@@ -3,11 +3,11 @@
 #MAKEFLAGS += --silent	# Silence makefile [Commented by default]\n
 NAME	=	Zappy
 
-SRC	=	$(wildcard srcs/*.cpp)
+SRC	=	$(wildcard srcs/*.cpp srcs/Commands/*.cpp)
 
 CFLAGS	=	-Wall -Wextra -Werror -std=c++20 -pedantic -fsanitize=address
 
-INC	=	-I includes
+INC	=	-I includes -I includes/Commands -I tomlplusplus/include
 
 OBJS_D	=	objs
 
@@ -37,11 +37,11 @@ $(NAME):	$(OBJ)
 			@printf "$(C_GREEN)DONE$(C_END)\n"
 
 $(OBJS_D)/%.o:srcs/%.cpp
-			@mkdir -p $(OBJS_D)
+			@mkdir -p $(OBJS_D) $(OBJS_D)/Commands
 			$(CC) $(CFLAGS) $(INC) -o $@ -c $<
 
 $(DEBUG_OBJS_D)/%.o:srcs/%.cpp
-			@mkdir -p $(DEBUG_OBJS_D)
+			@mkdir -p $(DEBUG_OBJS_D) $(DEBUG_OBJS_D)/Commands
 			$(CC) $(CFLAGS) -D DEBUG=1 $(INC) -o $@ -c $<
 
 test:		re

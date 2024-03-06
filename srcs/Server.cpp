@@ -10,10 +10,11 @@ extern "C" {
 
 #include <algorithm>
 
-// #include <toml++/toml.hpp>
+#include <toml++/toml.hpp>
 
 #include "Zappy.inc"
 #include "Server.hpp"
+#include "Command.hpp"
 
 namespace Zappy {
 	Server::Server(int players_port, int spectators_port):
@@ -205,6 +206,7 @@ namespace Zappy {
 		struct epoll_event ev;
 		int conn_sock, nfds;
 
+		write(1, "$> ", 3);
 		while(*sig) {
 			nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, -1);
 			if (nfds == -1) {
@@ -242,6 +244,15 @@ namespace Zappy {
 					// Server will send to spectator the game status at a given rate/s
 					if (events_[n].data.fd == 0) {
 						// handle standard input from the server [BONUS]
+						Command * c = Command::parse_server_command(client_msg);
+						if (DEBUG)
+							std::cout << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << std::endl;
+						if (c->is_valid()) {
+							c->execute(*this);
+							std::cout << c->get_output() << std::endl;
+						}
+						delete c;
+						write(1, "$> ", 3);
 					}
 					else if (is_fd_player(events_[n].data.fd)) {
 						// handle players
