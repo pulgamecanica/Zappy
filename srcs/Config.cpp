@@ -18,7 +18,8 @@ namespace Zappy {
 		help_(get_value_or_empty(table, language, "help")),
 		welcome_to_server_(get_value_or_empty(table, language, "welcome_to_server")),
 		total_players_(get_value_or_empty(table, language, "total_players")),
-		total_spectators_(get_value_or_empty(table, language, "total_spectators"))
+		total_spectators_(get_value_or_empty(table, language, "total_spectators")),
+	 	server_life_(get_value_or_empty(table, language, "server_life"))
 	 {
 	 	std::string error_msg_item;
 
@@ -34,6 +35,8 @@ namespace Zappy {
 	 		error_msg_item = "total_players";
 	 	} else if (total_spectators_.empty()) {
 	 		error_msg_item = "total_spectators";
+	 	} else if (server_life_.empty()) {
+	 		error_msg_item = "server_life";
 	 	}
 	 	if (!error_msg_item.empty()) {
 	 		std::stringstream ss;
@@ -43,6 +46,7 @@ namespace Zappy {
 	 		throw std::runtime_error(ss.str());
 	 	}
 	}
+
 
 	const std::string & Config::get_language() const { return (language_); }
 
@@ -56,6 +60,8 @@ namespace Zappy {
 
 	const std::string & Config::get_total_spectators() const { return (total_spectators_); }
 
+	const std::string & Config::get_server_life() const { return (server_life_); }
+	
 	Config::~Config() {
 		// std::cout << "Config" << " destroyed" << std::endl;
 		// TODO (destructor)

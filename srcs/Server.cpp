@@ -136,6 +136,13 @@ namespace Zappy {
 				exit(EXIT_FAILURE);
 			}
 		}
+		// Setup the timestamp
+		{
+			if(gettimeofday(&created_at_, NULL) == -1) {
+				perror("gettimeofday()");
+				exit(EXIT_FAILURE);
+			}
+		}
 		std::cout << BLUE << "* Players:\thttp://localhost:" << players_port_ << ENDC << std::endl;
 		std::cout << BLUE << "* Spectators:\thttp://localhost:" << spectators_port_<< ENDC << std::endl;
 	}
@@ -158,6 +165,27 @@ namespace Zappy {
 	int Server::total_spectators() const { return (spectators_.size()); }
 
 	const Config & Server::get_config() const { return (*curr_config_); } 
+
+	ssize_t Server::current_timestamp() const {
+			struct timeval tv;
+
+			if(gettimeofday(&tv, NULL) == -1) {
+				perror("gettimeofday()");
+				exit(EXIT_FAILURE);
+			}
+			return (tv.tv_sec - created_at_.tv_sec);
+	}
+
+	const std::string Server::get_creation_date() const {
+		std::string date;
+		ssize_t t;
+
+		t = created_at_.tv_sec + (created_at_.tv_usec / 1000);
+
+		date = ctime(&t);
+		date.pop_back();
+		return (date);
+	}
 
 	void	Server::set_config(const std::string lang_acronym) {
 		std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);

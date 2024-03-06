@@ -17,6 +17,7 @@ Welcome to the Zappy Server!
 '''
 total_players = "Total Players"
 total_spectators = "Total Spectators"
+server_life = "Server's Life"
 
 # SPANISH ########################################################
 [es]
@@ -32,6 +33,7 @@ Bienvenido al Servidor Zappy!
 '''
 total_players = "Total de Jugadores"
 total_spectators = "Total de Espectadores"
+server_life = "Vida del Servidor"
 
 # FRENCH ########################################################
 [fr]
@@ -48,3 +50,4 @@ Bienvenue aux Zappy Server!
 '''
 total_players = "Total des Joueurs"
 total_spectators = "Total de Spectateurs"
+server_life = "Vie du Server"

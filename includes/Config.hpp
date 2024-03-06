@@ -23,6 +23,7 @@ namespace Zappy {
 			const std::string & get_welcome_to_server() const;
 			const std::string & get_total_players() const;
 			const std::string & get_total_spectators() const;
+			const std::string & get_server_life() const;
 		private:
 			// CLASS FUNCTION MEMBERS
 			static const std::string get_value_or_empty(toml::table & table, const std::string language, const std::string key);
@@ -33,6 +34,7 @@ namespace Zappy {
 			const std::string welcome_to_server_;
 			const std::string total_players_;
 			const std::string total_spectators_;
+			const std::string server_life_;
 			// const std::string welcome_client_;
 			// const std::string help_;
 	};

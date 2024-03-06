@@ -6,6 +6,7 @@
 # define __SERVER_HPP__
 
 extern "C" {
+	#include <sys/time.h>
 	#include <sys/socket.h>
 	#include <sys/epoll.h>
 	#include <netinet/in.h>
@@ -29,7 +30,9 @@ namespace Zappy {
 			void run(int * sig);
 			const Config & get_config() const; 
 			int total_players() const; 
-			int total_spectators() const; 
+			int total_spectators() const;
+			ssize_t current_timestamp() const;
+			const std::string get_creation_date() const;
 		private:
 			// STATIC VALUES
 			static constexpr int					MAX_EPOLL_EVENTS = 64;
@@ -56,8 +59,8 @@ namespace Zappy {
 			std::vector<int>			spectators_;
 			std::vector<Config>		configs_;
 			Config							* curr_config_;
+			struct timeval				created_at_;
 			// std::map<int, Spectator> spectators_;
-
 	};
 
 	std::ostream&	operator<<(std::ostream&, const Server&);
