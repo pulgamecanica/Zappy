@@ -4,6 +4,7 @@
 
 extern "C" {
 	#include <unistd.h>
+	#include <sys/socket.h>
 }
 
 #include "Zappy.inc"
@@ -11,6 +12,8 @@ extern "C" {
 
 namespace Zappy {
 	Player::Player(int fd): fd_(fd) {
+		std::string welcome_msg = "Hello, welcome to the Zappy Server\n";
+		send(fd, welcome_msg.c_str(), welcome_msg.length(), 0);
 		// TODO (default constructor)
 	}
 
@@ -20,8 +23,8 @@ namespace Zappy {
 	// }
 
 	Player::~Player() {
-		if (DEBUG)
-			std::cout << "Player" << " destroyed" << std::endl;
+		// if (DEBUG)
+			// std::cout << "Player" << " destroyed" << std::endl;
 		// TODO (destructor)
 	}
 

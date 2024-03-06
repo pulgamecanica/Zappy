@@ -7,6 +7,10 @@ extern "C" {
 	#include <unistd.h>
 }
 
+#include <algorithm>
+
+// #include <toml++/toml.hpp>
+
 #include "Zappy.inc"
 #include "Server.hpp"
 
@@ -110,12 +114,8 @@ namespace Zappy {
 		return (players_socket_ == fd || spectators_socket_ == fd);
 	}
 
-	bool	Server::is_fd_spectator(int fd) {
+	bool	Server::is_fd_player(int fd) {
 		return (players_.find(fd) != players_.end());
-	}
-			
-	bool	Server::is_fd_client(int fd) {
-		return (spectators_.find(fd) != spectators_.end());
 	}
 
 	int Server::accept_client(int socket) {
@@ -136,11 +136,52 @@ namespace Zappy {
 	}
 
 	void Server::add_client(int socket, int fd) {
+		if (DEBUG)
+			std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl; 
 		if (players_socket_ == socket) {
 			players_.insert(std::pair<int, Player>(fd, fd));
 		} else if (spectators_socket_ == socket) {
-			spectators_.insert(std::pair<int, Spectator>(fd, fd));
+			spectators_.push_back(fd);
 		}
+	}
+
+	void	Server::remove_client(int fd) {
+		if (DEBUG)
+			std::cout << YELLOW << "[Server]\t" << RED << "remove\t" << ENDC << fd << std::endl; 
+		if (is_fd_player(fd))
+			players_.erase(fd);
+		else {
+			std::vector<int>::const_iterator pos = std::find(spectators_.begin(), spectators_.end(), fd);
+			spectators_.erase(pos);
+		}
+		close(fd);
+	}
+
+	const std::string Server::handle_client_input_or_disconnect(int fd) {
+		char buf[Server::RECV_BUFFER];
+		std::string msg;
+		ssize_t read_bytes;
+
+		for (;;) {
+			bzero(buf, Server::RECV_BUFFER);
+			read_bytes = recv(fd, buf, Server::RECV_BUFFER, MSG_DONTWAIT);
+			// Remove client on error
+			if (read_bytes == -1) {
+				if(errno == EAGAIN || errno == EWOULDBLOCK)
+					break ;
+				else
+					remove_client(fd);
+			}
+			// Remove client on disconnection
+			if (read_bytes == 0) {
+				remove_client(fd);
+				break;
+			}
+			// Protect append function from throwing lenght error when -1
+			// Return message when the client sends a message
+			msg.append(buf, read_bytes);
+		}
+		return (msg);
 	}
 
 	void Server::run(int * sig) {
@@ -170,9 +211,26 @@ namespace Zappy {
 					}
 					add_client(events_[n].data.fd, conn_sock);
 				} else {
-					if (is_fd_client(events_[n].data.fd)) {
+					// read message
+					// handle disconnection if need be
+					// read full message
+					// Pass message if player
+					// Server handles Client messages
+					const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
+					if (client_msg.empty())
+						continue ;
+					if (DEBUG)
+						std::cout << YELLOW << "[Server]\t" << GREEN << "recv:" << BLUE << client_msg.length() << ENDC << "bytes" << std::endl;
+					// Server will never use spectator messages (uni-directional communication)
+					// Server will send to spectator the game status at a given rate/s
+					if (is_fd_player(events_[n].data.fd)) {
 						// Player & p = players_.at(events_[n].data.fd);
-						// p.handle_io();
+						
+						// Player should parse the command
+						// Each player might choose his own configuration (language)
+						// Command & cmd = player.parse_command();
+						// execute_command(cmd);
+						// p.broadcast(cmd);
 					}
 					// do_use_fd(events_[n].data.fd);
 			   }
@@ -187,3 +245,19 @@ namespace Zappy {
 		return (s);
 	}
 }
+
+
+/**
+ * List of commands: 
+ * 
+ * [GENERAL]
+ * help
+ * status
+ * exit
+ * [GAME COMMANDS]
+ * 
+ * 
+ * 
+ * 
+ * 
+ */

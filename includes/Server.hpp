@@ -13,9 +13,9 @@ extern "C" {
 
 #include <iostream>
 #include <map>
+#include <vector>
 
 #include "Player.hpp"
-#include "Spectator.hpp"
 
 namespace Zappy {
 	class Server {
@@ -30,12 +30,15 @@ namespace Zappy {
 			static constexpr std::string 	VERSION = "42.0";
 			static constexpr int					MAX_EPOLL_EVENTS = 64;
 			static constexpr int					BACKLOG = 10;
-			// CLASS MEMBERS
-			bool	is_fd_spectator(int fd);
-			bool	is_fd_client(int fd);
-			int		accept_client(int socket);
-			bool	is_server_socket(int fd);
-			void	add_client(int socket, int fd);
+			static constexpr int					RECV_BUFFER = 1024;
+			// CLASS FUNCTION MEMBERS
+			bool							is_fd_player(int fd);
+			int								accept_client(int socket);
+			bool							is_server_socket(int fd);
+			void							add_client(int socket, int fd);
+			void							remove_client(int fd);
+			const std::string	handle_client_input_or_disconnect(int fd);
+			// CLASS PARAMS MEMBERS
 			const int						players_port_;
 			const int 					spectators_port_;
 			int									players_socket_;
@@ -45,7 +48,8 @@ namespace Zappy {
 			sockaddr_in					spectators_sockaddr_; // '' '' '' '' '' '' '' '' '' ''
 			struct epoll_event	events_[MAX_EPOLL_EVENTS];
 			std::map<int, Player> players_;
-			std::map<int, Spectator> spectators_;
+			std::vector<int> spectators_;
+			// std::map<int, Spectator> spectators_;
 	};
 
 	std::ostream&	operator<<(std::ostream&, const Server&);
