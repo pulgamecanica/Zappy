@@ -13,21 +13,23 @@
 namespace Zappy {
 	class Command {
 		public:
+			static Command * parse_server_command(const std::string & msg);
+			// CONSTRUCTORS
 			Command(const Command&) = default;
 			virtual ~Command();
-			Command&	operator= (const Command&) = default; // const for safety... not super nesessary
-			static Command * parse_server_command(const std::string & msg);
+			// MEMBER FUNCTIONS
+			Command&						operator= (const Command&) = default; // const for safety... not super nesessary
 			const std::string & get_cmd() const;
-			bool has_options() const;
-			virtual bool is_valid() const;
-			virtual void execute(Server & s);
-			virtual const std::string get_output() const;
+			bool 								has_options() const;
+			// VIRTAUL MEMBER FUNCTIONS(Inherited will prioritize)
+			virtual bool				is_valid() const;
+			virtual void 				execute(Server & s);
 		protected:
-			// CLASS FUNCTION MEMBERS
+			// Semi-Abstract Class, prevent Command from being created on the main scope
 			Command(const char *cmd, const bool options_enabled);
 		private:
-			const std::string cmd_;
-			const bool options_enabled_;
+			const std::string	cmd_;
+			const bool 				options_enabled_;
 			// const std::vector<std::string> options_;
 	};
 

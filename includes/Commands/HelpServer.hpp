@@ -9,16 +9,17 @@
 
 #include "Command.hpp"
 
+#include "Zappy.inc"
+
 namespace Zappy {
 	class HelpServer: public virtual Command {
 		public:
 			HelpServer();
 			HelpServer(const HelpServer&) = default;
 			virtual ~HelpServer();
-			HelpServer&	operator= (const HelpServer&) = default; // const for safety... not super nesessary
-			const std::string get_cmd_output();
-			virtual bool is_valid() const;
-			const std::string get_output() const;
+			HelpServer&		operator= (const HelpServer&) = default; // const for safety... not super nesessary
+			virtual bool	is_valid() const;
+			virtual void	execute(Server & s);
 	};
 
 	std::ostream&	operator<<(std::ostream&, const HelpServer&);

@@ -1,0 +1,50 @@
+languages = [ "en", "es", "fr" ]
+
+# ENGLISH ########################################################
+[en]
+language = "English"
+help = "Help - List with all commands available"
+welcome_to_server = '''
+
+Welcome to the Zappy Server!
+
+░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░░█████╗░███╗░░░███╗███████╗
+░██║░░██╗░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗████╗░████║██╔════╝
+░╚██╗████╗██╔╝█████╗░░██║░░░░░██║░░╚═╝██║░░██║██╔████╔██║█████╗░░
+░░████╔═████║░██╔══╝░░██║░░░░░██║░░██╗██║░░██║██║╚██╔╝██║██╔══╝░░
+░░╚██╔╝░╚██╔╝░███████╗███████╗╚█████╔╝╚█████╔╝██║░╚═╝░██║███████╗
+░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚══════╝
+'''
+total_players = "Total Players"
+total_spectators = "Total Spectators"
+
+# SPANISH ########################################################
+[es]
+language = "Espanol"
+help = "Ayuda - Lista de todos los comandos disponibles"
+welcome_to_server = '''
+Bienvenido al Servidor Zappy!
+ ____  _                           _     _       _ 
+| __ )(_) ___ _ ____   _____ _ __ (_) __| | ___ | |
+|  _ \| |/ _ \ '_ \ \ / / _ \ '_ \| |/ _` |/ _ \| |
+| |_) | |  __/ | | \ V /  __/ | | | | (_| | (_) |_|
+|____/|_|\___|_| |_|\_/ \___|_| |_|_|\__,_|\___/(_)
+'''
+total_players = "Total de Jugadores"
+total_spectators = "Total de Espectadores"
+
+# FRENCH ########################################################
+[fr]
+language = "French"
+help = "Aide - List tout les commandes disponibles"
+welcome_to_server = '''
+Bienvenue aux Zappy Server!
+ _     _                                      
+| |   (_)                                     
+| |__  _  ___ _ ____   _____ _ __  _   _  ___ 
+| '_ \| |/ _ \ '_ \ \ / / _ \ '_ \| | | |/ _ \
+| |_) | |  __/ | | \ V /  __/ | | | |_| |  __/
+|_.__/|_|\___|_| |_|\_/ \___|_| |_|\__,_|\___|
+'''
+total_players = "Total des Joueurs"
+total_spectators = "Total de Spectateurs"

@@ -8,6 +8,8 @@ extern "C" {
 	#include <fcntl.h>
 }
 
+#include <toml++/toml.hpp>
+
 #include "Zappy.inc"
 #include "Server.hpp"
 
@@ -45,13 +47,25 @@ void setnonblocking(int fd) {
 
 int	main(void)
 {
-	Zappy::Server s;
-	
+	// Using en language as a default, can be changed by using parameters
+	// main parameters:
+	// --default-language=<name> // default en
+	// --toml-file=<path> // default conf.toml
+	// --players-port=0000 // default 4242
+	// --viewers-port=0000 // default 2121
 	setup_signals();
 	try {
+		Zappy::Server s;
 		s.run(&g_stop_sig);
+	} catch (const toml::parse_error& err) {
+    std::cerr
+        << "Error parsing file '" << *err.source().path
+        << "':\n" << RED << err.description() << ENDC
+        << "\n\t(" << err.source().begin << ")\n";
+    return (1);
 	} catch (std::exception &e) {
 		std::cerr << RED << e.what() << ENDC << std::endl;
+		return (1);
 	}
 	std::cout << YELLOW << "Thank you for using the " << GREEN "Zappy Server" << ENDC << " :)" << std::endl;
 	return (0);

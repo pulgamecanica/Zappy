@@ -17,8 +17,37 @@ extern "C" {
 #include "Command.hpp"
 
 namespace Zappy {
-	Server::Server(int players_port, int spectators_port):
+	Server::Server(const char * toml_file, const char * default_lang, int players_port, int spectators_port):
 		players_port_(players_port), spectators_port_(spectators_port) {
+		// Setup TOML configuration file
+		{
+			(void)default_lang;
+			// Open Toml file
+			toml::table tbl = toml::parse_file(toml_file);
+			// Setup configuration for all the languages
+			auto toml_langs = tbl["languages"];
+			if (toml::array* arr = toml_langs.as_array())
+    	{
+	        // visitation with for_each() helps deal with heterogeneous data
+	        arr->for_each([&](auto&& el)
+	        {
+	            if constexpr (toml::is_string<decltype(el)>) {
+	            	if (DEBUG)
+	                std::cout << "Loading " << BLUE << *el << ENDC << " configuration" << std::endl;
+	        			configs_.push_back(Config(tbl, *el));
+	        		} else {
+	    					throw std::runtime_error("Error: languages can only contain strings");
+	        		}
+	        });
+	    } else {
+	    	throw std::runtime_error("Error: languages is not defined or is not an array");
+	    }
+	    // Check that default language is included
+			std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), default_lang);
+			if (it == std::end(configs_))
+	    	throw std::runtime_error("Error: default language is not included in the toml file");
+			curr_config_ = &(*it);
+		}
 		std::cout << YELLOW << "=> Booting Zappy in " << (DEBUG ? "debug" : "development") << " mode" << ENDC << std::endl;
 		std::cout << YELLOW << "=> ZappyServer version: " << GREEN << Server::VERSION << ENDC << std::endl;
 		std::cout << YELLOW << "=> Run `./Zappy --help` for more startup options" << ENDC << std::endl;
@@ -119,8 +148,25 @@ namespace Zappy {
 		// TODO
 		players_.clear();
 		spectators_.clear();
+		configs_.clear();
 		if (DEBUG)
 			std::cout << "Server" << " destroyed" << std::endl;
+	}
+
+	int Server::total_players() const { return (players_.size()); }
+
+	int Server::total_spectators() const { return (spectators_.size()); }
+
+	const Config & Server::get_config() const { return (*curr_config_); } 
+
+	void	Server::set_config(const std::string lang_acronym) {
+		std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
+		if (it == std::end(configs_)) {
+			std::cout << RED << "Error: Couldn't change the configuration '" << lang_acronym << "' is not supported" << std::endl;
+		} else {
+			curr_config_ = &(*it);
+			std::cout << GREEN << "[Server]: Language [" << BLUE << lang_acronym << GREEN << "]" << ENDC << std::endl;
+		}
 	}
 
 	bool Server::is_server_socket(int fd) {
@@ -206,6 +252,7 @@ namespace Zappy {
 		struct epoll_event ev;
 		int conn_sock, nfds;
 
+		std::cout << curr_config_->get_welcome_to_server() << std::endl;
 		write(1, "$> ", 3);
 		while(*sig) {
 			nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, -1);
@@ -246,10 +293,11 @@ namespace Zappy {
 						// handle standard input from the server [BONUS]
 						Command * c = Command::parse_server_command(client_msg);
 						if (DEBUG)
-							std::cout << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << std::endl;
+							std::cout << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
 						if (c->is_valid()) {
 							c->execute(*this);
-							std::cout << c->get_output() << std::endl;
+						} else {
+							write(0, "command not found\n", 18); 
 						}
 						delete c;
 						write(1, "$> ", 3);

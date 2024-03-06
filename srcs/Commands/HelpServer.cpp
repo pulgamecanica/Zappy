@@ -5,7 +5,6 @@
 #include <sstream>
 
 #include "HelpServer.hpp"
-#include "Zappy.inc"
 
 namespace Zappy {
 	HelpServer::HelpServer(): Command("help", false) {
@@ -16,17 +15,12 @@ namespace Zappy {
 	}
 
 	bool HelpServer::is_valid() const {
-		return true;
+		return true; // It is always valid
 	}
 	
-	const std::string HelpServer::get_output() const {
-		std::stringstream ss;
-
-		ss << BLUE << "help" << ENDC << " - Display all the available commands" << std::endl;
-		const std::string str(ss.str());
-		return (str);
-	};
-
+	void HelpServer::execute(Server & s) {
+		std::cout << s.get_config().get_help() << std::endl;
+	}
 
 	std::ostream& operator<<(std::ostream& s, const HelpServer& param) {
 		// s << param.CONST_METHOD()

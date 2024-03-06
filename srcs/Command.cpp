@@ -5,6 +5,7 @@
 #include "Zappy.inc"
 #include "Command.hpp"
 #include "HelpServer.hpp"
+#include "StatusServer.hpp"
 
 namespace Zappy {
 	Command::Command(const char *cmd, const bool options_enabled):
@@ -13,8 +14,8 @@ namespace Zappy {
 	}
 
 	Command::~Command() {
-		if (DEBUG)
-			std::cout << "Command" << " destroyed" << std::endl;
+		// if (DEBUG)
+			// std::cout << "Command" << " destroyed" << std::endl;
 		// TODO (destructor)
 	}
 
@@ -28,9 +29,6 @@ namespace Zappy {
 
 	void Command::execute(Server & s) {(void)s;}
 
-	const std::string Command::get_output() const {return (std::string());};
-
-
 	/**
 	 * Server commands:
 	 * 
@@ -41,8 +39,12 @@ namespace Zappy {
 	 * 
 	 * */
 	Command * Command::parse_server_command(const std::string & msg) {
-		if (msg.find("help") != std::string::npos) {
+		const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
+		// Missing options
+		if (cmd == "help") {
 			return new HelpServer();
+		} else if (cmd == "status") {
+			return new StatusServer();
 		}
 		return new Command("command not found", false);
 	}
