@@ -5,6 +5,7 @@
 extern "C" {
 	#include <sys/socket.h>
 	#include <unistd.h>
+	#include <strings.h>
 }
 
 #include <algorithm>
@@ -94,6 +95,17 @@ namespace Zappy {
 				exit(EXIT_FAILURE);
 			}
 		}
+		// Add standard input to the epoll list
+		{
+			setnonblocking(0);
+  		struct epoll_event ev;
+	   	ev.events = EPOLLIN | EPOLLET;
+	   	ev.data.fd = 0;
+	   	if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, 0, &ev) == -1) {
+	   		perror("std input ADD epoll_ctl()");
+				exit(EXIT_FAILURE);
+			}
+		}
 		std::cout << BLUE << "* Players:\thttp://localhost:" << players_port_ << ENDC << std::endl;
 		std::cout << BLUE << "* Spectators:\thttp://localhost:" << spectators_port_<< ENDC << std::endl;
 	}
@@ -164,16 +176,21 @@ namespace Zappy {
 
 		for (;;) {
 			bzero(buf, Server::RECV_BUFFER);
-			read_bytes = recv(fd, buf, Server::RECV_BUFFER, MSG_DONTWAIT);
+			if (fd == 0)
+				read_bytes = read(fd, buf, Server::RECV_BUFFER);
+			else
+				read_bytes = recv(fd, buf, Server::RECV_BUFFER, MSG_DONTWAIT);
 			// Remove client on error
 			if (read_bytes == -1) {
 				if(errno == EAGAIN || errno == EWOULDBLOCK)
-					break ;
-				else
+					break;
+				else if (fd != 0)
 					remove_client(fd);
+				else
+					break;
 			}
 			// Remove client on disconnection
-			if (read_bytes == 0) {
+			if (read_bytes == 0 && fd != 0) {
 				remove_client(fd);
 				break;
 			}
@@ -223,9 +240,13 @@ namespace Zappy {
 						std::cout << YELLOW << "[Server]\t" << GREEN << "recv:" << BLUE << client_msg.length() << ENDC << "bytes" << std::endl;
 					// Server will never use spectator messages (uni-directional communication)
 					// Server will send to spectator the game status at a given rate/s
-					if (is_fd_player(events_[n].data.fd)) {
+					if (events_[n].data.fd == 0) {
+						// handle standard input from the server [BONUS]
+					}
+					else if (is_fd_player(events_[n].data.fd)) {
+						// handle players
 						// Player & p = players_.at(events_[n].data.fd);
-						
+
 						// Player should parse the command
 						// Each player might choose his own configuration (language)
 						// Command & cmd = player.parse_command();
