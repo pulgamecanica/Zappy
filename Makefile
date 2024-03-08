@@ -3,7 +3,12 @@
 #MAKEFLAGS += --silent	# Silence makefile [Commented by default]\n
 NAME	=	Zappy
 
-SRC	=	$(wildcard srcs/*.cpp srcs/Commands/*.cpp)
+SRC	=	$(wildcard srcs/*.cpp)
+
+SRC += srcs/Commands/HelpServer.cpp \
+	srcs/Commands/StatusServer.cpp \
+	srcs/Commands/ExitServer.cpp \
+	srcs/Commands/LangServer.cpp \
 
 CFLAGS	=	-Wall -Wextra -Werror -std=c++20 -pedantic -fsanitize=address
 

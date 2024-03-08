@@ -20,17 +20,14 @@ namespace Zappy {
 			// MEMBER FUNCTIONS
 			Command&						operator= (const Command&) = default; // const for safety... not super nesessary
 			const std::string & get_cmd() const;
-			bool 								has_options() const;
 			// VIRTAUL MEMBER FUNCTIONS(Inherited will prioritize)
 			virtual bool				is_valid() const;
 			virtual void 				execute(Server & s);
 		protected:
 			// Semi-Abstract Class, prevent Command from being created on the main scope
-			Command(const char *cmd, const bool options_enabled);
+			Command(const char *cmd);
 		private:
 			const std::string	cmd_;
-			const bool 				options_enabled_;
-			// const std::vector<std::string> options_;
 	};
 
 	std::ostream&	operator<<(std::ostream&, const Command&);

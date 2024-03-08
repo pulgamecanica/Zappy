@@ -15,6 +15,7 @@ namespace Zappy {
 	Config::Config(toml::table & table, const std::string language):
 		language_(get_value_or_empty(table, language, "language")),
 		language_acronym_(language),
+	 	language_help_(get_value_or_empty(table, language, "language_help")),
 		help_(get_value_or_empty(table, language, "help")),
 		welcome_to_server_(get_value_or_empty(table, language, "welcome_to_server")),
 		total_players_(get_value_or_empty(table, language, "total_players")),
@@ -23,6 +24,9 @@ namespace Zappy {
 	 {
 	 	std::string error_msg_item;
 
+	 	// Should implement a map to avoid so much code and repetition
+	 	// Map all values, if value is not found, then error.
+	 	// if maped value is empty error
 	 	if (language_.empty()) {
 	 		error_msg_item = "language";
 	 	} else if (help_.empty()) {
@@ -35,6 +39,8 @@ namespace Zappy {
 	 		error_msg_item = "total_players";
 	 	} else if (total_spectators_.empty()) {
 	 		error_msg_item = "total_spectators";
+	 	} else if (language_help_.empty()) {
+	 		error_msg_item = "language_help";
 	 	} else if (server_life_.empty()) {
 	 		error_msg_item = "server_life";
 	 	}
@@ -51,6 +57,8 @@ namespace Zappy {
 	const std::string & Config::get_language() const { return (language_); }
 
 	const std::string & Config::get_language_acronym() const { return (language_acronym_); }
+	
+	const std::string & Config::get_language_help() const { return (language_help_); }
 
 	const std::string & Config::get_help() const { return (help_); }
 

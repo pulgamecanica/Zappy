@@ -7,7 +7,7 @@
 #include "Zappy.inc"
 
 namespace Zappy {
-	StatusServer::StatusServer(): Command("status", false) {
+	StatusServer::StatusServer(): Command("status") {
 		// TODO (default constructor)
 	}
 

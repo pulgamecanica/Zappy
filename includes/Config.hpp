@@ -19,6 +19,7 @@ namespace Zappy {
 			bool								operator==(const std::string&) const; // Needed in order to use find with a string
 			const std::string & get_language() const;
 			const std::string & get_language_acronym() const;
+			const std::string & get_language_help() const;
 			const std::string & get_help() const;
 			const std::string & get_welcome_to_server() const;
 			const std::string & get_total_players() const;
@@ -30,6 +31,7 @@ namespace Zappy {
 			// CLASS PARAMS MEMBERS
 			const std::string language_;
 			const std::string language_acronym_;
+			const std::string language_help_;
 			const std::string help_;
 			const std::string welcome_to_server_;
 			const std::string total_players_;

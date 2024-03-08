@@ -7,7 +7,7 @@
 #include "HelpServer.hpp"
 
 namespace Zappy {
-	HelpServer::HelpServer(): Command("help", false) {
+	HelpServer::HelpServer(): Command("help") {
 	}
 
 

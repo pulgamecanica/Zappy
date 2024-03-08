@@ -160,11 +160,24 @@ namespace Zappy {
 			std::cout << "Server" << " destroyed" << std::endl;
 	}
 
+	const std::vector<std::string> Server::get_list_of_supported_languages() const {
+		std::vector<std::string> langs;
+
+		for (std::vector<Config>::const_iterator it = configs_.begin(); it != configs_.end(); ++it) {
+			langs.push_back(it->get_language_acronym());
+		}
+		return (langs);
+	}
+
 	int Server::total_players() const { return (players_.size()); }
 
 	int Server::total_spectators() const { return (spectators_.size()); }
 
 	const Config & Server::get_config() const { return (*curr_config_); } 
+
+	void Server::server_stop() const {
+		*sig_ = 0;
+	};
 
 	ssize_t Server::current_timestamp() const {
 			struct timeval tv;
@@ -180,7 +193,7 @@ namespace Zappy {
 		std::string date;
 		ssize_t t;
 
-		t = created_at_.tv_sec + (created_at_.tv_usec / 1000);
+		t = ((created_at_.tv_sec * 1000) + (created_at_.tv_usec / 1000)) / 1000;
 
 		date = ctime(&t);
 		date.pop_back();
@@ -190,10 +203,11 @@ namespace Zappy {
 	void	Server::set_config(const std::string lang_acronym) {
 		std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
 		if (it == std::end(configs_)) {
-			std::cout << RED << "Error: Couldn't change the configuration '" << lang_acronym << "' is not supported" << std::endl;
+			std::cout << RED << "Error" << ENDC << " Couldn't change the configuration '" << lang_acronym << "' is not supported" << std::endl;
 		} else {
 			curr_config_ = &(*it);
-			std::cout << GREEN << "[Server]: Language [" << BLUE << lang_acronym << GREEN << "]" << ENDC << std::endl;
+			if (DEBUG)
+				std::cout << YELLOW << "[Server]\t" << GREEN << "Language [" << BLUE << lang_acronym << GREEN << "]" << ENDC << std::endl;
 		}
 	}
 
@@ -279,6 +293,7 @@ namespace Zappy {
 	void Server::run(int * sig) {
 		struct epoll_event ev;
 		int conn_sock, nfds;
+		sig_ = sig;
 
 		std::cout << curr_config_->get_welcome_to_server() << std::endl;
 		write(1, "$> ", 3);
@@ -328,7 +343,8 @@ namespace Zappy {
 							write(0, "command not found\n", 18); 
 						}
 						delete c;
-						write(1, "$> ", 3);
+						if (*sig_)
+							write(1, "$> ", 3);
 					}
 					else if (is_fd_player(events_[n].data.fd)) {
 						// handle players

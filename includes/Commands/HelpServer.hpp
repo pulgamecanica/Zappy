@@ -9,8 +9,6 @@
 
 #include "Command.hpp"
 
-#include "Zappy.inc"
-
 namespace Zappy {
 	class HelpServer: public virtual Command {
 		public:
