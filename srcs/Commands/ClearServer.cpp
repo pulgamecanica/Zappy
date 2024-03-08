@@ -4,30 +4,32 @@
 
 #include "ClearServer.hpp"
 
-ClearServer::ClearServer() {
-	// TODO (default constructor)
-}
+namespace Zappy {
 
-ClearServer::ClearServer(const ClearServer& param) {
-	// TODO (copy constructor)
-	(void)param;
-}
+	ClearServer::ClearServer(): Command("clear") {
+		// TODO (default constructor)
+	}
 
-ClearServer::~ClearServer() {
-	std::cout << "ClearServer" << " destroyed" << std::endl;
-	// TODO (destructor)
-}
 
-ClearServer& ClearServer::operator= (const ClearServer& param) {
-	// TODO (Assignment operatior)
-	// std::swap()
-	(void)param;
-	return (*this);
-}
+	ClearServer::~ClearServer() {
+		// std::cout << "ClearServer" << " destroyed" << std::endl;
+		// TODO (destructor)
+	}
 
-std::ostream& operator<<(std::ostream& s, const ClearServer& param) {
-	// s << param.CONST_METHOD()
-	(void)param;
-	return (s);
+	bool	ClearServer::is_valid() const {
+		return true;
+	};
+	
+	void	ClearServer::execute(Server & s) {
+		std::string ansi_clear_window_seq("\033[H\033[2J");
+		write(1, ansi_clear_window_seq.c_str(), ansi_clear_window_seq.length());
+	}
+
+
+	std::ostream& operator<<(std::ostream& s, const ClearServer& param) {
+		// s << param.CONST_METHOD()
+		(void)param;
+		return (s);
+	}
 }
 

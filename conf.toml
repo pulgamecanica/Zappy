@@ -19,6 +19,8 @@ help - List with all commands available
 *    The output will change             *
 *    Commands will never change         *
 *                                       *
+* - clear Clear the console scree       *
+*                                       *
 * - exit Exit the server                *
 \***************************************/'''
 welcome_to_server = '''

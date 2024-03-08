@@ -8,6 +8,7 @@
 #include "StatusServer.hpp"
 #include "ExitServer.hpp"
 #include "LangServer.hpp"
+#include "ClearServer.hpp"
 
 namespace Zappy {
 	Command::Command(const char *cmd): cmd_(cmd) {
@@ -62,6 +63,8 @@ namespace Zappy {
 			return new StatusServer();
 		} else if (cmd == "exit") {
 			return new ExitServer();
+		} else if (cmd == "clear") {
+			return new ClearServer();
 		} else if (cmd == "lang") {
 			return new LangServer(options_list);
 			// return new LangServer(options_list);

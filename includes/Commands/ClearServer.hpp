@@ -7,15 +7,21 @@
 
 #include <iostream>
 
-class ClearServer {
-	public:
-		ClearServer();
-		ClearServer(const ClearServer&);
-		~ClearServer();
-		ClearServer&	operator= (const ClearServer&); // const for safety... not super nesessary
-};
+#include "Command.hpp"
 
-std::ostream&	operator<<(std::ostream&, const ClearServer&);
+namespace Zappy {
+	class ClearServer: public virtual Command {
+		public:
+			ClearServer();
+			ClearServer(const ClearServer&) = default;
+			virtual ~ClearServer();
+			ClearServer&	operator= (const ClearServer&) = default; // const for safety... not super nesessary
+			virtual bool	is_valid() const;
+			virtual void	execute(Server & s);
+	};
+
+	std::ostream&	operator<<(std::ostream&, const ClearServer&);
+}
 
 #endif
 

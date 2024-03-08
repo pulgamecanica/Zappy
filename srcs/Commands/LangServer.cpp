@@ -29,7 +29,7 @@ namespace Zappy {
 		bool help_needed = it != std::end(options_);
 		
 		if (help_needed) {
-			std::cout << s.get_config().get_language_help();
+			std::cout << s.get_config().get("language_help");
 			std::cout << GREEN << "Langs\t" << ENDC;
 			for (std::vector<std::string>::const_iterator it = languages.begin(); it != languages.end(); ++it)
 				std::cout << "[" << BLUE << *it << ENDC << "]";

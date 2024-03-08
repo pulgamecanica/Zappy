@@ -19,7 +19,7 @@ namespace Zappy {
 	}
 	
 	void HelpServer::execute(Server & s) {
-		std::cout << s.get_config().get_help() << std::endl;
+		std::cout << s.get_config().get("help") << std::endl;
 	}
 
 	std::ostream& operator<<(std::ostream& s, const HelpServer& param) {

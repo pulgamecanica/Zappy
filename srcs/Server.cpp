@@ -295,7 +295,7 @@ namespace Zappy {
 		int conn_sock, nfds;
 		sig_ = sig;
 
-		std::cout << curr_config_->get_welcome_to_server() << std::endl;
+		std::cout << curr_config_->get("welcome_to_server") << std::endl;
 		write(1, "$> ", 3);
 		while(*sig) {
 			nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, -1);
