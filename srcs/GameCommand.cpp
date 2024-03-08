@@ -2,30 +2,30 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "HelpPlayer.hpp"
+#include "GameCommand.hpp"
 
-HelpPlayer::HelpPlayer() {
+GameCommand::GameCommand() {
 	// TODO (default constructor)
 }
 
-HelpPlayer::HelpPlayer(const HelpPlayer& param) {
+GameCommand::GameCommand(const GameCommand& param) {
 	// TODO (copy constructor)
 	(void)param;
 }
 
-HelpPlayer::~HelpPlayer() {
-	std::cout << "HelpPlayer" << " destroyed" << std::endl;
+GameCommand::~GameCommand() {
+	std::cout << "GameCommand" << " destroyed" << std::endl;
 	// TODO (destructor)
 }
 
-HelpPlayer& HelpPlayer::operator= (const HelpPlayer& param) {
+GameCommand& GameCommand::operator= (const GameCommand& param) {
 	// TODO (Assignment operatior)
 	// std::swap()
 	(void)param;
 	return (*this);
 }
 
-std::ostream& operator<<(std::ostream& s, const HelpPlayer& param) {
+std::ostream& operator<<(std::ostream& s, const GameCommand& param) {
 	// s << param.CONST_METHOD()
 	(void)param;
 	return (s);

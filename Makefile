@@ -12,7 +12,7 @@ SRC += srcs/Commands/HelpServer.cpp \
 	srcs/Commands/ClearServer.cpp \
 	srcs/Commands/PlayersServer.cpp \
 
-CFLAGS	=	-Wall -Wextra -Werror -std=c++20 -pedantic -fsanitize=address
+CFLAGS	= -O3 -g -Wall -Wextra -Werror -std=c++20 -pedantic #-fsanitize=leak
 
 INC	=	-I includes -I includes/Commands -I tomlplusplus/include
 
