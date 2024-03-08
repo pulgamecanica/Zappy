@@ -12,15 +12,17 @@ extern "C" {
 
 namespace Zappy {
 	Player::Player(int fd): fd_(fd) {
-		std::string welcome_msg = "Hello, welcome to the Zappy Server\n";
-		send(fd, welcome_msg.c_str(), welcome_msg.length(), 0);
-		// TODO (default constructor)
-	}
+		std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
+		ssize_t t;
 
-	// Player::Player(const Player& param) {
-	// 	// TODO (copy constructor)
-	// 	(void)param;
-	// }
+		if (gettimeofday(&created_at_, NULL) == -1) {
+			perror("gettimeofday()");
+			exit(EXIT_FAILURE);
+		}
+		t = ((created_at_.tv_sec * 1000) + (created_at_.tv_usec / 1000)) / 1000;
+		welcome_msg.append(ctime(&t));
+		send(fd, welcome_msg.c_str(), welcome_msg.length(), 0);
+	}
 
 	Player::~Player() {
 		// if (DEBUG)
@@ -28,12 +30,15 @@ namespace Zappy {
 		// TODO (destructor)
 	}
 
-	// Player& Player::operator= (const Player& param) {
-	// 	// TODO (Assignment operatior)
-	// 	// std::swap()
-	// 	(void)param;
-		// return (*this);
-	// }
+	ssize_t Player::uptime() const {
+		struct timeval tv;
+
+		if(gettimeofday(&tv, NULL) == -1) {
+			perror("gettimeofday()");
+			exit(EXIT_FAILURE);
+		}
+		return (tv.tv_sec - created_at_.tv_sec);
+	}
 
 	// void Player::handle_io() {
 	// 	ssize_t total_bytes(0);

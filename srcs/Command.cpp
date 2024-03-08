@@ -9,6 +9,7 @@
 #include "ExitServer.hpp"
 #include "LangServer.hpp"
 #include "ClearServer.hpp"
+#include "PlayersServer.hpp"
 
 namespace Zappy {
 	Command::Command(const char *cmd): cmd_(cmd) {
@@ -56,7 +57,6 @@ namespace Zappy {
 				std::cout << "[" << BLUE << *i << ENDC << "] ";
 			std::cout << std::endl;
 		}
-		// Missing options
 		if (cmd == "help") {
 			return new HelpServer();
 		} else if (cmd == "status") {
@@ -65,9 +65,10 @@ namespace Zappy {
 			return new ExitServer();
 		} else if (cmd == "clear") {
 			return new ClearServer();
+		} else if (cmd == "players") {
+			return new PlayersServer();
 		} else if (cmd == "lang") {
 			return new LangServer(options_list);
-			// return new LangServer(options_list);
 		}
 		return new Command("command not found");
 	}

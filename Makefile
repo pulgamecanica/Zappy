@@ -10,6 +10,7 @@ SRC += srcs/Commands/HelpServer.cpp \
 	srcs/Commands/ExitServer.cpp \
 	srcs/Commands/LangServer.cpp \
 	srcs/Commands/ClearServer.cpp \
+	srcs/Commands/PlayersServer.cpp \
 
 CFLAGS	=	-Wall -Wextra -Werror -std=c++20 -pedantic -fsanitize=address
 

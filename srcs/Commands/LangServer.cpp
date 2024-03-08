@@ -32,7 +32,7 @@ namespace Zappy {
 			std::cout << s.get_config().get("language_help");
 			std::cout << GREEN << "Langs\t" << ENDC;
 			for (std::vector<std::string>::const_iterator it = languages.begin(); it != languages.end(); ++it)
-				std::cout << "[" << BLUE << *it << ENDC << "]";
+				std::cout << "[" << (*it == s.get_config().get_language_acronym() ? RED : BLUE) << *it << ENDC << "]";
 			std::cout << std::endl;
 		} else {
 			if (options_.size() == 1) {

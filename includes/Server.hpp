@@ -36,6 +36,7 @@ namespace Zappy {
 			void 														server_stop() const;
 			void														set_config(const std::string lang_acronym);
 			const std::vector<std::string>	get_list_of_supported_languages() const;
+			const std::map<int, Player> & get_players() const;
 		private:
 			// STATIC VALUES
 			static constexpr int					MAX_EPOLL_EVENTS = 64;
@@ -51,6 +52,7 @@ namespace Zappy {
 			// CLASS PARAMS MEMBERS
 			const int							players_port_;
 			const int 						spectators_port_;
+			// const int							connection_timeout_; // Players will time out after X seconds, spectators never timeout
 			int										players_socket_;
 			int										spectators_socket_;
 			int										epoll_fd_;

@@ -160,6 +160,11 @@ namespace Zappy {
 			std::cout << "Server" << " destroyed" << std::endl;
 	}
 
+	const std::map<int, Player> & Server::get_players() const {
+		return players_;
+	}
+
+
 	const std::vector<std::string> Server::get_list_of_supported_languages() const {
 		std::vector<std::string> langs;
 
@@ -271,12 +276,9 @@ namespace Zappy {
 				read_bytes = recv(fd, buf, Server::RECV_BUFFER, MSG_DONTWAIT);
 			// Remove client on error
 			if (read_bytes == -1) {
-				if(errno == EAGAIN || errno == EWOULDBLOCK)
-					break;
-				else if (fd != 0)
+				if(errno != EAGAIN && errno != EWOULDBLOCK && fd != 0)
 					remove_client(fd);
-				else
-					break;
+				break;
 			}
 			// Remove client on disconnection
 			if (read_bytes == 0 && fd != 0) {
@@ -298,7 +300,7 @@ namespace Zappy {
 		std::cout << curr_config_->get("welcome_to_server") << std::endl;
 		write(1, "$> ", 3);
 		while(*sig) {
-			nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, -1);
+			nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 500);
 			if (nfds == -1) {
 			   perror("epoll_wait");
 			   break ;
@@ -358,6 +360,18 @@ namespace Zappy {
 					}
 					// do_use_fd(events_[n].data.fd);
 			   }
+			}
+			// Testing Spectators send
+			for (std::vector<int>::iterator it = spectators_.begin(); it != spectators_.end(); ++it) {
+				std::ostringstream ss;
+
+				ss << "\033[H\033[2J\n";
+				ss << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
+					<< " - [" << BLUE << get_creation_date() << ENDC << "]" << std::endl;
+				ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
+				ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
+				ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "s" << std::endl;
+				send(*it, ss.str().c_str(), ss.str().length(), 0);
 			}
 		}
 	}
