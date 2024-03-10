@@ -14,7 +14,7 @@ help - List with all commands available
 *                                       *
 * - help Show all commands and usage    *
 *                                       *
-* - lang [--help] (<name>)              *
+* - lang [--help] <name>                *
 *    Change server language             *
 *    The output will change             *
 *    Commands will never change         *

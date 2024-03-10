@@ -11,7 +11,7 @@ extern "C" {
 #include <toml++/toml.hpp>
 
 #include "Zappy.inc"
-#include "Server.hpp"
+#include "GameEngine.hpp"
 
 int g_stop_sig = 42;
 
@@ -55,8 +55,9 @@ int	main(void)
 	// --viewers-port=0000 // default 2121
 	setup_signals();
 	try {
-		Zappy::Server s;
-		s.run(&g_stop_sig);
+		Zappy::GameEngine trantor;
+		trantor.start(&g_stop_sig);
+		// Zappy::Server s;
 	} catch (const toml::parse_error& err) {
     std::cerr
         << "Error parsing file '" << *err.source().path

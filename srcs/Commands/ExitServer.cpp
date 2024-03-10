@@ -12,7 +12,7 @@ namespace Zappy {
 	bool	ExitServer::is_valid() const { return true; }
 	
 	void	ExitServer::execute(Server & s) {
-		s.server_stop();
+		s.stop_server();
 	}
 
 	std::ostream& operator<<(std::ostream& s, const ExitServer& param) {

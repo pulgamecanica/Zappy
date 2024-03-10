@@ -20,23 +20,38 @@ extern "C" {
 #include "Config.hpp"
 
 namespace Zappy {
+
+	// Implement enum to represent the server health
+	// Booting
+	// Running 
+	// Error
+	// End Of Life
+	enum ServerHealth
+	{
+		Booting,
+		Running,
+		EndOfLife
+	};
 	class Server {
 		public:
 			static constexpr std::string 	VERSION = "42.0";
-			Server(const char * toml_file = "conf.toml", const char * default_lang = "en", int players_port = 4242, int spectators_port = 2121);
 			Server(const Server&) = delete;
 			~Server();
 			Server&													operator= (const Server&) = delete; // const for safety... not super nesessary
-			void 														run(int * sig);
 			const Config &									get_config() const; 
 			int 														total_players() const; 
 			int 														total_spectators() const;
 			ssize_t													current_timestamp() const;
 			const std::string								get_creation_date() const;
-			void 														server_stop() const;
+			void 														stop_server();
 			void														set_config(const std::string lang_acronym);
 			const std::vector<std::string>	get_list_of_supported_languages() const;
 			const std::map<int, Player> & get_players() const;
+		protected:
+			Server(const char * toml_file = "conf.toml", const char * default_lang = "en", int players_port = 4242, int spectators_port = 2121);
+			void									update();
+			bool									check_health(enum ServerHealth check) const;
+			struct timeval				created_at_;
 		private:
 			// STATIC VALUES
 			static constexpr int					MAX_EPOLL_EVENTS = 64;
@@ -56,7 +71,6 @@ namespace Zappy {
 			int										players_socket_;
 			int										spectators_socket_;
 			int										epoll_fd_;
-			int									*	sig_;
 			sockaddr_in						players_sockaddr_; // man 7 ip to see sockaddr_in struct
 			sockaddr_in						spectators_sockaddr_; // '' '' '' '' '' '' '' '' '' ''
 			struct epoll_event		events_[MAX_EPOLL_EVENTS];
@@ -64,7 +78,7 @@ namespace Zappy {
 			std::vector<int>			spectators_;
 			std::vector<Config>		configs_;
 			Config							* curr_config_;
-			struct timeval				created_at_;
+			enum ServerHealth			health_;
 			// std::map<int, Spectator> spectators_;
 	};
 

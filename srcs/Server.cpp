@@ -18,7 +18,7 @@ extern "C" {
 
 namespace Zappy {
 	Server::Server(const char * toml_file, const char * default_lang, int players_port, int spectators_port):
-		players_port_(players_port), spectators_port_(spectators_port) {
+		players_port_(players_port), spectators_port_(spectators_port), health_(Booting) {
 		// Setup TOML configuration file
 		{
 			(void)default_lang;
@@ -145,6 +145,7 @@ namespace Zappy {
 		}
 		std::cout << BLUE << "* Players:\thttp://localhost:" << players_port_ << ENDC << std::endl;
 		std::cout << BLUE << "* Spectators:\thttp://localhost:" << spectators_port_<< ENDC << std::endl;
+		health_ = Running;
 	}
 
 	Server::~Server() {
@@ -156,6 +157,7 @@ namespace Zappy {
 		players_.clear();
 		spectators_.clear();
 		configs_.clear();
+		health_ = EndOfLife;
 		if (DEBUG)
 			std::cout << "Server" << " destroyed" << std::endl;
 	}
@@ -163,7 +165,6 @@ namespace Zappy {
 	const std::map<int, Player> & Server::get_players() const {
 		return players_;
 	}
-
 
 	const std::vector<std::string> Server::get_list_of_supported_languages() const {
 		std::vector<std::string> langs;
@@ -180,9 +181,13 @@ namespace Zappy {
 
 	const Config & Server::get_config() const { return (*curr_config_); } 
 
-	void Server::server_stop() const {
-		*sig_ = 0;
+	void Server::stop_server() {
+		health_ = ServerHealth::EndOfLife;
 	};
+
+	bool	Server::check_health(enum ServerHealth check) const {
+		return (check == health_);
+	}
 
 	ssize_t Server::current_timestamp() const {
 			struct timeval tv;
@@ -292,87 +297,83 @@ namespace Zappy {
 		return (msg);
 	}
 
-	void Server::run(int * sig) {
-		struct epoll_event ev;
+	void Server::update() {
+		static struct epoll_event ev;
 		int conn_sock, nfds;
-		sig_ = sig;
 
-		std::cout << curr_config_->get("welcome_to_server") << std::endl;
-		write(1, "$> ", 3);
-		while(*sig) {
-			nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 500);
-			if (nfds == -1) {
-			   perror("epoll_wait");
-			   break ;
-			}
-			for (int n = 0; n < nfds; ++n) {
-				if (is_server_socket(events_[n].data.fd)) {
-					conn_sock = accept_client(events_[n].data.fd);
-					if (conn_sock == -1) {
-						perror("accept");
-		        exit(EXIT_FAILURE);
-		      }
-		      setnonblocking(conn_sock);
-		      // Add fd to epoll list
-					ev.events = EPOLLIN | EPOLLET;
-					ev.data.fd = conn_sock;
-					if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
-						perror("epoll_ctl: conn_sock");
-						exit(EXIT_FAILURE);
-					}
-					add_client(events_[n].data.fd, conn_sock);
-				} else {
-					// read message
-					// handle disconnection if need be
-					// read full message
-					// Pass message if player
-					// Server handles Client messages
-					const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
-					if (client_msg.empty())
-						continue ;
+		nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0);
+		if (nfds == -1) {
+		   perror("epoll_wait");
+		   return ;
+		}
+		for (int n = 0; n < nfds; ++n) {
+			if (is_server_socket(events_[n].data.fd)) {
+				conn_sock = accept_client(events_[n].data.fd);
+				if (conn_sock == -1) {
+					perror("accept");
+	        exit(EXIT_FAILURE);
+	      }
+	      setnonblocking(conn_sock);
+	      // Add fd to epoll list
+				ev.events = EPOLLIN | EPOLLET;
+				ev.data.fd = conn_sock;
+				if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
+					perror("epoll_ctl: conn_sock");
+					exit(EXIT_FAILURE);
+				}
+				add_client(events_[n].data.fd, conn_sock);
+			} else {
+				// read message
+				// handle disconnection if need be
+				// read full message
+				// Pass message if player
+				// Server handles Client messages
+				const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
+				if (client_msg.empty())
+					continue ;
+				if (DEBUG)
+					std::cout << YELLOW << "[Server]\t" << GREEN << "recv:" << BLUE << client_msg.length() << ENDC << "bytes" << std::endl;
+				// Server will never use spectator messages (uni-directional communication)
+				// Server will send to spectator the game status at a given rate/s
+				if (events_[n].data.fd == 0) {
+					// handle standard input from the server [BONUS]
+					Command * c = Command::parse_server_command(client_msg);
 					if (DEBUG)
-						std::cout << YELLOW << "[Server]\t" << GREEN << "recv:" << BLUE << client_msg.length() << ENDC << "bytes" << std::endl;
-					// Server will never use spectator messages (uni-directional communication)
-					// Server will send to spectator the game status at a given rate/s
-					if (events_[n].data.fd == 0) {
-						// handle standard input from the server [BONUS]
-						Command * c = Command::parse_server_command(client_msg);
-						if (DEBUG)
-							std::cout << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
-						if (c->is_valid()) {
-							c->execute(*this);
-						} else {
-							write(0, "command not found\n", 18); 
-						}
-						delete c;
-						if (*sig_)
-							write(1, "$> ", 3);
+						std::cout << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
+					if (c->is_valid()) {
+						c->execute(*this);
+					} else {
+						write(0, "command not found\n", 18); 
 					}
-					else if (is_fd_player(events_[n].data.fd)) {
-						// handle players
-						// Player & p = players_.at(events_[n].data.fd);
+					delete c;
+					// TODO
+					if (check_health(Running))
+						write(1, "$> ", 3);
+				}
+				else if (is_fd_player(events_[n].data.fd)) {
+					// handle players
+					// Player & p = players_.at(events_[n].data.fd);
 
-						// Player should parse the command
-						// Each player might choose his own configuration (language)
-						// Command & cmd = player.parse_command();
-						// execute_command(cmd);
-						// p.broadcast(cmd);
-					}
-					// do_use_fd(events_[n].data.fd);
-			   }
-			}
-			// Testing Spectators send
-			for (std::vector<int>::iterator it = spectators_.begin(); it != spectators_.end(); ++it) {
-				std::ostringstream ss;
+					// Player should parse the command
+					// Each player might choose his own configuration (language)
+					// Command & cmd = player.parse_command();
+					// execute_command(cmd);
+					// p.broadcast(cmd);
+				}
+				// do_use_fd(events_[n].data.fd);
+		   }
+		}
+		// Testing Spectators send
+		for (std::vector<int>::iterator it = spectators_.begin(); it != spectators_.end(); ++it) {
+			std::ostringstream ss;
 
-				ss << "\033[H\033[2J\n";
-				ss << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
-					<< " - [" << BLUE << get_creation_date() << ENDC << "]" << std::endl;
-				ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
-				ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
-				ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "s" << std::endl;
-				send(*it, ss.str().c_str(), ss.str().length(), 0);
-			}
+			ss << "\033[H\033[2J\n";
+			ss << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
+				<< " - [" << BLUE << get_creation_date() << ENDC << "]" << std::endl;
+			ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
+			ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
+			ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "s" << std::endl;
+			send(*it, ss.str().c_str(), ss.str().length(), 0);
 		}
 	}
 
