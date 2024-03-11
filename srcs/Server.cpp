@@ -373,7 +373,14 @@ namespace Zappy {
 			ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
 			ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
 			ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "s" << std::endl;
-			send(*it, ss.str().c_str(), ss.str().length(), 0);
+			if (send(*it, ss.str().c_str(), ss.str().length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1 && DEBUG) {
+				if (errno == EPIPE) {
+					if (DEBUG)
+						std::cout << YELLOW << "[Server]\t" << RED << "Error" << ENDC << " would send SIGPIPE, problems with socket" << std::endl;
+					remove_client(*it);
+					break;
+				}
+			}
 		}
 	}
 

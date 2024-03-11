@@ -7,9 +7,18 @@
 #include "GameEngine.hpp"
 
 namespace Zappy {
-	GameEngine::GameEngine(): Server(), t_(100), current_frame_(0) {
-		frame_delay_ = 1000 / t_;
+	GameEngine::GameEngine(): Server(), t_(4), current_frame_(0) {
+		set_game_delay();
 		updated_at_ms_ = (created_at_.tv_sec * 1000) + (created_at_.tv_usec / 1000);
+	}
+
+	void GameEngine::set_game_delay() {
+		/**
+		 * Probably should limit t_ to be a maximum amount of 1000
+		 * Else it can be problematic, also 1000 would be a frame of 1ms
+		 * Which means 1000 iterations in 1 second, which seams so many
+		 **/
+		frame_delay_ = 1000 / t_;
 	}
 
 	void GameEngine::start(int * sig) {
@@ -17,13 +26,12 @@ namespace Zappy {
 		write(1, "$> ", 3);
 		while (*sig && check_health(ServerHealth::Running))
 			update();
-		std::cout << "Finished[" << current_frame_ << "]" << std::endl; 
 	}
 
 	inline unsigned int GameEngine::frame() {return current_frame_;}
 
 	inline bool GameEngine::is_time_to_update() {
-		ssize_t now_ms;//, now_s, updated_at_s; 
+		ssize_t now_ms; 
 		struct timeval tv;
 
 		if(gettimeofday(&tv, NULL) == -1) {
@@ -31,11 +39,6 @@ namespace Zappy {
 			exit(EXIT_FAILURE);
 		}
 		now_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-		// now_s = now_ms / 1000;
-		// updated_at_s = updated_at_ms_ / 1000;
-		// std::cout << "\033[H\033[2J" << std::endl
-		// 	 << "Frame[" << current_frame_ << "] | Frame delay: " << frame_delay_ << " | Outdated(ms): " << (now_ms - updated_at_ms_) << std::endl
-		// 	 << "Now:" << ctime(&now_s) << "Last Update:" << ctime(&updated_at_s);
 		if (now_ms - updated_at_ms_ >= frame_delay_)
 			return true;
 		return false;
@@ -49,15 +52,14 @@ namespace Zappy {
 	void GameEngine::update() {
 		Server::update();
 		if (is_time_to_update()) {
-			// std::cout << "Update [" << GREEN << current_frame_ << ENDC << "]" << std::endl;
 			current_frame_++;
 			update_time();
 		}
 	}
 
 	GameEngine::~GameEngine() {
-		// std::cout << "GameEngine" << " destroyed" << std::endl;
-		// TODO (destructor)
+		if (DEBUG)
+			std::cout << "GameEngine destroyed | Total: [" << current_frame_ << "]frames" << std::endl;
 	}
 
 	std::ostream& operator<<(std::ostream& s, const GameEngine& param) {

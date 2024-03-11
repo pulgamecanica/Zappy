@@ -39,7 +39,7 @@ void setnonblocking(int fd) {
 		perror("fcntl()");
 		exit(EXIT_FAILURE);
 	}
-	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == 01) {
+	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
 		perror("fcntl()");
 		exit(EXIT_FAILURE);		
 	}

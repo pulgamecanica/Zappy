@@ -20,6 +20,7 @@ namespace Zappy {
 		private:
 			// CLASS FUNCTION MEMBERS
 			unsigned int	frame();
+			void					set_game_delay();
 			void 					update();
 			void 					update_time();
 			bool 					is_time_to_update();
