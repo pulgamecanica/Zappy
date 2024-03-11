@@ -18,7 +18,8 @@ namespace Zappy {
 		return true; // It is always valid
 	}
 	
-	void HelpServer::execute(Server & s) {
+	void HelpServer::execute(Server & s, Client *client) {
+		(void)client;
 		std::cout << s.get_config().get("help") << std::endl;
 	}
 

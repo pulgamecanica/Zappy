@@ -3,7 +3,6 @@
 //***************************//
 
 extern "C" {
-	#include <sys/socket.h>
 	#include <unistd.h>
 	#include <strings.h>
 }
@@ -15,6 +14,7 @@ extern "C" {
 #include "Zappy.inc"
 #include "Server.hpp"
 #include "Command.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
 	Server::Server(std::string toml_file, std::string default_lang, int players_port, int spectators_port):
@@ -141,6 +141,9 @@ namespace Zappy {
 		close(epoll_fd_);
 		// close all clients and spectators
 		// TODO
+		for (std::map<int, Client *>::const_iterator i = players_.begin(); i != players_.end(); ++i) {
+			delete i->second;
+		}
 		players_.clear();
 		spectators_.clear();
 		configs_.clear();
@@ -149,7 +152,7 @@ namespace Zappy {
 			std::cout << "Server" << " destroyed" << std::endl;
 	}
 
-	const std::map<int, Player> & Server::get_players() const {
+	const std::map<int, Client *> & Server::get_players() const {
 		return players_;
 	}
 
@@ -236,8 +239,9 @@ namespace Zappy {
 		if (DEBUG)
 			std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl; 
 		if (players_socket_ == socket) {
-			players_.insert(std::pair<int, Player>(fd, fd));
+			players_.insert(std::pair<int, Client *>(fd, new Player(fd)));
 		} else if (spectators_socket_ == socket) {
+			// players_.insert(std::pair<int, Player>(fd, fd));
 			spectators_.push_back(fd);
 		}
 	}
@@ -245,9 +249,10 @@ namespace Zappy {
 	void	Server::remove_client(int fd) {
 		if (DEBUG)
 			std::cout << YELLOW << "[Server]\t" << RED << "remove\t" << ENDC << fd << std::endl; 
-		if (is_fd_player(fd))
+		if (is_fd_player(fd)) {
+			delete players_.at(fd);
 			players_.erase(fd);
-		else {
+		} else {
 			std::vector<int>::const_iterator pos = std::find(spectators_.begin(), spectators_.end(), fd);
 			spectators_.erase(pos);
 		}
@@ -335,9 +340,15 @@ namespace Zappy {
 				}
 				else if (is_fd_player(events_[n].data.fd)) {
 					// handle players
-					// Player & p = players_.at(events_[n].data.fd);
-					// std::cout << p << std::endl;
-
+					Client * p = players_.at(events_[n].data.fd);
+					Command * c = p->parse_command();
+					if (c->is_valid()) {
+						c->execute(*this, p);
+					} else {
+						p->broadcast("KO: command not found\n");
+					}
+					std::cout << *p << ":" << *c << std::endl;
+					delete c;
 					// Player should parse the command
 					// Each player might choose his own configuration (language)
 					// Command & cmd = player.parse_command();
@@ -357,7 +368,7 @@ namespace Zappy {
 			ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
 			ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
 			ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "s" << std::endl;
-			if (send(*it, ss.str().c_str(), ss.str().length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1 && DEBUG) {
+			if (send(*it, ss.str().c_str(), ss.str().length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1) {
 				if (errno == EPIPE) {
 					if (DEBUG)
 						std::cout << YELLOW << "[Server]\t" << RED << "Error" << ENDC << " would send SIGPIPE, problems with socket" << std::endl;

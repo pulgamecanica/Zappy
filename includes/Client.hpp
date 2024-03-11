@@ -18,27 +18,32 @@ extern "C" {
 #include <vector>
 #include <iostream>
 
+
 namespace Zappy {
 	
+	class Command;
 
 	class Client {
 		public:
 			enum ClientType {
 				Player,
 				Spectator,
-				Graphic	
+				Graphic,
+				Error
 			};
 			Client(const Client&) = default;
-			~Client();
-			static constexpr const char * CLIENT_TYPES_STR[3] = {"Player", "Spectator", "Graphic"};
-			Client&	operator= (const Client&) = default; // const for safety... not super nesessary
-			ssize_t uptime() const; // Seconds
-			int			get_fd() const;
-			enum ClientType get_client_type() const;
+			virtual ~Client();
+			static constexpr const char * CLIENT_TYPES_STR[4] = {"Player", "Spectator", "Graphic", "Error"};
+			Client&						operator= (const Client&) = default; // const for safety... not super nesessary
+			ssize_t 					uptime() const; // Seconds
+			int								get_fd() const;
+			void							broadcast(std::string msg);
+			enum ClientType 	get_client_type() const;
+			virtual Command *	parse_command() const;
 		protected:
 			Client(int fd, ClientType type);
 			const int							fd_;
-			const enum ClientType	client_type_;
+			enum ClientType				client_type_;
 			struct timeval				created_at_;
 	};
 

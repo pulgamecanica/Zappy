@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Command.hpp"
+#include "Server.hpp"
 
 namespace Zappy {
 
@@ -18,7 +19,7 @@ class StatusServer: public virtual Command {
 		~StatusServer();
 		StatusServer&	operator= (const StatusServer&) = default; // const for safety... not super nesessary
 		virtual bool	is_valid() const;
-		virtual void	execute(Server & s);
+		virtual void	execute(Server & s, Client *p);
 };
 
 std::ostream&	operator<<(std::ostream&, const StatusServer&);

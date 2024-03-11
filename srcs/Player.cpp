@@ -29,6 +29,11 @@ namespace Zappy {
 			// std::cout << "Player" << " destroyed" << std::endl;
 	}
 
+	Command * Player::parse_command() const {
+		return (Command::parse_server_command("not found..."));
+	};
+
+
 	std::ostream& operator<<(std::ostream& s, const Player& p) {
 		s << (Client)p;
 		return (s);

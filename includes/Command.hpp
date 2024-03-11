@@ -8,9 +8,12 @@
 #include <iostream>
 #include <vector>
 
-#include "Server.hpp"
+#include "Client.hpp"
 
 namespace Zappy {
+	
+	class Server;
+
 	class Command {
 		public:
 			static Command * parse_server_command(const std::string & msg);
@@ -22,7 +25,7 @@ namespace Zappy {
 			const std::string & get_cmd() const;
 			// VIRTAUL MEMBER FUNCTIONS(Inherited will prioritize)
 			virtual bool				is_valid() const;
-			virtual void 				execute(Server & s);
+			virtual void 				execute(Server & s, Client *c = nullptr);
 		protected:
 			// Semi-Abstract Class, prevent Command from being created on the main scope
 			Command(const char *cmd);

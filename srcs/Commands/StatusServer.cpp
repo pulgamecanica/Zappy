@@ -27,8 +27,8 @@ namespace Zappy {
 	 * Current Language
 	 * Languages available
 	 */
-	void StatusServer::execute(Server & s) {
-		(void)s;
+	void StatusServer::execute(Server & s, Client *client) {
+		(void)client;
 		std::cout << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
 				<< " - [" << BLUE << s.get_creation_date() << ENDC << "]" << std::endl;
 		std::cout << " * " << s.get_config().get("total_players") << ":" << BLUE << s.total_players() << ENDC << std::endl;

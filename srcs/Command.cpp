@@ -11,6 +11,8 @@
 #include "ClearServer.hpp"
 #include "PlayersServer.hpp"
 
+#include "Server.hpp"
+
 namespace Zappy {
 	Command::Command(const char *cmd): cmd_(cmd) {
 	}
@@ -26,7 +28,10 @@ namespace Zappy {
 		return false;
 	}
 
-	void Command::execute(Server & s) {(void)s;}
+	void Command::execute(Server & s, Client *p) {
+		(void)s;(void)p;
+		throw std::runtime_error("Cannot execute abstract command");
+	}
 
 	/**
 	 * Server commands:

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "Command.hpp"
+#include "Server.hpp"
 
 namespace Zappy {
 	class LangServer: public virtual Command {
@@ -18,7 +19,7 @@ namespace Zappy {
 			virtual ~LangServer();
 			LangServer&	operator= (const LangServer&) = default; // const for safety... not super nesessary
 			virtual bool	is_valid() const;
-			virtual void	execute(Server & s);
+			virtual void	execute(Server & s, Client *p);
 		private:
 			std::vector<std::string> options_;
 	};

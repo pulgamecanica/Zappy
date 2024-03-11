@@ -22,7 +22,8 @@ namespace Zappy {
 		return true;
 	}
 	
-	void	LangServer::execute(Server & s) {
+	void	LangServer::execute(Server & s, Client *client) {
+		(void)client;
 		std::string language;
 		const std::vector<std::string>::const_iterator it = std::find(options_.begin(), options_.end(), "--help");
 		const std::vector<std::string> languages(s.get_list_of_supported_languages());

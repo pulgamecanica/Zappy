@@ -11,7 +11,8 @@ namespace Zappy {
 	
 	bool	ExitServer::is_valid() const { return true; }
 	
-	void	ExitServer::execute(Server & s) {
+	void	ExitServer::execute(Server & s, Client * client) {
+		(void)client;
 		s.stop_server();
 	}
 

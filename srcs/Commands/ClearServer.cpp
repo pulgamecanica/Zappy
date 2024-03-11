@@ -20,7 +20,8 @@ namespace Zappy {
 		return true;
 	};
 	
-	void	ClearServer::execute(Server & s) {
+	void	ClearServer::execute(Server & s, Client *client) {
+		(void)client;
 		(void)s;
 		std::string ansi_clear_window_seq("\033[H\033[2J");
 		write(1, ansi_clear_window_seq.c_str(), ansi_clear_window_seq.length());

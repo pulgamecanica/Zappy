@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Command.hpp"
+#include "Server.hpp"
 
 namespace Zappy {
 	class ExitServer: public virtual Command {
@@ -17,7 +18,7 @@ namespace Zappy {
 			virtual ~ExitServer();
 			ExitServer&	operator= (const ExitServer&) = default; // const for safety... not super nesessary
 			virtual bool	is_valid() const;
-			virtual void	execute(Server & s);
+			virtual void	execute(Server & s, Client *client);
 	};
 
 	std::ostream&	operator<<(std::ostream&, const ExitServer&);

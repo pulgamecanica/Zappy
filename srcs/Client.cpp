@@ -3,11 +3,14 @@
 //***************************//
 
 extern "C" {
+	#include <sys/socket.h>
 	#include <sys/time.h>
 }
 
 #include "Zappy.inc"
 #include "Client.hpp"
+
+#include "Command.hpp"
 
 namespace Zappy {
 	Client::Client(int fd, ClientType type): fd_(fd), client_type_(type) {
@@ -28,6 +31,23 @@ namespace Zappy {
 		}
 		return (tv.tv_sec - created_at_.tv_sec);
 	}
+
+	Command * Client::parse_command() const {
+		throw std::runtime_error("Should not call it like this");
+	}
+
+	void Client::broadcast(std::string msg) {
+		if (send(fd_, msg.c_str(), msg.length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1) {
+			if (errno == EPIPE) {
+				if (DEBUG)
+					std::cout << YELLOW << "[Server]\t" << RED << "Error" << ENDC << " would send SIGPIPE, problems with socket" << std::endl;
+				// remove_client(*it);
+				// Client is dead
+				client_type_ = ClientType::Error;
+			}
+		}
+	}
+
 
 	int Client::get_fd() const { return (fd_); }
 

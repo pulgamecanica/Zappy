@@ -4,8 +4,8 @@
 
 #include "Zappy.inc"
 
-#include "Player.hpp"
 #include "PlayersServer.hpp"
+#include "Client.hpp"
 
 namespace Zappy {
 
@@ -22,14 +22,15 @@ namespace Zappy {
 		return true;
 	}
 
-	void	PlayersServer::execute(Server & s) {
-		const std::map<int, Player> players = s.get_players();
+	void	PlayersServer::execute(Server & s, Client *client) {
+		(void)client;
+		const std::map<int, Client *> players = s.get_players();
 		int i;
 		std::cout << "#Players:" << BLUE << players.size() << ENDC << std::endl;
 		i = 1;
-		for (std::map<int, Player>::const_iterator it = players.begin(); it != players.end(); ++it) {
+		for (std::map<int, Client *>::const_iterator it = players.begin(); it != players.end(); ++it) {
 			std::cout << " " << i << ". fd:" << BLUE << it->first << ENDC << " (" <<
-				BLUE << it->second.uptime() << ENDC << "s)" << std::endl;	
+				BLUE << it->second->uptime() << ENDC << "s)" << std::endl;	
 			i++;
 		}
 		std::cout << std::endl; 	
