@@ -45,17 +45,53 @@ void setnonblocking(int fd) {
 	}
 }
 
-int	main(void)
+int	main(int argc, char *argv[])
 {
-	// Using en language as a default, can be changed by using parameters
-	// main parameters:
-	// --default-language=<name> // default en
-	// --toml-file=<path> // default conf.toml
-	// --players-port=0000 // default 4242
-	// --viewers-port=0000 // default 2121
+	/**
+	 * Params:
+	 * -l <name> --default-language=<name>	// default en
+	 * -f <path> --toml-file=<path> 				// default conf.toml
+	 * -P        --players-port=0000 				// default 4242
+	 * -S        --viewers-port=0000				// default 2121
+	**/
+	int	opt;
+	std::string lang("en");
+	std::string file_name("conf.toml");
+	int players_port(4242);
+	int spectators_port(2121);
+
+
+	/* The "-l" option specifies the default language. */
+	/* The "-f" modifies default file `conf.toml`. */
+	/* The "-P" sets the Players port. */
+	/* The "-S" sets the Spectators port. */
 	setup_signals();
 	try {
-		Zappy::GameEngine trantor;
+		while ((opt = getopt(argc, argv, "l:f:P:S:")) != -1) {
+			switch (opt) {
+			case 'l':
+				lang.assign(optarg);
+				break ;
+			case 'f':
+				file_name.assign(optarg);
+				break ;
+			case 'P':
+				players_port = std::stoi(optarg);
+				break ;
+			case 'S':
+				spectators_port = std::stoi(optarg);
+				break;
+			case 'h':
+				std::cout << "Help" << std::endl;
+				// print_help();
+				return (0);
+			default:
+			   fprintf(stderr, "Usage: %s [-f conf file] [-l default language] [-P players port] [-S spectators-port]\n",
+			           argv[0]);
+			   exit(EXIT_FAILURE);
+			}
+		}
+		Zappy::GameEngine trantor(file_name, lang, players_port, spectators_port);
 		trantor.start(&g_stop_sig);
 		// Zappy::Server s;
 	} catch (const toml::parse_error& err) {

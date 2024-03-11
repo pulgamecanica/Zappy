@@ -7,7 +7,8 @@
 #include "GameEngine.hpp"
 
 namespace Zappy {
-	GameEngine::GameEngine(): Server(), t_(4), current_frame_(0) {
+	GameEngine::GameEngine(std::string toml_file, std::string default_lang, int players_port, int spectators_port):
+		Server(toml_file, default_lang, players_port, spectators_port), t_(4), current_frame_(0) {
 		set_game_delay();
 		updated_at_ms_ = (created_at_.tv_sec * 1000) + (created_at_.tv_usec / 1000);
 	}

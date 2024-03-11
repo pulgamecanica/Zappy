@@ -16,8 +16,8 @@ extern "C" {
 #include <map>
 #include <vector>
 
-#include "Player.hpp"
 #include "Config.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
 
@@ -48,7 +48,7 @@ namespace Zappy {
 			const std::vector<std::string>	get_list_of_supported_languages() const;
 			const std::map<int, Player> & get_players() const;
 		protected:
-			Server(const char * toml_file = "conf.toml", const char * default_lang = "en", int players_port = 4242, int spectators_port = 2121);
+			Server(std::string toml_file, std::string default_lang, int players_port, int spectators_port);
 			void									update();
 			bool									check_health(enum ServerHealth check) const;
 			struct timeval				created_at_;

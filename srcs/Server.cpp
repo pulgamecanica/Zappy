@@ -17,11 +17,10 @@ extern "C" {
 #include "Command.hpp"
 
 namespace Zappy {
-	Server::Server(const char * toml_file, const char * default_lang, int players_port, int spectators_port):
+	Server::Server(std::string toml_file, std::string default_lang, int players_port, int spectators_port):
 		players_port_(players_port), spectators_port_(spectators_port), health_(Booting) {
 		// Setup TOML configuration file
 		{
-			(void)default_lang;
 			// Open Toml file
 			toml::table tbl = toml::parse_file(toml_file);
 			// Setup configuration for all the languages
@@ -54,23 +53,19 @@ namespace Zappy {
 		// Create players & spectators sockets (IPV4, TCP | man socket)
 		players_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 		if (players_socket_ == -1) {
-			perror("players socket()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("players socket()") + std::string(strerror(errno)));
 		}
 		spectators_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 		if (spectators_socket_ == -1) {
-			perror("spectators socket()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("spectators socket()") + std::string(strerror(errno)));
 		}
 		// Set sockets to reusable (avoid port binding lag) (man 7 setsockopt & man 7 socket)
 		int enable = 1;
 		if (setsockopt(players_socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1) {
-			perror("players setsockopt()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("players setsockopt()") + std::string(strerror(errno)));
 		}
 		if (setsockopt(spectators_socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1) {
-			perror("spectators setsockopt()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("spectators setsockopt()") + std::string(strerror(errno)));
 		}
 		// Set socket to non blocking
 		setnonblocking(players_socket_);
@@ -80,24 +75,20 @@ namespace Zappy {
 		players_sockaddr_.sin_port = htons(players_port_);
 		players_sockaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
 		if (bind(players_socket_, (struct sockaddr *)&players_sockaddr_, sizeof(players_sockaddr_)) == -1) {
-			perror("players bind()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("players bind()") + std::string(strerror(errno)));
 		}
 		spectators_sockaddr_.sin_family = AF_INET;
 		spectators_sockaddr_.sin_port = htons(spectators_port_);
 		spectators_sockaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
 		if (bind(spectators_socket_, (struct sockaddr *)&spectators_sockaddr_, sizeof(spectators_sockaddr_)) == -1) {
-			perror("spectators bind()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("spectators bind()") + std::string(strerror(errno)));
 		}
 		// Setup Listen sockets
 		if (listen(players_socket_, Server::BACKLOG) == -1) {
-			perror("players listen()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("players listen()") + std::string(strerror(errno)));
 		}
 		if (listen(spectators_socket_, Server::BACKLOG) == -1) {
-			perror("spectators listen()");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error(std::string("spectators listen()") + std::string(strerror(errno)));
 		}
 		std::cout << BLUE << "Zappy listening in single thread mode" << ENDC << std::endl;
 		std::cout << BLUE << "* C++ version:\t20" << ENDC << std::endl;
@@ -111,8 +102,7 @@ namespace Zappy {
 	   	ev.events = EPOLLIN | EPOLLET;
 	   	ev.data.fd = players_socket_;
 	   	if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, players_socket_, &ev) == -1) {
-	   		perror("players ADD epoll_ctl()");
-				exit(EXIT_FAILURE);
+	   		throw std::runtime_error(std::string("players ADD epoll_ctl()") + std::string(strerror(errno)));
 			}
 		}
 		// Add spectators socket to epoll list
@@ -121,8 +111,7 @@ namespace Zappy {
 	   	ev.events = EPOLLIN | EPOLLET;
 	   	ev.data.fd = spectators_socket_;
 	   	if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, spectators_socket_, &ev) == -1) {
-	   		perror("spectators ADD epoll_ctl()");
-				exit(EXIT_FAILURE);
+	   		throw std::runtime_error(std::string("spectators ADD epoll_ctl()") + std::string(strerror(errno)));
 			}
 		}
 		// Add standard input to the epoll list
@@ -132,15 +121,13 @@ namespace Zappy {
 	   	ev.events = EPOLLIN | EPOLLET;
 	   	ev.data.fd = 0;
 	   	if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, 0, &ev) == -1) {
-	   		perror("std input ADD epoll_ctl()");
-				exit(EXIT_FAILURE);
+	   		throw std::runtime_error(std::string("std input ADD epoll_ctl()") + std::string(strerror(errno)));
 			}
 		}
 		// Setup the timestamp
 		{
 			if(gettimeofday(&created_at_, NULL) == -1) {
-				perror("gettimeofday()");
-				exit(EXIT_FAILURE);
+				throw std::runtime_error(std::string("gettimeofday()") + std::string(strerror(errno)));
 			}
 		}
 		std::cout << BLUE << "* Players:\thttp://localhost:" << players_port_ << ENDC << std::endl;
@@ -190,13 +177,12 @@ namespace Zappy {
 	}
 
 	ssize_t Server::current_timestamp() const {
-			struct timeval tv;
+		struct timeval tv;
 
-			if(gettimeofday(&tv, NULL) == -1) {
-				perror("gettimeofday()");
-				exit(EXIT_FAILURE);
-			}
-			return (tv.tv_sec - created_at_.tv_sec);
+		if(gettimeofday(&tv, NULL) == -1) {
+			throw std::runtime_error(std::string("gettimeofday()") + std::string(strerror(errno)));
+		}
+		return (tv.tv_sec - created_at_.tv_sec);
 	}
 
 	const std::string Server::get_creation_date() const {
@@ -303,23 +289,20 @@ namespace Zappy {
 
 		nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0);
 		if (nfds == -1) {
-		   perror("epoll_wait");
-		   return ;
+		   throw std::runtime_error(std::string("epoll_wait") + std::string(strerror(errno)));
 		}
 		for (int n = 0; n < nfds; ++n) {
 			if (is_server_socket(events_[n].data.fd)) {
 				conn_sock = accept_client(events_[n].data.fd);
 				if (conn_sock == -1) {
-					perror("accept");
-	        exit(EXIT_FAILURE);
+					throw std::runtime_error(std::string("accept") + std::string(strerror(errno)));
 	      }
 	      setnonblocking(conn_sock);
 	      // Add fd to epoll list
 				ev.events = EPOLLIN | EPOLLET;
 				ev.data.fd = conn_sock;
 				if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
-					perror("epoll_ctl: conn_sock");
-					exit(EXIT_FAILURE);
+					throw std::runtime_error(std::string("epoll_ctl: conn_sock") + std::string(strerror(errno)));
 				}
 				add_client(events_[n].data.fd, conn_sock);
 			} else {
@@ -339,7 +322,7 @@ namespace Zappy {
 					// handle standard input from the server [BONUS]
 					Command * c = Command::parse_server_command(client_msg);
 					if (DEBUG)
-						std::cout << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
+						std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
 					if (c->is_valid()) {
 						c->execute(*this);
 					} else {
@@ -353,6 +336,7 @@ namespace Zappy {
 				else if (is_fd_player(events_[n].data.fd)) {
 					// handle players
 					// Player & p = players_.at(events_[n].data.fd);
+					// std::cout << p << std::endl;
 
 					// Player should parse the command
 					// Each player might choose his own configuration (language)

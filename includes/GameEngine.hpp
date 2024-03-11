@@ -12,7 +12,7 @@
 namespace Zappy {
 	class GameEngine: public virtual Server {
 		public:
-			GameEngine();
+			GameEngine(std::string toml_file = "conf.toml", std::string default_lang = "en", int players_port = 4242, int spectators_port = 2121);
 			GameEngine(const GameEngine&) = delete;
 			~GameEngine();
 			GameEngine&	operator=(const GameEngine&) = delete; // const for safety... not super nesessary
