@@ -12,14 +12,14 @@
 namespace Zappy {
 	class GameEngine: public virtual Server {
 		public:
-			GameEngine(std::string toml_file = "conf.toml", std::string default_lang = "en", int players_port = 4242, int spectators_port = 2121);
+			GameEngine(int default_time = 100, std::string toml_file = "conf.toml", std::string default_lang = "en", int players_port = 4242, int spectators_port = 2121);
 			GameEngine(const GameEngine&) = delete;
 			~GameEngine();
 			GameEngine&	operator=(const GameEngine&) = delete; // const for safety... not super nesessary
-			void				start(int * sig);
+			void					start(int * sig);
+			unsigned int	frame();
 		private:
 			// CLASS FUNCTION MEMBERS
-			unsigned int	frame();
 			void					set_game_delay();
 			void 					update();
 			void 					update_time();

@@ -4,30 +4,28 @@
 
 #include "Advance.hpp"
 
-Advance::Advance() {
-	// TODO (default constructor)
-}
+namespace Zappy {
 
-Advance::Advance(const Advance& param) {
-	// TODO (copy constructor)
-	(void)param;
-}
+	Advance::Advance(GameEngine * trantor): ClientCommand(trantor, "advance", 7) {
+		// TODO (default constructor)
+	}
 
-Advance::~Advance() {
-	std::cout << "Advance" << " destroyed" << std::endl;
-	// TODO (destructor)
-}
+	Advance::~Advance() {
+		// std::cout << "Advance" << " destroyed" << std::endl;
+	}
 
-Advance& Advance::operator= (const Advance& param) {
-	// TODO (Assignment operatior)
-	// std::swap()
-	(void)param;
-	return (*this);
-}
+	void	Advance::execute(Server & s, Client *c) {
+		(void)s;
+		(void)c;
+		std::cout << "Executing Advance" << std::endl;
+	}
 
-std::ostream& operator<<(std::ostream& s, const Advance& param) {
-	// s << param.CONST_METHOD()
-	(void)param;
-	return (s);
+	bool	Advance::is_valid() const { return (true); }
+
+
+	std::ostream& operator<<(std::ostream& s, const Advance& param) {
+		s << (Command &)param;
+		return (s);
+	}
 }
 

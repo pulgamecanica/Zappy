@@ -7,15 +7,22 @@
 
 #include <iostream>
 
-class Advance {
-	public:
-		Advance();
-		Advance(const Advance&);
-		~Advance();
-		Advance&	operator= (const Advance&); // const for safety... not super nesessary
-};
+#include "ClientCommand.hpp"
+#include "GameEngine.hpp"
 
-std::ostream&	operator<<(std::ostream&, const Advance&);
+namespace Zappy {
 
+	class Advance: public ClientCommand {
+		public:
+			Advance(GameEngine * trantor);
+			Advance(const Advance&) = delete;
+			~Advance();
+			Advance&			operator= (const Advance&) = delete; // const for safety... not super nesessary
+			virtual void	execute(Server & s, Client *c = nullptr);
+			virtual bool	is_valid() const;
+	};
+
+	std::ostream&	operator<<(std::ostream&, const Advance&);
+}
 #endif
 

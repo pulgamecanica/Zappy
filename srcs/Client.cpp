@@ -10,10 +10,11 @@ extern "C" {
 #include "Zappy.inc"
 #include "Client.hpp"
 
-#include "Command.hpp"
+#include "ClientCommand.hpp"
 
 namespace Zappy {
 	Client::Client(int fd, ClientType type): fd_(fd), client_type_(type) {
+		created_at_ms_ = gettimeofday_ms();
 	}
 
 	Client::~Client() {
@@ -23,17 +24,7 @@ namespace Zappy {
 	}
 
 	ssize_t Client::uptime() const {
-		struct timeval tv;
-
-		if(gettimeofday(&tv, NULL) == -1) {
-			perror("gettimeofday()");
-			exit(EXIT_FAILURE);
-		}
-		return (tv.tv_sec - created_at_.tv_sec);
-	}
-
-	Command * Client::parse_command() const {
-		throw std::runtime_error("Should not call it like this");
+		return (gettimeofday_ms() - created_at_ms_);
 	}
 
 	void Client::broadcast(std::string msg) {

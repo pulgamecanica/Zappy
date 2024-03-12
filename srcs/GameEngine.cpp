@@ -7,10 +7,10 @@
 #include "GameEngine.hpp"
 
 namespace Zappy {
-	GameEngine::GameEngine(std::string toml_file, std::string default_lang, int players_port, int spectators_port):
-		Server(toml_file, default_lang, players_port, spectators_port), t_(4), current_frame_(0) {
+	GameEngine::GameEngine(int default_time, std::string toml_file, std::string default_lang, int players_port, int spectators_port):
+		Server(this, toml_file, default_lang, players_port, spectators_port), t_(default_time), current_frame_(0) {
 		set_game_delay();
-		updated_at_ms_ = (created_at_.tv_sec * 1000) + (created_at_.tv_usec / 1000);
+		updated_at_ms_ = created_at_ms_;
 	}
 
 	void GameEngine::set_game_delay() {
@@ -29,17 +29,12 @@ namespace Zappy {
 			update();
 	}
 
-	inline unsigned int GameEngine::frame() {return current_frame_;}
+	unsigned int GameEngine::frame() {return current_frame_;}
 
 	inline bool GameEngine::is_time_to_update() {
 		ssize_t now_ms; 
-		struct timeval tv;
 
-		if(gettimeofday(&tv, NULL) == -1) {
-			perror("gettimeofday()");
-			exit(EXIT_FAILURE);
-		}
-		now_ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+		now_ms = gettimeofday_ms();
 		if (now_ms - updated_at_ms_ >= frame_delay_)
 			return true;
 		return false;

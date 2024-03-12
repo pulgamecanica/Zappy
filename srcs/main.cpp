@@ -45,6 +45,16 @@ void setnonblocking(int fd) {
 	}
 }
 
+
+ssize_t gettimeofday_ms() {
+	struct timeval tv;
+
+	if(gettimeofday(&tv, NULL) == -1) {
+		throw std::runtime_error(std::string("gettimeofday()") + std::string(strerror(errno)));
+	}
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
 int	main(int argc, char *argv[])
 {
 	/**
@@ -59,6 +69,7 @@ int	main(int argc, char *argv[])
 	std::string file_name("conf.toml");
 	int players_port(4242);
 	int spectators_port(2121);
+	int default_time(100);
 
 
 	/* The "-l" option specifies the default language. */
@@ -67,7 +78,7 @@ int	main(int argc, char *argv[])
 	/* The "-S" sets the Spectators port. */
 	setup_signals();
 	try {
-		while ((opt = getopt(argc, argv, "l:f:P:S:")) != -1) {
+		while ((opt = getopt(argc, argv, "l:f:P:S:t:")) != -1) {
 			switch (opt) {
 			case 'l':
 				lang.assign(optarg);
@@ -81,17 +92,20 @@ int	main(int argc, char *argv[])
 			case 'S':
 				spectators_port = std::stoi(optarg);
 				break;
+			case 't':
+				default_time = std::stoi(optarg);
+				break;
 			case 'h':
 				std::cout << "Help" << std::endl;
 				// print_help();
 				return (0);
 			default:
-			   fprintf(stderr, "Usage: %s [-f conf file] [-l default language] [-P players port] [-S spectators-port]\n",
+			   fprintf(stderr, "Usage: %s [-t time] [-f conf file] [-l default language] [-P players port] [-S spectators-port]\n",
 			           argv[0]);
 			   exit(EXIT_FAILURE);
 			}
 		}
-		Zappy::GameEngine trantor(file_name, lang, players_port, spectators_port);
+		Zappy::GameEngine trantor(default_time, file_name, lang, players_port, spectators_port);
 		trantor.start(&g_stop_sig);
 		// Zappy::Server s;
 	} catch (const toml::parse_error& err) {

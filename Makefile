@@ -11,6 +11,7 @@ SRC += srcs/Commands/HelpServer.cpp \
 	srcs/Commands/LangServer.cpp \
 	srcs/Commands/ClearServer.cpp \
 	srcs/Commands/PlayersServer.cpp \
+	srcs/Commands/Advance.cpp \
 
 CFLAGS	= -O3 -g -Wall -Wextra -Werror -std=c++20 -pedantic #-fsanitize=leak
 

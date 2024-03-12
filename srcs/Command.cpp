@@ -14,7 +14,7 @@
 #include "Server.hpp"
 
 namespace Zappy {
-	Command::Command(const char *cmd): cmd_(cmd) {
+	Command::Command(const std::string cmd): cmd_(cmd) {
 	}
 
 	Command::~Command() {
@@ -33,6 +33,27 @@ namespace Zappy {
 		throw std::runtime_error("Cannot execute abstract command");
 	}
 
+	std::vector<std::string> Command::get_options(const std::string & options_str) {
+		std::vector<std::string> options;
+
+		std::istringstream stream(options_str);
+		std::string option;
+
+		while (stream >> option)
+			if (!option.empty())
+				options.push_back(option);
+
+		if (DEBUG) {
+			std::cout << GREEN << "Options: " << ENDC;
+			if (options.empty())
+				std::cout << "[]";
+			for (std::vector<std::string>::iterator i = options.begin(); i != options.end(); ++i)
+				std::cout << "[" << BLUE << *i << ENDC << "] ";
+			std::cout << std::endl;
+		}
+		return (options);
+	}
+
 	/**
 	 * Server commands:
 	 * 
@@ -44,24 +65,9 @@ namespace Zappy {
 	 * */
 	Command * Command::parse_server_command(const std::string & msg) {
 		const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
-		std::vector<std::string> options_list;
-		
-		{ // Extract options
-			std::istringstream stream(msg.substr(cmd.length()));
-			std::string option;
+		std::vector<std::string> options;
 
-			while (stream >> option)
-				if (!option.empty())
-					options_list.push_back(option);
-		}
-		if (DEBUG) {
-			std::cout << GREEN << "Options: " << ENDC;
-			if (options_list.empty())
-				std::cout << "[]";
-			for (std::vector<std::string>::iterator i = options_list.begin(); i != options_list.end(); ++i)
-				std::cout << "[" << BLUE << *i << ENDC << "] ";
-			std::cout << std::endl;
-		}
+		options = get_options(msg.substr(cmd.length()));
 		if (cmd == "help") {
 			return new HelpServer();
 		} else if (cmd == "status") {
@@ -73,9 +79,9 @@ namespace Zappy {
 		} else if (cmd == "players") {
 			return new PlayersServer();
 		} else if (cmd == "lang") {
-			return new LangServer(options_list);
+			return new LangServer(options);
 		}
-		return new Command("command not found");
+		return new Command(cmd);
 	}
 
 	std::ostream& operator<<(std::ostream& s, const Command& param) {

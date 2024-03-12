@@ -33,7 +33,7 @@ namespace Zappy {
 				<< " - [" << BLUE << s.get_creation_date() << ENDC << "]" << std::endl;
 		std::cout << " * " << s.get_config().get("total_players") << ":" << BLUE << s.total_players() << ENDC << std::endl;
 		std::cout << " * " << s.get_config().get("total_spectators") << ":" << BLUE << s.total_spectators() << ENDC << std::endl;
-		std::cout << " * " << s.get_config().get("server_life") << ":" << BLUE << s.current_timestamp() << ENDC << "s" << std::endl;
+		std::cout << " * " << s.get_config().get("server_life") << ":" << BLUE << s.current_timestamp() << ENDC << "ms" << std::endl;
 		// std::cout << s.get_config().get_latency() << ":" << s.latency() << std::endl;
 		// std::cout << s.get_languages_list_highlight_current() << std::endl;
 	}

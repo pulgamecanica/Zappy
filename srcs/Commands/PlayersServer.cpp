@@ -24,13 +24,13 @@ namespace Zappy {
 
 	void	PlayersServer::execute(Server & s, Client *client) {
 		(void)client;
-		const std::map<int, Client *> players = s.get_players();
+		const std::map<int, Client *> players = s.get_clients();
 		int i;
 		std::cout << "#Players:" << BLUE << players.size() << ENDC << std::endl;
 		i = 1;
 		for (std::map<int, Client *>::const_iterator it = players.begin(); it != players.end(); ++it) {
 			std::cout << " " << i << ". fd:" << BLUE << it->first << ENDC << " (" <<
-				BLUE << it->second->uptime() << ENDC << "s)" << std::endl;	
+				BLUE << it->second->uptime() << ENDC << "ms)" << std::endl;	
 			i++;
 		}
 		std::cout << std::endl; 	

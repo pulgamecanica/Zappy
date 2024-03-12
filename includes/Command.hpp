@@ -28,7 +28,8 @@ namespace Zappy {
 			virtual void 				execute(Server & s, Client *c = nullptr);
 		protected:
 			// Semi-Abstract Class, prevent Command from being created on the main scope
-			Command(const char *cmd);
+			static std::vector<std::string> get_options(const std::string & options_str);
+			Command(const std::string cmd);
 		private:
 			const std::string	cmd_;
 	};

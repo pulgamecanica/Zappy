@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "Client.hpp"
-#include "Command.hpp"
+#include "ClientCommand.hpp"
 
 namespace Zappy {
 	class Player: public virtual Client {
@@ -17,7 +17,6 @@ namespace Zappy {
 			Player(const Player&) = default;
 			virtual ~Player();
 			Player&	operator= (const Player&) = delete; // const for safety... not super nesessary
-			virtual Command * parse_command() const;
 		private:
 			// const int 			fd_;
 			// struct timeval	created_at_;

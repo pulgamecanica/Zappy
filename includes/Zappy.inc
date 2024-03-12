@@ -21,5 +21,6 @@
 
 
 void setnonblocking(int fd);
+ssize_t gettimeofday_ms();
 
 #endif
