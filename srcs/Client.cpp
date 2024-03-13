@@ -18,6 +18,7 @@ namespace Zappy {
 	}
 
 	Client::~Client() {
+		cmd_queue_.clear();
 		if (DEBUG)
 			std::cout << *this << " destroyed" << std::endl;
 		// TODO (destructor)
@@ -39,6 +40,32 @@ namespace Zappy {
 		}
 	}
 
+	void	Client::queue_cmd(ClientCommand * cmd) {
+		if (cmd_queue_.size() < Client::QUEUE_SIZE) {
+			cmd_queue_.push_back(cmd);
+		}
+		if (DEBUG)
+			std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " enqueue" << ENDC << ":" << BLUE << *cmd << ENDC << std::endl;
+	}
+
+	// Update Client
+	// Check cmd queue
+	// Execute commands
+	// Remove expired commands
+	void Client::update() {
+		if (cmd_queue_.empty())
+			return ;
+		if (!cmd_queue_.front()->was_executed()) {
+			if (DEBUG)
+				std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " exec" << ENDC << ":" << BLUE << *cmd_queue_.front() << ENDC << std::endl;
+			cmd_queue_.front()->execute();
+		} else if (cmd_queue_.front()->expired()) {
+			if (DEBUG)
+				std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " finished exec" << ENDC << ":" << BLUE << *cmd_queue_.front() << ENDC << std::endl; 
+			delete cmd_queue_.front();
+			cmd_queue_.erase(cmd_queue_.begin());
+		}
+	}
 
 	int Client::get_fd() const { return (fd_); }
 

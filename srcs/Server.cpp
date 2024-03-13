@@ -312,32 +312,29 @@ namespace Zappy {
 
 	// Handle standard input from the server [BONUS]
 	void	Server::handle_stdin(const std::string & cmd) {
-		Command * c = Command::parse_server_command(cmd);
+		Command * c = Command::parse_server_command(cmd, this);
+
 		if (DEBUG)
 			std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
 		if (c->is_valid())
-			c->execute(*this, nullptr);
+			c->execute();
 		else
 			write(0, "command not found\n", 18); 
 		delete c;
+		if (check_health(Running))
+			write(1, "$> ", 3);
 	}
 	
 	void	Server::handle_client(int fd, const std::string & cmd) {
 		Player * p = dynamic_cast<Player *>(clients_.at(fd));
-		ClientCommand * c = ClientCommand::parse_command(trantor_, cmd);
+		ClientCommand * c = ClientCommand::parse_command(trantor_, p, cmd);
 		if (DEBUG)
 			std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC << ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << " | " << GREEN << "recv" << ENDC << ":" << BLUE << cmd.length() << ENDC << "bytes" << std::endl;
 		if (c->is_valid()) {
-			// NOT THIS!
-			// If The command is valid then add the command to the queue
-			// the execution is independant of when the command is prompted
-			// There can be up to 10 requests to the server
-			// c->execute(*this, p);
+			p->queue_cmd(c);
 		} else {
 			p->broadcast("KO: command not found\n");
 		}
-		std::cout << *p << ":" << *c << std::endl;
-		delete c;
 	}
 
 	// Epoll wait non blocking
@@ -359,17 +356,18 @@ namespace Zappy {
 			} else { // must be a client (Note: could be a spectator [ignore])
 				const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
 				if (client_msg.empty())
-					continue ; // To skip the $>
+					continue ;
 				if (is_stdin(events_[n].data.fd))
 					handle_stdin(client_msg);
 				else if (is_client(events_[n].data.fd))
 					handle_client(events_[n].data.fd, client_msg);
-				else // Ignore if not stdin or client
-					continue ;
-				if (check_health(Running))
-					write(1, "$> ", 3);
 			}
 		}
+		// Update all clients
+		for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
+			i->second->update();
+		}
+		// Update all viewers	
 		// Testing Spectators send
 		// Server will send to spectator the game status at a given rate/s
 		for (std::vector<int>::iterator it = spectators_.begin(); it != spectators_.end(); ++it) {

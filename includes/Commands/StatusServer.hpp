@@ -12,14 +12,14 @@
 
 namespace Zappy {
 
-class StatusServer: public virtual Command {
+class StatusServer: public Command {
 	public:
-		StatusServer();
+		StatusServer(Server * s);
 		StatusServer(const StatusServer&) = default;
 		~StatusServer();
 		StatusServer&	operator= (const StatusServer&) = default; // const for safety... not super nesessary
-		virtual bool	is_valid() const;
-		virtual void	execute(Server & s, Client *p);
+		bool	is_valid() const;
+		void	execute();
 };
 
 std::ostream&	operator<<(std::ostream&, const StatusServer&);

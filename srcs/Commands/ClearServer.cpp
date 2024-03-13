@@ -6,7 +6,7 @@
 
 namespace Zappy {
 
-	ClearServer::ClearServer(): Command("clear") {
+	ClearServer::ClearServer(): Command("clear", NULL) {
 		// TODO (default constructor)
 	}
 
@@ -20,9 +20,7 @@ namespace Zappy {
 		return true;
 	};
 	
-	void	ClearServer::execute(Server & s, Client *client) {
-		(void)client;
-		(void)s;
+	void	ClearServer::execute() {
 		std::string ansi_clear_window_seq("\033[H\033[2J");
 		write(1, ansi_clear_window_seq.c_str(), ansi_clear_window_seq.length());
 	}

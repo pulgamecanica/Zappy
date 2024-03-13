@@ -14,7 +14,8 @@
 #include "Server.hpp"
 
 namespace Zappy {
-	Command::Command(const std::string cmd): cmd_(cmd) {
+	Command::Command(const std::string cmd, Server * s):
+		 s_(s), cmd_(cmd) {
 	}
 
 	Command::~Command() {
@@ -28,8 +29,7 @@ namespace Zappy {
 		return false;
 	}
 
-	void Command::execute(Server & s, Client *p) {
-		(void)s;(void)p;
+	void Command::execute() {
 		throw std::runtime_error("Cannot execute abstract command");
 	}
 
@@ -63,25 +63,25 @@ namespace Zappy {
 	 * lang <name> -> change the server language
 	 * 
 	 * */
-	Command * Command::parse_server_command(const std::string & msg) {
+	Command * Command::parse_server_command(const std::string & msg, Server * s) {
 		const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
 		std::vector<std::string> options;
 
 		options = get_options(msg.substr(cmd.length()));
 		if (cmd == "help") {
-			return new HelpServer();
+			return new HelpServer(s);
 		} else if (cmd == "status") {
-			return new StatusServer();
+			return new StatusServer(s);
 		} else if (cmd == "exit") {
-			return new ExitServer();
+			return new ExitServer(s);
 		} else if (cmd == "clear") {
 			return new ClearServer();
 		} else if (cmd == "players") {
-			return new PlayersServer();
+			return new PlayersServer(s);
 		} else if (cmd == "lang") {
-			return new LangServer(options);
+			return new LangServer(s, options);
 		}
-		return new Command(cmd);
+		return new Command(cmd, s);
 	}
 
 	std::ostream& operator<<(std::ostream& s, const Command& param) {

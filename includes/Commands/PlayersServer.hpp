@@ -11,14 +11,14 @@
 #include "Server.hpp"
 
 namespace Zappy {
-	class PlayersServer: public virtual Command {
+	class PlayersServer: public Command {
 		public:
-			PlayersServer();
+			PlayersServer(Server *s);
 			PlayersServer(const PlayersServer&) = default;
-			virtual ~PlayersServer();
+			~PlayersServer();
 			PlayersServer&	operator= (const PlayersServer&) = default; // const for safety... not super nesessary
-			virtual bool	is_valid() const;
-			virtual void	execute(Server & s, Client *c);
+			bool	is_valid() const;
+			void	execute();
 	};
 
 	std::ostream&	operator<<(std::ostream&, const PlayersServer&);

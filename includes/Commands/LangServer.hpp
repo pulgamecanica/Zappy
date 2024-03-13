@@ -12,14 +12,14 @@
 #include "Server.hpp"
 
 namespace Zappy {
-	class LangServer: public virtual Command {
+	class LangServer: public Command {
 		public:
-			LangServer(std::vector<std::string> & options);
+			LangServer(Server *s, std::vector<std::string> & options);
 			LangServer(const LangServer&) = default;
-			virtual ~LangServer();
+			~LangServer();
 			LangServer&	operator= (const LangServer&) = default; // const for safety... not super nesessary
-			virtual bool	is_valid() const;
-			virtual void	execute(Server & s, Client *p);
+			bool	is_valid() const;
+			void	execute();
 		private:
 			std::vector<std::string> options_;
 	};

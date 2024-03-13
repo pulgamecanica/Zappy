@@ -48,6 +48,7 @@ namespace Zappy {
 	void GameEngine::update() {
 		Server::update();
 		if (is_time_to_update()) {
+			// std::cout << "1/t:[" << frame() << "]" << std::endl;
 			current_frame_++;
 			update_time();
 		}

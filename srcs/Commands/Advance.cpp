@@ -3,10 +3,11 @@
 //***************************//
 
 #include "Advance.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
 
-	Advance::Advance(GameEngine * trantor): ClientCommand(trantor, "advance", 7) {
+	Advance::Advance(GameEngine * trantor, Client * c): ClientCommand(trantor, c, "advance", 7) {
 		// TODO (default constructor)
 	}
 
@@ -14,10 +15,10 @@ namespace Zappy {
 		// std::cout << "Advance" << " destroyed" << std::endl;
 	}
 
-	void	Advance::execute(Server & s, Client *c) {
-		(void)s;
-		(void)c;
-		std::cout << "Executing Advance" << std::endl;
+	void	Advance::execute() {
+		ClientCommand::execute();
+		Player * p = dynamic_cast<Player *>(client_);
+		p->advance();
 	}
 
 	bool	Advance::is_valid() const { return (true); }

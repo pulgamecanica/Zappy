@@ -6,6 +6,8 @@ extern "C" {
 	#include <signal.h>
 	#include <string.h>
 	#include <fcntl.h>
+	#include <stdlib.h>
+	#include <time.h>
 }
 
 #include <toml++/toml.hpp>
@@ -57,6 +59,8 @@ ssize_t gettimeofday_ms() {
 
 int	main(int argc, char *argv[])
 {
+	// Seed rand
+	srand (time(NULL));
 	/**
 	 * Params:
 	 * -l <name> --default-language=<name>	// default en

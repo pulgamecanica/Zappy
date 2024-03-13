@@ -9,24 +9,28 @@
 
 namespace Zappy {
 
-	ClientCommand::ClientCommand(GameEngine *trantor, const std::string cmd, int frames_cost):
-		Command(cmd), trantor_(trantor), frames_cost_(frames_cost), executed_at_frame_(-1), executed_(false) {
+	ClientCommand::ClientCommand(GameEngine *trantor, Client * c, const std::string cmd, int frames_cost):
+		Command(cmd, trantor), trantor_(trantor), client_(c), executed_at_frame_(-1), executed_(false), frames_cost_(frames_cost) {
 	}
 
-	ClientCommand::~ClientCommand() {
-	}
+	ClientCommand::~ClientCommand() {}
 
 	bool ClientCommand::expired() const {
-		if (!executed_)
+		if (!was_executed())
 			return false ;
 		if (executed_at_frame_ == -1)
-			return true ; // Should it be expired or not if it hasn't been executed? // maybe throw exception ?
-		return (executed_at_frame_ + frames_cost_ > trantor_->frame());
+			throw std::runtime_error("Something went wrong... command was not properly handled/executed");
+		return (executed_at_frame_ + frames_cost_ <= trantor_->frame());
 	}
 
-	int ClientCommand::get_cost() const { return (frames_cost_); }
+	void	ClientCommand::execute() {
+		executed_ = true;
+		executed_at_frame_ = trantor_->frame();
+	}
 
 	bool ClientCommand::is_valid() const { return (false); }
+
+	int ClientCommand::get_cost() const { return (frames_cost_); }
 
 	bool ClientCommand::was_executed() const { return (executed_); }
 
@@ -35,13 +39,13 @@ namespace Zappy {
 		return (s);
 	}
 
-	ClientCommand* ClientCommand::parse_command(GameEngine *trantor, const std::string &msg) {
+	ClientCommand* ClientCommand::parse_command(GameEngine *trantor, Client *c, const std::string &msg) {
 		const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
-		std::vector<std::string> options;
+		// std::vector<std::string> options;
 
 		// options = get_options(msg.substr(cmd.length()));
 		if (cmd == "advance")
-			return new Advance(trantor);
+			return new Advance(trantor, c);
 		// } else if (cmd == "status") {
 		// 	return new ClientCommand();
 		// } else if (cmd == "exit") {
@@ -53,7 +57,7 @@ namespace Zappy {
 		// } else if (cmd == "lang") {
 		// 	return new ClientCommand(options);
 		// }
-		return (new ClientCommand(trantor, cmd, 0));
+		return (new ClientCommand(trantor, c, cmd, 0));
 	}
 }
 

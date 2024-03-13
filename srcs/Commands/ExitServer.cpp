@@ -5,15 +5,15 @@
 #include "ExitServer.hpp"
 
 namespace Zappy {
-	ExitServer::ExitServer(): Command("exit") {}
+	ExitServer::ExitServer(Server * s): Command("exit", s) {}
 
 	ExitServer::~ExitServer() {}
 	
 	bool	ExitServer::is_valid() const { return true; }
 	
-	void	ExitServer::execute(Server & s, Client * client) {
-		(void)client;
-		s.stop_server();
+	void	ExitServer::execute() {
+		// Server Must be implemented
+		s_->stop_server();
 	}
 
 	std::ostream& operator<<(std::ostream& s, const ExitServer& param) {

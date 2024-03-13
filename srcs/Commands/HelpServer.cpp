@@ -7,7 +7,7 @@
 #include "HelpServer.hpp"
 
 namespace Zappy {
-	HelpServer::HelpServer(): Command("help") {
+	HelpServer::HelpServer(Server * s): Command("help", s) {
 	}
 
 
@@ -18,9 +18,8 @@ namespace Zappy {
 		return true; // It is always valid
 	}
 	
-	void HelpServer::execute(Server & s, Client *client) {
-		(void)client;
-		std::cout << s.get_config().get("help") << std::endl;
+	void HelpServer::execute() {
+		std::cout << s_->get_config().get("help") << std::endl;
 	}
 
 	std::ostream& operator<<(std::ostream& s, const HelpServer& param) {

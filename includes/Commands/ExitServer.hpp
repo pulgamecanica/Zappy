@@ -11,14 +11,14 @@
 #include "Server.hpp"
 
 namespace Zappy {
-	class ExitServer: public virtual Command {
+	class ExitServer: public Command {
 		public:
-			ExitServer();
+			ExitServer(Server * s);
 			ExitServer(const ExitServer&) = default;
-			virtual ~ExitServer();
+			~ExitServer();
 			ExitServer&	operator= (const ExitServer&) = default; // const for safety... not super nesessary
-			virtual bool	is_valid() const;
-			virtual void	execute(Server & s, Client *client);
+			bool	is_valid() const;
+			void	execute();
 	};
 
 	std::ostream&	operator<<(std::ostream&, const ExitServer&);

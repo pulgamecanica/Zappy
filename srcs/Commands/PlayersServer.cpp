@@ -9,7 +9,7 @@
 
 namespace Zappy {
 
-	PlayersServer::PlayersServer(): Command("players") {
+	PlayersServer::PlayersServer(Server *s): Command("players", s) {
 	}
 
 
@@ -22,9 +22,8 @@ namespace Zappy {
 		return true;
 	}
 
-	void	PlayersServer::execute(Server & s, Client *client) {
-		(void)client;
-		const std::map<int, Client *> players = s.get_clients();
+	void	PlayersServer::execute() {
+		const std::map<int, Client *> players = s_->get_clients();
 		int i;
 		std::cout << "#Players:" << BLUE << players.size() << ENDC << std::endl;
 		i = 1;
