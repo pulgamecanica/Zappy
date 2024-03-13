@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Inventory {
-	public:
-		Inventory();
-		Inventory(const Inventory&);
-		~Inventory();
-		Inventory&	operator= (const Inventory&); // const for safety... not super nesessary
+  public:
+    Inventory();
+    Inventory(const Inventory&);
+    ~Inventory();
+    Inventory&  operator= (const Inventory&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Inventory&);
+std::ostream& operator<<(std::ostream&, const Inventory&);
 
 #endif
 

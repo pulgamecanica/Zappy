@@ -3,9 +3,9 @@
 //***************************//
 
 extern "C" {
-	#include <unistd.h>
+  #include <unistd.h>
   #include <sys/socket.h>
-	#include <stdlib.h>
+  #include <stdlib.h>
 }
 
 #include "Zappy.inc"
@@ -28,16 +28,16 @@ namespace Zappy {
     }
   }
 
-	Player::Player(int fd): Client(fd, ClientType::Player) {
-		std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
+  Player::Player(int fd): Client(fd, ClientType::Player) {
+    std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
 
-		welcome_msg.append(ctime(&created_at_ms_));
-		send(fd, welcome_msg.c_str(), welcome_msg.length(), 0);
+    welcome_msg.append(ctime(&created_at_ms_));
+    send(fd, welcome_msg.c_str(), welcome_msg.length(), 0);
 
-		direction_ = get_direction(rand() % 4);
-		position_[0] = rand() % 10;
+    direction_ = get_direction(rand() % 4);
+    position_[0] = rand() % 10;
     position_[1] = rand() % 10;
-	}
+  }
 
   const int *Player::direction_vec() {
     return DIRECTIONS_VEC[direction_];
@@ -51,13 +51,13 @@ namespace Zappy {
     return true;
   }
 
-	Player::~Player() {
-		// if (DEBUG)
-			// std::cout << "Player" << " destroyed" << std::endl;
-	}
+  Player::~Player() {
+    // if (DEBUG)
+      // std::cout << "Player" << " destroyed" << std::endl;
+  }
 
-	std::ostream& operator<<(std::ostream& s, const Player& p) {
-		s << (Client &)p;
-		return (s);
-	}
+  std::ostream& operator<<(std::ostream& s, const Player& p) {
+    s << (Client &)p;
+    return (s);
+  }
 }

@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Kick {
-	public:
-		Kick();
-		Kick(const Kick&);
-		~Kick();
-		Kick&	operator= (const Kick&); // const for safety... not super nesessary
+  public:
+    Kick();
+    Kick(const Kick&);
+    ~Kick();
+    Kick& operator= (const Kick&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Kick&);
+std::ostream& operator<<(std::ostream&, const Kick&);
 
 #endif
 

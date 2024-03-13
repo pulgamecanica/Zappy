@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Right {
-	public:
-		Right();
-		Right(const Right&);
-		~Right();
-		Right&	operator= (const Right&); // const for safety... not super nesessary
+  public:
+    Right();
+    Right(const Right&);
+    ~Right();
+    Right&  operator= (const Right&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Right&);
+std::ostream& operator<<(std::ostream&, const Right&);
 
 #endif
 

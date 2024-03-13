@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Incantation {
-	public:
-		Incantation();
-		Incantation(const Incantation&);
-		~Incantation();
-		Incantation&	operator= (const Incantation&); // const for safety... not super nesessary
+  public:
+    Incantation();
+    Incantation(const Incantation&);
+    ~Incantation();
+    Incantation&  operator= (const Incantation&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Incantation&);
+std::ostream& operator<<(std::ostream&, const Incantation&);
 
 #endif
 

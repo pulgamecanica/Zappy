@@ -8,14 +8,14 @@
 #include <iostream>
 
 class UnusedConnection {
-	public:
-		UnusedConnection();
-		UnusedConnection(const UnusedConnection&);
-		~UnusedConnection();
-		UnusedConnection&	operator= (const UnusedConnection&); // const for safety... not super nesessary
+  public:
+    UnusedConnection();
+    UnusedConnection(const UnusedConnection&);
+    ~UnusedConnection();
+    UnusedConnection& operator= (const UnusedConnection&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const UnusedConnection&);
+std::ostream& operator<<(std::ostream&, const UnusedConnection&);
 
 #endif
 

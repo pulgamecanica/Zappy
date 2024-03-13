@@ -8,14 +8,14 @@
 #include <iostream>
 
 class See {
-	public:
-		See();
-		See(const See&);
-		~See();
-		See&	operator= (const See&); // const for safety... not super nesessary
+  public:
+    See();
+    See(const See&);
+    ~See();
+    See&  operator= (const See&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const See&);
+std::ostream& operator<<(std::ostream&, const See&);
 
 #endif
 

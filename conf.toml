@@ -43,8 +43,8 @@ lang [--help] <name>
 Change the language of the server
 Replace <name> by any language you want to use
 Ex.
-	$> lang es
-	$> lang --help
+  $> lang es
+  $> lang --help
 '''
 
 # SPANISH ########################################################
@@ -68,8 +68,8 @@ lang [--help] <nombre>
 Cambiar el lenguage del servidor
 Remplaza <nombre> por lenguage que quieres utilizar
 Ej.
-	$> lang es
-	$> lang --help
+  $> lang es
+  $> lang --help
 '''
 
 # FRENCH ########################################################
@@ -94,6 +94,6 @@ lang [--help] <nom>
 Change la langue du server
 Reemplis le <nom> pour quel que langue gue tu a soahtez
 Ex.
-	$> lang es
-	$> lang --help
+  $> lang es
+  $> lang --help
 '''

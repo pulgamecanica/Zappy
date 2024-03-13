@@ -5,29 +5,29 @@
 #include "Kick.hpp"
 
 Kick::Kick() {
-	// TODO (default constructor)
+  // TODO (default constructor)
 }
 
 Kick::Kick(const Kick& param) {
-	// TODO (copy constructor)
-	(void)param;
+  // TODO (copy constructor)
+  (void)param;
 }
 
 Kick::~Kick() {
-	std::cout << "Kick" << " destroyed" << std::endl;
-	// TODO (destructor)
+  std::cout << "Kick" << " destroyed" << std::endl;
+  // TODO (destructor)
 }
 
 Kick& Kick::operator= (const Kick& param) {
-	// TODO (Assignment operatior)
-	// std::swap()
-	(void)param;
-	return (*this);
+  // TODO (Assignment operatior)
+  // std::swap()
+  (void)param;
+  return (*this);
 }
 
 std::ostream& operator<<(std::ostream& s, const Kick& param) {
-	// s << param.CONST_METHOD()
-	(void)param;
-	return (s);
+  // s << param.CONST_METHOD()
+  (void)param;
+  return (s);
 }
 

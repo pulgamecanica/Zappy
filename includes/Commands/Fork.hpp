@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Fork {
-	public:
-		Fork();
-		Fork(const Fork&);
-		~Fork();
-		Fork&	operator= (const Fork&); // const for safety... not super nesessary
+  public:
+    Fork();
+    Fork(const Fork&);
+    ~Fork();
+    Fork& operator= (const Fork&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Fork&);
+std::ostream& operator<<(std::ostream&, const Fork&);
 
 #endif
 

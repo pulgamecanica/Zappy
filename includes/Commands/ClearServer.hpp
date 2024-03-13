@@ -11,17 +11,17 @@
 #include "Server.hpp"
 
 namespace Zappy {
-	class ClearServer: public Command {
-		public:
-			ClearServer();
-			ClearServer(const ClearServer&) = default;
-			~ClearServer();
-			ClearServer&	operator= (const ClearServer&) = default; // const for safety... not super nesessary
-			bool	is_valid() const;
-			void	execute();
-	};
+  class ClearServer: public Command {
+    public:
+      ClearServer();
+      ClearServer(const ClearServer&) = default;
+      ~ClearServer();
+      ClearServer&  operator= (const ClearServer&) = default; // const for safety... not super nesessary
+      bool  is_valid() const;
+      void  execute();
+  };
 
-	std::ostream&	operator<<(std::ostream&, const ClearServer&);
+  std::ostream& operator<<(std::ostream&, const ClearServer&);
 }
 
 #endif

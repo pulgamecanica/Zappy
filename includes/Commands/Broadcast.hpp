@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Broadcast {
-	public:
-		Broadcast();
-		Broadcast(const Broadcast&);
-		~Broadcast();
-		Broadcast&	operator= (const Broadcast&); // const for safety... not super nesessary
+  public:
+    Broadcast();
+    Broadcast(const Broadcast&);
+    ~Broadcast();
+    Broadcast&  operator= (const Broadcast&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Broadcast&);
+std::ostream& operator<<(std::ostream&, const Broadcast&);
 
 #endif
 

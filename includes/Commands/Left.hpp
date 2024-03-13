@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Left {
-	public:
-		Left();
-		Left(const Left&);
-		~Left();
-		Left&	operator= (const Left&); // const for safety... not super nesessary
+  public:
+    Left();
+    Left(const Left&);
+    ~Left();
+    Left& operator= (const Left&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const Left&);
+std::ostream& operator<<(std::ostream&, const Left&);
 
 #endif
 

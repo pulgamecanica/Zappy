@@ -8,14 +8,14 @@
 #include <iostream>
 
 class LetGoObject {
-	public:
-		LetGoObject();
-		LetGoObject(const LetGoObject&);
-		~LetGoObject();
-		LetGoObject&	operator= (const LetGoObject&); // const for safety... not super nesessary
+  public:
+    LetGoObject();
+    LetGoObject(const LetGoObject&);
+    ~LetGoObject();
+    LetGoObject&  operator= (const LetGoObject&); // const for safety... not super nesessary
 };
 
-std::ostream&	operator<<(std::ostream&, const LetGoObject&);
+std::ostream& operator<<(std::ostream&, const LetGoObject&);
 
 #endif
 

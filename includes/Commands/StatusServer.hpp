@@ -13,16 +13,16 @@
 namespace Zappy {
 
 class StatusServer: public Command {
-	public:
-		StatusServer(Server * s);
-		StatusServer(const StatusServer&) = default;
-		~StatusServer();
-		StatusServer&	operator= (const StatusServer&) = default; // const for safety... not super nesessary
-		bool	is_valid() const;
-		void	execute();
+  public:
+    StatusServer(Server * s);
+    StatusServer(const StatusServer&) = default;
+    ~StatusServer();
+    StatusServer& operator= (const StatusServer&) = default; // const for safety... not super nesessary
+    bool  is_valid() const;
+    void  execute();
 };
 
-std::ostream&	operator<<(std::ostream&, const StatusServer&);
+std::ostream& operator<<(std::ostream&, const StatusServer&);
 }
 
 #endif
