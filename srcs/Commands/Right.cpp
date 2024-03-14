@@ -3,31 +3,28 @@
 //***************************//
 
 #include "Right.hpp"
+#include "Player.hpp"
 
-Right::Right() {
-  // TODO (default constructor)
+namespace Zappy {
+
+
+  Right::Right(GameEngine * trantor, Client * c):
+    ClientCommand(trantor, c, "right", 7) {  
+  }
+
+  Right::~Right() {
+  }
+
+  std::ostream& operator<<(std::ostream& s, const Right& param) {
+    (void)param;
+    return (s);
+  }
+
+  bool  Right::is_valid() const { return (true); };
+
+  void  Right::execute() {
+    ClientCommand::execute();
+    Player * p = dynamic_cast<Player *>(client_);
+    p->move_right();
+  };
 }
-
-Right::Right(const Right& param) {
-  // TODO (copy constructor)
-  (void)param;
-}
-
-Right::~Right() {
-  std::cout << "Right" << " destroyed" << std::endl;
-  // TODO (destructor)
-}
-
-Right& Right::operator= (const Right& param) {
-  // TODO (Assignment operatior)
-  // std::swap()
-  (void)param;
-  return (*this);
-}
-
-std::ostream& operator<<(std::ostream& s, const Right& param) {
-  // s << param.CONST_METHOD()
-  (void)param;
-  return (s);
-}
-

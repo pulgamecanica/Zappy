@@ -23,8 +23,18 @@ namespace Zappy {
 
   bool Player::advance() {
     position_ += direction_; 
-    std::cout << *this << " | " << "Position:" << position_ << " | " << direction_ << std::endl;
+    std::cout << YELLOW << "[Server]\t" << ENDC << "advance:" << BLUE << *this << GREEN << "\tPosition:" << position_ << "  " << direction_ << ENDC << std::endl;
     return true;
+  }
+
+  void  Player::move_right() {
+    direction_++;
+    std::cout << YELLOW << "[Server]\t" << ENDC << "right:" << BLUE << *this << GREEN << "\tPosition:" << position_ << "  " << direction_ << ENDC << std::endl;
+  }
+
+  void  Player::move_left() {
+    direction_--;
+    std::cout << YELLOW << "[Server]\t" << ENDC << "right:" << BLUE << *this << GREEN << "\tPosition:" << position_ << "  " << direction_ << ENDC << std::endl;
   }
 
   Player::~Player() {

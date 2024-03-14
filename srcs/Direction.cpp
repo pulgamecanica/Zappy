@@ -26,9 +26,9 @@ namespace Zappy {
       case 0:
         return (Direction(Orientation::North));
       case 1:
-        return (Direction(Orientation::South));
-      case 2:
         return (Direction(Orientation::East));
+      case 2:
+        return (Direction(Orientation::South));
       case 3:
         return (Direction(Orientation::West));
       default:
@@ -66,8 +66,7 @@ namespace Zappy {
   Direction& Direction::operator--(void) {
     int next;
 
-    next = o_;
-    next--;
+    next = o_ - 1;
     if (next < 0)
       next = 3;
     o_ = static_cast<Orientation>(next);
@@ -79,8 +78,7 @@ namespace Zappy {
     Direction tmp(*this);
     int next;
 
-    next = o_;
-    next--;
+    next = o_ - 1;
     if (next < 0)
       next = 3;
     o_ = static_cast<Orientation>(next);

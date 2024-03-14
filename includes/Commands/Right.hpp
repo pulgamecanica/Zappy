@@ -7,15 +7,21 @@
 
 #include <iostream>
 
-class Right {
-  public:
-    Right();
-    Right(const Right&);
-    ~Right();
-    Right&  operator= (const Right&); // const for safety... not super nesessary
-};
+#include "ClientCommand.hpp"
 
-std::ostream& operator<<(std::ostream&, const Right&);
+namespace Zappy {
 
+  class Right: public ClientCommand {
+    public:
+      Right(GameEngine * trantor, Client * c);
+      Right(const Right&) = delete;
+      ~Right();
+      Right&  operator= (const Right&) = delete; // const for safety... not super nesessary
+      bool  is_valid() const;
+      void  execute();
+  };
+
+  std::ostream& operator<<(std::ostream&, const Right&);
+}
 #endif
 

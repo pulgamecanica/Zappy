@@ -7,15 +7,23 @@
 
 #include <iostream>
 
-class Left {
+#include "ClientCommand.hpp"
+
+namespace Zappy {
+
+  class Left: public ClientCommand {
   public:
-    Left();
-    Left(const Left&);
+    Left(GameEngine * trantor, Client * c);
+    Left(const Left&) = delete;
     ~Left();
-    Left& operator= (const Left&); // const for safety... not super nesessary
+    Left& operator= (const Left&) = delete; // const for safety... not super nesessary
+    bool  is_valid() const;
+    void  execute();
 };
 
 std::ostream& operator<<(std::ostream&, const Left&);
+
+}
 
 #endif
 

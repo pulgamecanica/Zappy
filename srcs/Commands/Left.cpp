@@ -3,31 +3,31 @@
 //***************************//
 
 #include "Left.hpp"
+#include "Player.hpp"
 
-Left::Left() {
-  // TODO (default constructor)
-}
+namespace Zappy {
 
-Left::Left(const Left& param) {
-  // TODO (copy constructor)
-  (void)param;
-}
+  Left::Left(GameEngine * trantor, Client * c): 
+      ClientCommand(trantor, c, "left", 7) {
+  }
 
-Left::~Left() {
-  std::cout << "Left" << " destroyed" << std::endl;
-  // TODO (destructor)
-}
+  Left::~Left() {
+  }
 
-Left& Left::operator= (const Left& param) {
-  // TODO (Assignment operatior)
-  // std::swap()
-  (void)param;
-  return (*this);
-}
+  bool  Left::is_valid() const { return (true); }
 
-std::ostream& operator<<(std::ostream& s, const Left& param) {
-  // s << param.CONST_METHOD()
-  (void)param;
-  return (s);
+  void  Left::execute() {
+    ClientCommand::execute();
+    Player * p = dynamic_cast<Player *>(client_);
+    p->move_left();
+  }
+
+
+  std::ostream& operator<<(std::ostream& s, const Left& param) {
+    // s << param.CONST_METHOD()
+    (void)param;
+    return (s);
+  }
+
 }
 

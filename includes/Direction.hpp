@@ -13,8 +13,8 @@ namespace Zappy {
 
   enum Orientation {
     North,
-    South,
     East,
+    South,
     West
   };
 
@@ -37,8 +37,8 @@ namespace Zappy {
     private:
       static constexpr const std::string DIRECTIONS_STR[4] = {
         "North",
-        "South",
         "East",
+        "South",
         "West"
       };
       enum Orientation o_;

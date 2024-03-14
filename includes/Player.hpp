@@ -21,6 +21,8 @@ namespace Zappy {
       ~Player();
       Player& operator= (const Player&) = delete; // const for safety... not super nesessary
       bool    advance();
+      void    move_right();
+      void    move_left();
     private:
       Direction direction_;
       Point     position_;

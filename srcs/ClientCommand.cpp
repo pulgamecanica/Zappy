@@ -6,6 +6,8 @@
 
 #include "ClientCommand.hpp"
 #include "Advance.hpp"
+#include "Right.hpp"
+#include "Left.hpp"
 
 namespace Zappy {
 
@@ -26,6 +28,7 @@ namespace Zappy {
   void  ClientCommand::execute() {
     executed_ = true;
     executed_at_frame_ = trantor_->frame();
+    client_->broadcast("OK\n");
   }
 
   bool ClientCommand::is_valid() const { return (false); }
@@ -44,12 +47,13 @@ namespace Zappy {
     // std::vector<std::string> options;
 
     // options = get_options(msg.substr(cmd.length()));
-    if (cmd == "advance")
+    if (cmd == "advance") {
       return new Advance(trantor, c);
-    // } else if (cmd == "status") {
-    //  return new ClientCommand();
-    // } else if (cmd == "exit") {
-    //  return new ClientCommand();
+    } else if (cmd == "right") {
+     return new Right(trantor, c);
+    } else if (cmd == "left") {
+     return new Left(trantor, c);
+    }
     // } else if (cmd == "clear") {
     //  return new ClientCommand();
     // } else if (cmd == "players") {

@@ -7,7 +7,8 @@
 
 namespace Zappy {
 
-  Advance::Advance(GameEngine * trantor, Client * c): ClientCommand(trantor, c, "advance", 7) {
+  Advance::Advance(GameEngine * trantor, Client * c):
+    ClientCommand(trantor, c, "advance", 7) {
     // TODO (default constructor)
   }
 
