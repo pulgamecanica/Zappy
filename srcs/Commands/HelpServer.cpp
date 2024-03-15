@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-#include "HelpServer.hpp"
+#include "Commands/HelpServer.hpp"
 
 namespace Zappy {
   HelpServer::HelpServer(Server * s): Command("help", s) {

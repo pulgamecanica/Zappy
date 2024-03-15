@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "ClearServer.hpp"
+#include "Commands/ClearServer.hpp"
 
 namespace Zappy {
 

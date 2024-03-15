@@ -2,13 +2,13 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Left.hpp"
 #include "Player.hpp"
+#include "Commands/Left.hpp"
 
 namespace Zappy {
 
-  Left::Left(GameEngine * trantor, Client * c): 
-      ClientCommand(trantor, c, "left", 7) {
+  Left::Left(GameEngine * trantor, Player &p): 
+      ClientCommand(trantor, "left", 7), player_(p) {
   }
 
   Left::~Left() {
@@ -18,8 +18,8 @@ namespace Zappy {
 
   void  Left::execute() {
     ClientCommand::execute();
-    Player * p = dynamic_cast<Player *>(client_);
-    p->move_left();
+    player_.move_left();
+    player_.broadcast("OK:left");
   }
 
 

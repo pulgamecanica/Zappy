@@ -2,13 +2,13 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Advance.hpp"
 #include "Player.hpp"
+#include "Commands/Advance.hpp"
 
 namespace Zappy {
 
-  Advance::Advance(GameEngine * trantor, Client * c):
-    ClientCommand(trantor, c, "advance", 7) {
+  Advance::Advance(GameEngine * trantor, Player &p):
+    ClientCommand(trantor, "advance", 7), player_(p) {
     // TODO (default constructor)
   }
 
@@ -18,8 +18,8 @@ namespace Zappy {
 
   void  Advance::execute() {
     ClientCommand::execute();
-    Player * p = dynamic_cast<Player *>(client_);
-    p->advance();
+    player_.advance();
+    player_.broadcast("OK:advance");
   }
 
   bool  Advance::is_valid() const { return (true); }

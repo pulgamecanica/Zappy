@@ -18,7 +18,7 @@ namespace Zappy {
     std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
 
     welcome_msg.append(ctime(&created_at_ms_));
-    send(fd, welcome_msg.c_str(), welcome_msg.length(), 0);
+    broadcast(welcome_msg.c_str());
   }
 
   bool Player::advance() {
@@ -38,8 +38,6 @@ namespace Zappy {
   }
 
   Player::~Player() {
-    // if (DEBUG)
-      // std::cout << "Player" << " destroyed" << std::endl;
   }
 
   std::ostream& operator<<(std::ostream& s, const Player& p) {

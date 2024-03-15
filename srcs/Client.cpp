@@ -29,6 +29,7 @@ namespace Zappy {
   }
 
   void Client::broadcast(std::string msg) {
+    msg.append("\n");
     if (send(fd_, msg.c_str(), msg.length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1) {
       if (errno == EPIPE) {
         if (DEBUG)

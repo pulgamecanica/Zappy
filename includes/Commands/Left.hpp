@@ -8,20 +8,23 @@
 #include <iostream>
 
 #include "ClientCommand.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
 
   class Left: public ClientCommand {
-  public:
-    Left(GameEngine * trantor, Client * c);
-    Left(const Left&) = delete;
-    ~Left();
-    Left& operator= (const Left&) = delete; // const for safety... not super nesessary
-    bool  is_valid() const;
-    void  execute();
-};
+    public:
+      Left(GameEngine * trantor, Player &p);
+      Left(const Left&) = delete;
+      ~Left();
+      Left& operator= (const Left&) = delete; // const for safety... not super nesessary
+      bool  is_valid() const;
+      void  execute();
+    private:
+      Player &player_;
+  };
 
-std::ostream& operator<<(std::ostream&, const Left&);
+  std::ostream& operator<<(std::ostream&, const Left&);
 
 }
 

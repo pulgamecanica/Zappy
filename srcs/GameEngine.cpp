@@ -7,8 +7,8 @@
 #include "GameEngine.hpp"
 
 namespace Zappy {
-  GameEngine::GameEngine(int default_time, std::string toml_file, std::string default_lang, int players_port, int spectators_port):
-    Server(this, toml_file, default_lang, players_port, spectators_port), t_(default_time), current_frame_(0) {
+  GameEngine::GameEngine(int default_time, std::string toml_file, std::string default_lang, int players_port, int spectators_port, Point p):
+    Server(this, toml_file, default_lang, players_port, spectators_port), t_(default_time), current_frame_(0), map_size_(p) {
     set_game_delay();
     updated_at_ms_ = created_at_ms_;
   }
@@ -22,6 +22,10 @@ namespace Zappy {
     frame_delay_ = 1000 / t_;
   }
 
+  const Point & GameEngine::get_map_size() const {
+    return (map_size_);
+  }
+
   void GameEngine::start(int * sig) {
     std::cout << get_config().get("welcome_to_server") << std::endl;
     write(1, "$> ", 3);
@@ -32,12 +36,7 @@ namespace Zappy {
   unsigned int GameEngine::frame() {return current_frame_;}
 
   inline bool GameEngine::is_time_to_update() {
-    ssize_t now_ms; 
-
-    now_ms = gettimeofday_ms();
-    if (now_ms - updated_at_ms_ >= frame_delay_)
-      return true;
-    return false;
+    return (gettimeofday_ms() - updated_at_ms_ >= frame_delay_);
   }
 
   inline void GameEngine::update_time() {

@@ -24,6 +24,8 @@ namespace Zappy {
       Point&  operator-=(const Point& p);
       Point&  operator*=(const Point& p);
       Point&  operator/=(const Point& p);
+      // To convert to string
+      explicit operator std::string() const;
       int y() const;
       int x() const;
     protected:

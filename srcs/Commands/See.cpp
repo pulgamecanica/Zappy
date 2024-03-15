@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "See.hpp"
+#include "Commands/See.hpp"
 
 See::See() {
   // TODO (default constructor)

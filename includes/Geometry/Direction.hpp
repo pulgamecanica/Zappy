@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "Point.hpp"
+#include "Geometry/Point.hpp"
 
 namespace Zappy {
 

@@ -4,12 +4,12 @@
 
 #include "Zappy.inc"
 #include "Command.hpp"
-#include "HelpServer.hpp"
-#include "StatusServer.hpp"
-#include "ExitServer.hpp"
-#include "LangServer.hpp"
-#include "ClearServer.hpp"
-#include "PlayersServer.hpp"
+#include "Commands/HelpServer.hpp"
+#include "Commands/StatusServer.hpp"
+#include "Commands/ExitServer.hpp"
+#include "Commands/LangServer.hpp"
+#include "Commands/ClearServer.hpp"
+#include "Commands/PlayersServer.hpp"
 
 #include "Server.hpp"
 

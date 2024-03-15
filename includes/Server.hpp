@@ -83,7 +83,7 @@ namespace Zappy {
       sockaddr_in           spectators_sockaddr_; // '' '' '' '' '' '' '' '' '' ''
       struct epoll_event    events_[MAX_EPOLL_EVENTS];
       std::map<int, Client *> clients_;
-      std::vector<int>      spectators_;
+      // std::vector<int>      spectators_;
       std::vector<Config>   configs_;
       Config              * curr_config_;
       enum ServerHealth     health_;

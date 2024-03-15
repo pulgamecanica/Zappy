@@ -6,7 +6,7 @@ extern "C" {
   #include <math.h>
 }
 
-#include "Point.hpp"
+#include "Geometry/Point.hpp"
 
 namespace Zappy {
 
@@ -15,6 +15,11 @@ namespace Zappy {
   }
 
   Point::~Point() {}
+
+  Point::operator std::string() const {
+    
+    return std::string(std::to_string(x()) + " " + std::to_string(y()));
+  }
 
   int Point::x() const { return (x_); }
 

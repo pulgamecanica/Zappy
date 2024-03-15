@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Broadcast.hpp"
+#include "Commands/Broadcast.hpp"
 
 Broadcast::Broadcast() {
   // TODO (default constructor)

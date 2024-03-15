@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "LetGoObject.hpp"
+#include "Commands/LetGoObject.hpp"
 
 LetGoObject::LetGoObject() {
   // TODO (default constructor)

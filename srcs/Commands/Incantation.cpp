@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Incantation.hpp"
+#include "Commands/Incantation.hpp"
 
 Incantation::Incantation() {
   // TODO (default constructor)

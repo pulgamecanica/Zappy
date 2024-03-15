@@ -12,10 +12,11 @@ extern "C" {
 #include <toml++/toml.hpp>
 
 #include "Zappy.inc"
+#include "Player.hpp"
+#include "Spectator.hpp"
 #include "Server.hpp"
 #include "Command.hpp"
 #include "ClientCommand.hpp"
-#include "Player.hpp"
 #include "GameEngine.hpp"
 
 
@@ -145,7 +146,6 @@ namespace Zappy {
       delete i->second;
     }
     clients_.clear();
-    spectators_.clear();
     configs_.clear();
     health_ = EndOfLife;
     if (DEBUG)
@@ -166,13 +166,23 @@ namespace Zappy {
   }
 
   int Server::total_players() const {
-    // Figure out a way to get this with a lambda
-    // Boolean on Client::ClientType::Player
-    return (clients_.size());
+    int total(0);
+
+    for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
+      if (i->second->get_client_type() == Client::ClientType::Player)
+        total++;
+    }
+    return (total);
   }
 
   int Server::total_spectators() const {
-    return (spectators_.size());
+    int total(0);
+
+    for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
+      if (i->second->get_client_type() == Client::ClientType::Spectator)
+        total++;
+    }
+    return (total);
   }
 
   const Config & Server::get_config() const { return (*curr_config_); } 
@@ -258,12 +268,12 @@ namespace Zappy {
 
   void Server::add_client(int socket, int fd) {
     if (DEBUG)
-      std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl; 
+      std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl;
     if (players_socket_ == socket) {
       clients_.insert(std::pair<int, Client *>(fd, new Player(fd)));
     } else if (spectators_socket_ == socket) {
-      // clients_.insert(std::pair<int, Player>(fd, fd));
-      spectators_.push_back(fd);
+      clients_.insert(std::pair<int, Client *>(fd, new Spectator(fd)));
+      // spectators_.push_back(fd);
     }
   }
 
@@ -273,9 +283,6 @@ namespace Zappy {
     if (is_client(fd)) {
       delete clients_.at(fd);
       clients_.erase(fd);
-    } else {
-      std::vector<int>::const_iterator pos = std::find(spectators_.begin(), spectators_.end(), fd);
-      spectators_.erase(pos);
     }
     close(fd);
   }
@@ -326,14 +333,22 @@ namespace Zappy {
   }
   
   void  Server::handle_client(int fd, const std::string & cmd) {
-    Player * p = dynamic_cast<Player *>(clients_.at(fd));
-    ClientCommand * c = ClientCommand::parse_command(trantor_, p, cmd);
+    Client * client;
+
+    // client = dynamic_cast<Player *>(clients_.at(fd));
+    // if (client)
+    //   std::cout << "Im a client" << std::endl;
+    // client = dynamic_cast<Spectator *>(clients_.at(fd));
+    // if (client)
+    //   std::cout << "Im a Spectator" << std::endl;
+    client = clients_.at(fd);
+    ClientCommand * c = ClientCommand::parse_command(trantor_, client, cmd);
     if (DEBUG)
       std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC << ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << " | " << GREEN << "recv" << ENDC << ":" << BLUE << cmd.length() << ENDC << "bytes" << std::endl;
     if (c->is_valid()) {
-      p->queue_cmd(c);
+      client->queue_cmd(c);
     } else {
-      p->broadcast("KO: command not found\n");
+      client->broadcast("KO: command not found\n");
     }
   }
 
@@ -370,24 +385,21 @@ namespace Zappy {
     // Update all viewers 
     // Testing Spectators send
     // Server will send to spectator the game status at a given rate/s
-    for (std::vector<int>::iterator it = spectators_.begin(); it != spectators_.end(); ++it) {
-      std::ostringstream ss;
+    // for (std::map<int, Client *>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
+    //   std::ostringstream ss;
 
-      ss << "\033[H\033[2J\n";
-      ss << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
-        << " - [" << BLUE << get_creation_date() << ENDC << "]" << std::endl;
-      ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
-      ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
-      ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "ms" << std::endl;
-      if (send(*it, ss.str().c_str(), ss.str().length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1) {
-        if (errno == EPIPE) {
-          if (DEBUG)
-            std::cout << YELLOW << "[Server]\t" << RED << "Error" << ENDC << " would send SIGPIPE, problems with socket" << std::endl;
-          remove_client(*it);
-          break;
-        }
-      }
-    }
+    //   if (it->second->get_client_type() != Client::ClientType::Spectator)
+    //     continue ;
+    //   ss << "\033[H\033[2J\n";
+    //   ss << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
+    //     << " - [" << BLUE << get_creation_date() << ENDC << "]" << std::endl;
+    //   ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
+    //   ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
+    //   ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "ms" << std::endl;
+    //   it->second->broadcast(ss.str());
+    // }
+    // Check clients list
+    // Remove any broken client
   }
 
 

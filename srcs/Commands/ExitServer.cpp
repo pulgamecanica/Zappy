@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "ExitServer.hpp"
+#include "Commands/ExitServer.hpp"
 
 namespace Zappy {
   ExitServer::ExitServer(Server * s): Command("exit", s) {}

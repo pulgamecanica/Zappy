@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "UnusedConnection.hpp"
+#include "Commands/UnusedConnection.hpp"
 
 UnusedConnection::UnusedConnection() {
   // TODO (default constructor)

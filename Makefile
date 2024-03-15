@@ -7,6 +7,7 @@ NAME  = Zappy
 
 SRC = $(wildcard srcs/*.cpp)
 
+# Add the Command srcs
 SRC += srcs/Commands/HelpServer.cpp \
   srcs/Commands/StatusServer.cpp \
   srcs/Commands/ExitServer.cpp \
@@ -16,14 +17,23 @@ SRC += srcs/Commands/HelpServer.cpp \
   srcs/Commands/Advance.cpp \
   srcs/Commands/Right.cpp \
   srcs/Commands/Left.cpp \
+  srcs/Commands/MapSize.cpp \
+
+# Add The Geometry srcs
+SRC += srcs/Geometry/Point.cpp \
+  srcs/Geometry/Direction.cpp \
 
 CFLAGS  = -O3 -g -Wall -Wextra -Werror -std=c++20 -pedantic #-fsanitize=leak
 
-INC = -I includes -I includes/Commands -I tomlplusplus/include
+INC = -I includes -I tomlplusplus/include
 
 OBJS_D  = objs
 
+OBJS_DIRS = ${OBJS_D}/Commands ${OBJS_D}/Geometry 
+
 DEBUG_OBJS_D  = debug_objs
+
+DEBUG_OBJS_DIRS = ${DEBUG_OBJS_D}/Commands ${DEBUG_OBJS_D}/Geometry 
 
 OBJ = $(SRC:srcs/%.cpp=$(OBJS_D)/%.o)
 
@@ -48,11 +58,11 @@ $(NAME):$(OBJ)
 > @printf "$(C_GREEN)DONE$(C_END)\n"
 
 $(OBJS_D)/%.o:srcs/%.cpp
-> @mkdir -p $(OBJS_D) $(OBJS_D)/Commands
+> @mkdir -p $(OBJS_D) ${OBJS_DIRS}
 > $(CC) $(CFLAGS) $(INC) -o $@ -c $<
 
 $(DEBUG_OBJS_D)/%.o:srcs/%.cpp
-> @mkdir -p $(DEBUG_OBJS_D) $(DEBUG_OBJS_D)/Commands
+> @mkdir -p $(DEBUG_OBJS_D) ${DEBUG_OBJS_DIRS}
 > $(CC) $(CFLAGS) -D DEBUG=1 $(INC) -o $@ -c $<
 
 test:   re

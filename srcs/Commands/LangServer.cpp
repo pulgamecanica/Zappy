@@ -5,7 +5,7 @@
 #include <algorithm>
 
 #include "Zappy.inc"
-#include "LangServer.hpp"
+#include "Commands/LangServer.hpp"
 
 namespace Zappy {
 

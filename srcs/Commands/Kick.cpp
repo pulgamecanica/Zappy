@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Kick.hpp"
+#include "Commands/Kick.hpp"
 
 Kick::Kick() {
   // TODO (default constructor)

@@ -15,7 +15,7 @@ namespace Zappy {
 
   class ClientCommand: public Command {
     public:
-      static ClientCommand* parse_command(GameEngine *trantor, Client * c, const std::string &msg);
+      static ClientCommand* parse_command(GameEngine *trantor, Client *c, const std::string &msg);
       
       // CONSTRUCTORS
       ClientCommand(const ClientCommand&) = default;
@@ -31,9 +31,9 @@ namespace Zappy {
       bool            is_valid() const;
       void            execute();
     protected:
-      ClientCommand(GameEngine *trantor, Client *c, const std::string cmd, int time_cost);
+      ClientCommand(GameEngine *trantor, const std::string cmd, int time_cost);
       GameEngine          *trantor_;
-      Client              *client_;
+      // Client              *client_;
       ssize_t             executed_at_frame_;
     private:
       bool                executed_;

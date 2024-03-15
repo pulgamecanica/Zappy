@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Inventory.hpp"
+#include "Commands/Inventory.hpp"
 
 Inventory::Inventory() {
   // TODO (default constructor)

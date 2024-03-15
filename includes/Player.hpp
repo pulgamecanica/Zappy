@@ -9,8 +9,8 @@
 
 #include "Client.hpp"
 #include "ClientCommand.hpp"
-#include "Direction.hpp"
-#include "Point.hpp"
+#include "Geometry/Direction.hpp"
+#include "Geometry/Point.hpp"
 
 namespace Zappy {
   

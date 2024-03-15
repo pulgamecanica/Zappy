@@ -4,8 +4,8 @@
 
 #include "Zappy.inc"
 
-#include "PlayersServer.hpp"
 #include "Client.hpp"
+#include "Commands/PlayersServer.hpp"
 
 namespace Zappy {
 

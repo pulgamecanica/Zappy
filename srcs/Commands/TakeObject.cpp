@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "TakeObject.hpp"
+#include "Commands/TakeObject.hpp"
 
 TakeObject::TakeObject() {
   // TODO (default constructor)

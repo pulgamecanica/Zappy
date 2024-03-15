@@ -2,9 +2,9 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "StatusServer.hpp"
-
 #include "Zappy.inc"
+
+#include "Commands/StatusServer.hpp"
 
 namespace Zappy {
   StatusServer::StatusServer(Server * s): Command("status", s) {

@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
     int players_port(4242);
     int spectators_port(2121);
     int default_time(100);
+    int x(-1), y(-1);
 
 
     /* The "-l" option specifies the default language. */
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
     /* The "-S" sets the Spectators port. */
     setup_signals();
     try {
-        while ((opt = getopt(argc, argv, "l:f:P:S:t:")) != -1) {
+        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:")) != -1) {
             switch (opt) {
             case 'l':
                 lang.assign(optarg);
@@ -99,25 +100,53 @@ int main(int argc, char *argv[])
             case 't':
                 default_time = std::stoi(optarg);
                 break;
+            case 'x':
+                x = std::stoi(optarg);
+                if (x < 1)
+                    throw std::runtime_error("width < 1");
+                break;
+            case 'y':
+                y = std::stoi(optarg);
+                if (y < 1)
+                    throw std::runtime_error("height < 1");
+                break;
             case 'h':
                 std::cout << "Help" << std::endl;
                 // print_help();
                 return (0);
             default:
-               fprintf(stderr, "Usage: %s [-t time] [-f conf file] [-l default language] [-P players port] [-S spectators-port]\n",
+               fprintf(stderr, "" \
+                    "Usage: %s -x <width> -y <height> [-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>]\n" \
+                    "\t -t time unit divider (the greater t is, the faster the game will go, default 100)\n" \
+                    "\t -f configuration file for server messages (default conf.toml)\n" \
+                    "\t -l default language for the server (default en)\n" \
+                    "\t -p port for the players (default 4242)\n" \
+                    "\t -S port for the spectators (default 2121)\n",
                        argv[0]);
                exit(EXIT_FAILURE);
             }
         }
+    } catch (std::exception &e) {
+        std::cerr << RED << "Error: " << e.what() << ENDC " ("
+            << BLUE << "option[" << ENDC << (char)opt << BLUE  << "]"
+            << " => Invalid Arg [" << RED << optarg << BLUE "]"
+            << ENDC << ")" << std::endl;
+        return (1);
+    }
+
+    // (void)x;
+    // (void)y;
+    // GameEngine throw runtime_exception on x or y negative or == 0
+    try {
         Zappy::GameEngine trantor(default_time, file_name, lang, players_port, spectators_port);
         trantor.start(&g_stop_sig);
         // Zappy::Server s;
     } catch (const toml::parse_error& err) {
-    std::cerr
-        << "Error parsing file '" << *err.source().path
-        << "':\n" << RED << err.description() << ENDC
-        << "\n\t(" << err.source().begin << ")\n";
-    return (1);
+        std::cerr
+            << "Error parsing file '" << *err.source().path
+            << "':\n" << RED << err.description() << ENDC
+            << "\n\t(" << err.source().begin << ")\n";
+        return (1);
     } catch (std::exception &e) {
         std::cerr << RED << e.what() << ENDC << std::endl;
         return (1);

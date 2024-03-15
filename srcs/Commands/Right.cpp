@@ -2,14 +2,14 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Right.hpp"
 #include "Player.hpp"
+#include "Commands/Right.hpp"
 
 namespace Zappy {
 
 
-  Right::Right(GameEngine * trantor, Client * c):
-    ClientCommand(trantor, c, "right", 7) {  
+  Right::Right(GameEngine * trantor, Player &p):
+    ClientCommand(trantor, "right", 7), player_(p) {  
   }
 
   Right::~Right() {
@@ -24,7 +24,7 @@ namespace Zappy {
 
   void  Right::execute() {
     ClientCommand::execute();
-    Player * p = dynamic_cast<Player *>(client_);
-    p->move_right();
+    player_.move_right();
+    player_.broadcast("OK:right");
   };
 }

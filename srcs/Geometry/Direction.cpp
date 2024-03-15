@@ -2,7 +2,7 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Direction.hpp"
+#include "Geometry/Direction.hpp"
 
 namespace Zappy {
 
