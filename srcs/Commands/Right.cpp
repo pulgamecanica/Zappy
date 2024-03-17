@@ -27,4 +27,9 @@ namespace Zappy {
     player_.move_right();
     player_.broadcast("OK:right");
   };
+
+  const std::string Right::cmd_error() const {
+    return ClientCommand::cmd_error();
+  }
+
 }

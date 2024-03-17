@@ -24,6 +24,10 @@ namespace Zappy {
 
   bool  Advance::is_valid() const { return (true); }
 
+  const std::string Advance::cmd_error() const {
+    return ClientCommand::cmd_error();
+  }
+
 
   std::ostream& operator<<(std::ostream& s, const Advance& param) {
     s << (Command &)param;

@@ -9,6 +9,7 @@
 #include "Commands/Right.hpp"
 #include "Commands/Left.hpp"
 #include "Commands/MapSize.hpp"
+#include "Commands/Join.hpp"
 
 namespace Zappy {
 
@@ -37,6 +38,14 @@ namespace Zappy {
 
   bool ClientCommand::was_executed() const { return (executed_); }
 
+  const std::string ClientCommand::cmd_error() const {
+    std::string msg;
+
+    msg.append(get_cmd());
+    msg.append(":is not a valid command");
+    return (msg);
+  }
+
   std::ostream& operator<<(std::ostream& s, const ClientCommand& cc) {
     s << (Command &)cc;
     return (s);
@@ -49,12 +58,16 @@ namespace Zappy {
     // options = get_options(msg.substr(cmd.length()));
     if (c->get_client_type() == Client::ClientType::Player) {
       Player & p = *(dynamic_cast<Player *>(c));
-      if (cmd == "advance") {
-        return new Advance(trantor, p);
-      } else if (cmd == "right") {
-        return new Right(trantor, p);
-      } else if (cmd == "left") {
-        return new Left(trantor, p);
+      if (p.get_status() == Player::PlayerStatus::Waiting) {
+        return new Join(trantor, p, msg);
+      } else if (p.get_status() == Player::PlayerStatus::Playing) {
+        if (cmd == "advance") {
+          return new Advance(trantor, p);
+        } else if (cmd == "right") {
+          return new Right(trantor, p);
+        } else if (cmd == "left") {
+          return new Left(trantor, p);
+        }
       }
       // } else if (cmd == "clear") {
       //  return new ClientCommand();

@@ -28,6 +28,7 @@ namespace Zappy {
       // VIRTUAL MEMBER FUNCTIONS(Inherited will prioritize)
       virtual bool        is_valid() const;
       virtual void        execute();
+      virtual const std::string cmd_error() const;
     protected:
       // Semi-Abstract Class, prevent Command from being created on the main scope
       Command(const std::string cmd, Server * s);

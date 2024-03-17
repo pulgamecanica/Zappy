@@ -22,6 +22,9 @@ namespace Zappy {
     player_.broadcast("OK:left");
   }
 
+  const std::string Left::cmd_error() const {
+    return ("Error");
+  }
 
   std::ostream& operator<<(std::ostream& s, const Left& param) {
     // s << param.CONST_METHOD()

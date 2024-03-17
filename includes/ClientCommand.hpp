@@ -13,7 +13,7 @@
 
 namespace Zappy {
 
-  class ClientCommand: public Command {
+  class ClientCommand: public Command {// virtual inheritance because I want to also check the middle class (ClientCommand)
     public:
       static ClientCommand* parse_command(GameEngine *trantor, Client *c, const std::string &msg);
       
@@ -26,10 +26,10 @@ namespace Zappy {
       int             get_cost() const;
       bool            was_executed() const;
       bool            expired() const;
-      
       // VIRTUAL MEMBER FUNCTIONS(Inherited will prioritize)
-      bool            is_valid() const;
-      void            execute();
+      virtual bool    is_valid() const;
+      virtual void    execute();
+      virtual const std::string cmd_error() const;
     protected:
       ClientCommand(GameEngine *trantor, const std::string cmd, int time_cost);
       GameEngine          *trantor_;

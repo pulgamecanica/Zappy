@@ -14,7 +14,7 @@ extern "C" {
 namespace Zappy {
 
   Player::Player(int fd):
-    Client(fd, ClientType::Player), direction_(Direction::get_random()), position_(rand() % 10, rand() % 10) {
+    Client(fd, ClientType::Player), direction_(Direction::get_random()), position_(rand() % 10, rand() % 10), status_(Player::PlayerStatus::Waiting) {
     std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
 
     welcome_msg.append(ctime(&created_at_ms_));
@@ -36,6 +36,9 @@ namespace Zappy {
     direction_--;
     std::cout << YELLOW << "[Server]\t" << ENDC << "right:" << BLUE << *this << GREEN << "\tPosition:" << position_ << "  " << direction_ << ENDC << std::endl;
   }
+
+  enum Player::PlayerStatus Player::get_status() const { return (status_); }
+
 
   Player::~Player() {
   }

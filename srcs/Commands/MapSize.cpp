@@ -24,6 +24,10 @@ namespace Zappy {
 			std::string("msz ") + size_str + std::string("\n"));
 	}
 
+	const std::string MapSize::cmd_error() const {
+    return ClientCommand::cmd_error();
+  }
+
 	std::ostream& operator<<(std::ostream& s, const MapSize& param) {
 		// s << param.CONST_METHOD()
 		(void)param;

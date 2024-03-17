@@ -342,13 +342,13 @@ namespace Zappy {
     // if (client)
     //   std::cout << "Im a Spectator" << std::endl;
     client = clients_.at(fd);
-    ClientCommand * c = ClientCommand::parse_command(trantor_, client, cmd);
+    ClientCommand *c = ClientCommand::parse_command(trantor_, client, cmd);
     if (DEBUG)
       std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC << ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << " | " << GREEN << "recv" << ENDC << ":" << BLUE << cmd.length() << ENDC << "bytes" << std::endl;
     if (c->is_valid()) {
       client->queue_cmd(c);
     } else {
-      client->broadcast("KO: command not found\n");
+      client->broadcast(c->cmd_error());
     }
   }
 

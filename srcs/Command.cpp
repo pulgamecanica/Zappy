@@ -33,6 +33,11 @@ namespace Zappy {
     throw std::runtime_error("Cannot execute abstract command");
   }
 
+  const std::string Command::cmd_error() const {
+    return ("Command:Error");
+  }
+
+
   std::vector<std::string> Command::get_options(const std::string & options_str) {
     std::vector<std::string> options;
 

@@ -20,6 +20,7 @@ namespace Zappy {
       Left& operator= (const Left&) = delete; // const for safety... not super nesessary
       bool  is_valid() const;
       void  execute();
+      const std::string cmd_error() const;
     private:
       Player &player_;
   };

@@ -43,6 +43,16 @@ namespace Zappy {
     updated_at_ms_ += frame_delay_;
   }
 
+  bool  GameEngine::is_team_valid(const std::string & team) const {
+    // for (std::vector<std::string>::iterator i = .begin(); i != .end(); ++i)
+    // {
+      
+    // }
+    // Missing teams logic
+    return !team.empty();
+  }
+
+
   // The game engine is running an underlying Server, who is also in charge of all managing the fds
   void GameEngine::update() {
     Server::update();

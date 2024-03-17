@@ -20,6 +20,7 @@ namespace Zappy {
 			MapSize&	operator= (const MapSize&) = default; // const for safety... not super nesessary
 			bool  is_valid() const;
       void  execute();
+			const std::string cmd_error() const;
 		private:
 			Spectator & spectator_;
 	};

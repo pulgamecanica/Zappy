@@ -21,6 +21,7 @@ namespace Zappy {
       Advance&  operator= (const Advance&) = delete; // const for safety... not super nesessary
       bool  is_valid() const;
       void  execute();
+      const std::string cmd_error() const;
     private:
       Player &player_;
   };
