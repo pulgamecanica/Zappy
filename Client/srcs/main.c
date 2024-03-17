@@ -11,7 +11,7 @@
 #include <netdb.h>
 #include <errno.h>
 
-#include "Spectator.h"
+#include "Client.h"
 
 static void ft_exit_on_error(int res, char * fallback_msg) {
   if (res == -1) {

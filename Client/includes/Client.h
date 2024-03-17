@@ -2,8 +2,8 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#ifndef __SPECTATOR__
-# define __SPECTATOR__
+#ifndef __CLIENT__
+# define __CLIENT__
 
 
 # define BLACK  "\033[0;30m"
