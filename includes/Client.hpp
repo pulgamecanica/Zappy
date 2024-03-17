@@ -19,35 +19,44 @@ extern "C" {
 #include <iostream>
 
 namespace Zappy {
-  
   class ClientCommand;
-  class Server;
+  class Player;
 
   class Client {
     public:
       static constexpr const char * CLIENT_TYPES_STR[4] = {"Player", "Spectator", "Graphic", "Error"};
       enum ClientType {
-        Player,
-        Spectator,
-        Graphic,
-        Error
+        PlayerT,
+        SpectatorT,
+        ErrorT
       };
+      // CONSTRUCTORS & DESTRUCTORS
+      Client(int fd, ClientType type);
       Client(const Client&) = default;
       virtual ~Client();
-      Client&                 operator= (const Client&) = default; // const for safety... not super nesessary
-      ssize_t                 uptime() const; // Seconds
-      int                     get_fd() const;
-      void                    broadcast(std::string msg);
-      enum ClientType         get_client_type() const;
-      void                    update();
-      void                    queue_cmd(ClientCommand * cmd);
+      Client&         operator= (const Client&) = default; // const for safety... not super nesessary
+      // CONST PUBLIC METHODS
+      enum ClientType get_client_type() const;
+      int             get_fd() const;
+      bool            joined() const;
+      ssize_t         uptime() const; // In miliseconds (ms)
+      // PUBLIC METHODS
+      void            broadcast(std::string msg);
+      void            update();
+      void            queue_cmd(ClientCommand * cmd);
     protected:
+      // STATIC PROTECTED CONST MEMBERS
       static const int QUEUE_SIZE = 8;
-      Client(int fd, ClientType type);
+      // CONST PROTECTED MEMBERS
       const int                     fd_;
+      // PROTECTED MEMBERS
       enum ClientType               client_type_;
       ssize_t                       created_at_ms_;
       std::vector<ClientCommand *>  cmd_queue_;
+    private:
+      // PRIVATE MEMBERS
+      Player                        *player_; // I don't like this, spectators should not inherit this...
+    // Will concider having this separated...
   };
 
   std::ostream& operator<<(std::ostream&, const Client&);

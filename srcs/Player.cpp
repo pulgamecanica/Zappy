@@ -13,12 +13,12 @@ extern "C" {
 
 namespace Zappy {
 
-  Player::Player(int fd):
-    Client(fd, ClientType::Player), direction_(Direction::get_random()), position_(rand() % 10, rand() % 10), status_(Player::PlayerStatus::Waiting) {
-    std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
+  Player::Player(/*int fd*/):
+    /*Client(fd, ClientType::Player), */direction_(Direction::get_random()), position_(rand() % 10, rand() % 10), status_(Player::PlayerStatus::Waiting) {
+    // std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
 
-    welcome_msg.append(ctime(&created_at_ms_));
-    broadcast(welcome_msg.c_str());
+    // welcome_msg.append(ctime(&created_at_ms_));
+    // broadcast(welcome_msg.c_str());
   }
 
   bool Player::advance() {
@@ -44,7 +44,8 @@ namespace Zappy {
   }
 
   std::ostream& operator<<(std::ostream& s, const Player& p) {
-    s << (Client &)p;
+    (void)p;
+    // s << (Client &)p;
     return (s);
   }
 }

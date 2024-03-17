@@ -8,12 +8,13 @@ extern "C" {
 }
 
 #include "Zappy.inc"
-#include "Client.hpp"
 
+#include "Client.hpp"
 #include "ClientCommand.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
-  Client::Client(int fd, ClientType type): fd_(fd), client_type_(type) {
+  Client::Client(int fd, ClientType type): fd_(fd), client_type_(type), player_(nullptr) {
     created_at_ms_ = gettimeofday_ms();
   }
 
@@ -28,6 +29,9 @@ namespace Zappy {
     return (gettimeofday_ms() - created_at_ms_);
   }
 
+  bool  Client::joined() const { return (true/*player_ == nullptr*/); }
+
+
   void Client::broadcast(std::string msg) {
     msg.append("\n");
     if (send(fd_, msg.c_str(), msg.length(), MSG_DONTWAIT | MSG_NOSIGNAL) == -1) {
@@ -36,7 +40,7 @@ namespace Zappy {
           std::cout << YELLOW << "[Server]\t" << RED << "Error" << ENDC << " would send SIGPIPE, problems with socket" << std::endl;
         // remove_client(*it);
         // Client is dead
-        client_type_ = ClientType::Error;
+        client_type_ = ClientType::ErrorT;
       }
     }
   }

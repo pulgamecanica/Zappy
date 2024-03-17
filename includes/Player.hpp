@@ -7,13 +7,16 @@
 
 #include <iostream>
 
-#include "Client.hpp"
+// #include "Client.hpp"
 #include "ClientCommand.hpp"
 #include "Geometry/Direction.hpp"
 #include "Geometry/Point.hpp"
 
 namespace Zappy {
-  class Player: public Client {
+  
+  class Client;
+
+  class Player {//: public Client {
     public:
       enum PlayerStatus {
         Waiting,
@@ -21,7 +24,7 @@ namespace Zappy {
         Dead,
         Error
       };
-      Player(int fd);
+      Player(/*int fd*/);
       Player(const Player&) = default;
       ~Player();
       Player&           operator= (const Player&) = delete; // const for safety... not super nesessary
@@ -29,6 +32,7 @@ namespace Zappy {
       void              move_right();
       void              move_left();
       enum PlayerStatus get_status() const;
+      Client            *client_;
     private:
       Direction         direction_;
       Point             position_;

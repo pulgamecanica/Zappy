@@ -25,7 +25,7 @@ namespace Zappy {
   void  Right::execute() {
     ClientCommand::execute();
     player_.move_right();
-    player_.broadcast("OK:right");
+    player_.client_->broadcast("OK:right");
   };
 
   const std::string Right::cmd_error() const {

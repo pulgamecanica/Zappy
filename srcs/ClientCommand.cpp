@@ -56,19 +56,18 @@ namespace Zappy {
     // std::vector<std::string> options;
 
     // options = get_options(msg.substr(cmd.length()));
-    if (c->get_client_type() == Client::ClientType::Player) {
-      Player & p = *(dynamic_cast<Player *>(c));
-      if (p.get_status() == Player::PlayerStatus::Waiting) {
-        return new Join(trantor, p, msg);
-      } else if (p.get_status() == Player::PlayerStatus::Playing) {
-        if (cmd == "advance") {
-          return new Advance(trantor, p);
-        } else if (cmd == "right") {
-          return new Right(trantor, p);
-        } else if (cmd == "left") {
-          return new Left(trantor, p);
-        }
-      }
+    // if (c->get_client_type() == Client::ClientType::PlayerT) {
+    //   if (!c->joined()) {
+    //     return new Join(trantor, *c, msg);
+    //   } else if (c->joined()) {
+    //     if (cmd == "advance") {
+    //       return new Advance(trantor, c->player_);
+    //     } else if (cmd == "right") {
+    //       return new Right(trantor, c->player_);
+    //     } else if (cmd == "left") {
+    //       return new Left(trantor, c->player_);
+    //     }
+    //   }
       // } else if (cmd == "clear") {
       //  return new ClientCommand();
       // } else if (cmd == "players") {
@@ -76,7 +75,7 @@ namespace Zappy {
       // } else if (cmd == "lang") {
       //  return new ClientCommand(options);
       // }
-    } else if (c->get_client_type() == Client::ClientType::Spectator) {
+    /*} else */if (c->get_client_type() == Client::ClientType::SpectatorT) {
       Spectator & s = *(dynamic_cast<Spectator *>(c));
       if (cmd == "msz") {
         return new MapSize(trantor, s);

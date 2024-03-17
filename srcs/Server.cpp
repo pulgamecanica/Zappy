@@ -12,25 +12,28 @@ extern "C" {
 #include <toml++/toml.hpp>
 
 #include "Zappy.inc"
+
 #include "Player.hpp"
 #include "Spectator.hpp"
 #include "Server.hpp"
 #include "Command.hpp"
 #include "ClientCommand.hpp"
 #include "GameEngine.hpp"
-
+#include "Client.hpp"
 
 namespace Zappy {
-  Server::Server(GameEngine *trantor, std::string toml_file, std::string default_lang, int players_port, int spectators_port):
-    trantor_(trantor), players_port_(players_port), spectators_port_(spectators_port), health_(Booting) {
-    // Setup TOML configuration file
+  //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
+  Server::Server(GameEngine *trantor, std::string toml_file, std::string default_lang,
+    int players_port, int spectators_port): players_port_(players_port),
+      spectators_port_(spectators_port), health_(Booting), trantor_(trantor) {
+    /* Setup TOML configuration file */
     {
       toml::table tbl = toml::parse_file(toml_file);
-      // Setup configuration for all the languages
+      /* Setup configuration for all the languages */
       auto toml_langs = tbl["languages"];
       if (toml::array* arr = toml_langs.as_array())
       {
-          // visitation with for_each() helps deal with heterogeneous data
+          /* visitation with for_each() helps deal with heterogeneous data */
           arr->for_each([&](auto&& el)
           {
               if constexpr (toml::is_string<decltype(el)>) {
@@ -44,16 +47,19 @@ namespace Zappy {
       } else {
         throw std::runtime_error("Error: languages is not defined or is not an array");
       }
-      // Check that default language is included
+      /* Check that default language is included */
       std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), default_lang);
       if (it == std::end(configs_))
         throw std::runtime_error("Error: default language is not included in the toml file");
       curr_config_ = &(*it);
     }
-    std::cout << YELLOW << "=> Booting Zappy in " << (DEBUG ? "debug" : "development") << " mode" << ENDC << std::endl;
-    std::cout << YELLOW << "=> ZappyServer version: " << GREEN << Server::VERSION << ENDC << std::endl;
-    std::cout << YELLOW << "=> Run `./Zappy --help` for more startup options" << ENDC << std::endl;
-    // Create players & spectators sockets (IPV4, TCP | man socket)
+    std::cout << YELLOW << "=> Booting Zappy in " << (DEBUG ? "debug" : "development") <<
+      " mode" << ENDC << std::endl;
+    std::cout << YELLOW << "=> ZappyServer version: " << GREEN << Server::VERSION <<
+      ENDC << std::endl;
+    std::cout << YELLOW << "=> Run `./Zappy --help` for more startup options" <<
+      ENDC << std::endl;
+    /* Create players & spectators sockets (IPV4, TCP | man socket) */
     players_socket_ = socket(AF_INET, SOCK_STREAM, 0);
     if (players_socket_ == -1) {
       throw std::runtime_error(std::string("players socket()") + std::string(strerror(errno)));
@@ -62,31 +68,34 @@ namespace Zappy {
     if (spectators_socket_ == -1) {
       throw std::runtime_error(std::string("spectators socket()") + std::string(strerror(errno)));
     }
-    // Set sockets to reusable (avoid port binding lag) (man 7 setsockopt & man 7 socket)
+    /* Set sockets to reusable (avoid port binding lag) (man 7 setsockopt & man 7 socket) */
     int enable = 1;
     if (setsockopt(players_socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1) {
       throw std::runtime_error(std::string("players setsockopt()") + std::string(strerror(errno)));
     }
     if (setsockopt(spectators_socket_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1) {
-      throw std::runtime_error(std::string("spectators setsockopt()") + std::string(strerror(errno)));
+      throw std::runtime_error(
+        std::string("spectators setsockopt()") + std::string(strerror(errno)));
     }
-    // Set socket to non blocking
+    /* Set socket to non blocking */
     setnonblocking(players_socket_);
     setnonblocking(spectators_socket_);
-    // Bind sockets, to port and 0.0.0.0 (localhost)
+    /* Bind sockets, to port and 0.0.0.0 (localhost) */
     players_sockaddr_.sin_family = AF_INET;
     players_sockaddr_.sin_port = htons(players_port_);
     players_sockaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (bind(players_socket_, (struct sockaddr *)&players_sockaddr_, sizeof(players_sockaddr_)) == -1) {
+    if (bind(players_socket_, (struct sockaddr *)&players_sockaddr_,
+      sizeof(players_sockaddr_)) == -1) {
       throw std::runtime_error(std::string("players bind()") + std::string(strerror(errno)));
     }
     spectators_sockaddr_.sin_family = AF_INET;
     spectators_sockaddr_.sin_port = htons(spectators_port_);
     spectators_sockaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (bind(spectators_socket_, (struct sockaddr *)&spectators_sockaddr_, sizeof(spectators_sockaddr_)) == -1) {
+    if (bind(spectators_socket_, (struct sockaddr *)&spectators_sockaddr_,
+      sizeof(spectators_sockaddr_)) == -1) {
       throw std::runtime_error(std::string("spectators bind()") + std::string(strerror(errno)));
     }
-    // Setup Listen sockets
+    /* Setup Listen sockets */
     if (listen(players_socket_, Server::BACKLOG) == -1) {
       throw std::runtime_error(std::string("players listen()") + std::string(strerror(errno)));
     }
@@ -96,43 +105,43 @@ namespace Zappy {
     std::cout << BLUE << "Zappy listening in single thread mode" << ENDC << std::endl;
     std::cout << BLUE << "* C++ version:\t20" << ENDC << std::endl;
     std::cout << BLUE << "* Server PID:\t" << GREEN << getpid() << ENDC << std::endl;
-    // Epoll setup
+    /* Epoll setup */
     epoll_fd_ = epoll_create1(0);
     setnonblocking(epoll_fd_);
-    // Add players socket to epoll list
+    /* Add players socket to epoll list */
     {
       struct epoll_event ev;
       ev.events = EPOLLIN | EPOLLET;
       ev.data.fd = players_socket_;
       if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, players_socket_, &ev) == -1) {
-        throw std::runtime_error(std::string("players ADD epoll_ctl()") + std::string(strerror(errno)));
+        throw std::runtime_error(std::string("epoll_ctl()") + std::string(strerror(errno)));
       }
     }
-    // Add spectators socket to epoll list
+    /* Add spectators socket to epoll list */
     {
       struct epoll_event ev;
       ev.events = EPOLLIN | EPOLLET;
       ev.data.fd = spectators_socket_;
       if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, spectators_socket_, &ev) == -1) {
-        throw std::runtime_error(std::string("spectators ADD epoll_ctl()") + std::string(strerror(errno)));
+        throw std::runtime_error(std::string("epoll_ctl()") + std::string(strerror(errno)));
       }
     }
-    // Add standard input to the epoll list
+    /* Add standard input to the epoll list */
     {
       setnonblocking(0);
       struct epoll_event ev;
       ev.events = EPOLLIN | EPOLLET;
       ev.data.fd = 0;
       if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, 0, &ev) == -1) {
-        throw std::runtime_error(std::string("std input ADD epoll_ctl()") + std::string(strerror(errno)));
+        throw std::runtime_error(std::string("epoll_ctl()") + std::string(strerror(errno)));
       }
     }
-    // Setup the timestamp
+    /* Setup the timestamp */
     {
       created_at_ms_ = gettimeofday_ms();
     }
-    std::cout << BLUE << "* Players:\thttp://localhost:" << players_port_ << ENDC << std::endl;
-    std::cout << BLUE << "* Spectators:\thttp://localhost:" << spectators_port_<< ENDC << std::endl;
+    std::cout << BLUE << "* Players:\thttp://host:" << players_port_ << ENDC << std::endl;
+    std::cout << BLUE << "* Spectators:\thttp://host:" << spectators_port_<< ENDC << std::endl;
     health_ = Running;
   }
 
@@ -151,11 +160,29 @@ namespace Zappy {
     if (DEBUG)
       std::cout << "Server" << " destroyed" << std::endl;
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const std::map<int, Client *> & Server::get_clients() const {
-    return clients_;
+  /////////////////////////////////// CONST PUBLIC METHODS ////////////////////////////////////////
+  ssize_t Server::current_timestamp() const {
+    return (gettimeofday_ms() - created_at_ms_);
   }
 
+  const std::map<int, Client *> &Server::get_clients() const {
+    return (clients_);
+  }
+
+  const Config  &Server::get_config() const {
+    return (*curr_config_);
+  } 
+
+  const std::string Server::get_creation_date() const {
+    std::string date;
+
+    date = ctime(&created_at_ms_);
+    date.pop_back();
+    return (date);
+  }
+  
   const std::vector<std::string> Server::get_list_of_supported_languages() const {
     std::vector<std::string> langs;
 
@@ -169,7 +196,7 @@ namespace Zappy {
     int total(0);
 
     for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
-      if (i->second->get_client_type() == Client::ClientType::Player)
+      if (i->second->get_client_type() == Client::ClientType::PlayerT)
         total++;
     }
     return (total);
@@ -179,58 +206,76 @@ namespace Zappy {
     int total(0);
 
     for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
-      if (i->second->get_client_type() == Client::ClientType::Spectator)
+      if (i->second->get_client_type() == Client::ClientType::SpectatorT)
         total++;
     }
     return (total);
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const Config & Server::get_config() const { return (*curr_config_); } 
+  ////////////////////////////////////// PUBLIC METHODS ///////////////////////////////////////////
+  void  Server::set_config(const std::string lang_acronym) {
+    std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
+    if (it == std::end(configs_)) {
+      std::cout << RED << "Error" << ENDC << " Couldn't change the configuration '" <<
+        lang_acronym << "' is not supported" << std::endl;
+    } else {
+      curr_config_ = &(*it);
+      if (DEBUG) {
+        std::cout << YELLOW << "[Server]\t" << GREEN << "Language [" << BLUE << lang_acronym <<
+          GREEN << "]" << ENDC << std::endl;
+      }
+    }
+  }
 
   void Server::stop_server() {
     health_ = ServerHealth::EndOfLife;
   };
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
+  ////////////////////////////////// CONST PROTECTED METHODS //////////////////////////////////////
   bool  Server::check_health(enum ServerHealth check) const {
     return (check == health_);
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  ssize_t Server::current_timestamp() const {
-    return (gettimeofday_ms() - created_at_ms_);
-  }
+  ///////////////////////////////////// PROTECTED METHODS /////////////////////////////////////////
+  /**
+   * Epoll wait non blocking
+   * Check all events (for loop)
+   *  If Event
+   *   If server socket (some socket waits to be accepted)
+   *   If stdin (some command on the server input)
+   *   If client (client sent a command or disconnected)
+   * Broadcast to all specatators the current state
+   **/
+  void Server::update() {
+    int nfds;
 
-  const std::string Server::get_creation_date() const {
-    std::string date;
-
-    date = ctime(&created_at_ms_);
-    date.pop_back();
-    return (date);
-  }
-
-  void  Server::set_config(const std::string lang_acronym) {
-    std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
-    if (it == std::end(configs_)) {
-      std::cout << RED << "Error" << ENDC << " Couldn't change the configuration '" << lang_acronym << "' is not supported" << std::endl;
-    } else {
-      curr_config_ = &(*it);
-      if (DEBUG)
-        std::cout << YELLOW << "[Server]\t" << GREEN << "Language [" << BLUE << lang_acronym << GREEN << "]" << ENDC << std::endl;
+    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0); // Change to 0 when implementing the udp bidirectionall socket
+    if (nfds == -1)
+       throw std::runtime_error(std::string("epoll_wait") + std::string(strerror(errno)));
+    for (int n = 0; n < nfds; ++n) {
+      if (is_server_socket(events_[n].data.fd)) {
+        accept_client(events_[n].data.fd);
+      } else { // must be a client (Note: could be a spectator [ignore])
+        const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
+        if (client_msg.empty())
+          continue ;
+        if (is_stdin(events_[n].data.fd))
+          handle_stdin(client_msg);
+        else if (is_client(events_[n].data.fd))
+          handle_client(events_[n].data.fd, client_msg);
+      }
+    }
+    /* Update all clients */
+    for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
+      i->second->update();
     }
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  bool Server::is_server_socket(int fd) {
-    return (players_socket_ == fd || spectators_socket_ == fd);
-  }
-
-  bool  Server::is_stdin(int fd) {
-    return (fd == 0);
-  }
-
-
-  bool  Server::is_client(int fd) {
-    return (clients_.find(fd) != clients_.end());
-  }
-
+  ////////////////////////////////////// PRIVATE METHODS //////////////////////////////////////////
   /**
    * Accept a client
    * 
@@ -253,10 +298,11 @@ namespace Zappy {
     fd = accept(socket, (struct sockaddr *)&addr, &addrlen);
     if (fd == -1)
       throw std::runtime_error(std::string("accept():") + std::string(strerror(errno)));
-    if (DEBUG)
-      std::cout << GREEN << "Accepted client (" << BLUE << (socket == players_socket_ ? "Player" : "Spectator") <<  GREEN <<")" << ENDC << std::endl; 
+    if (DEBUG) {
+      std::cout << GREEN << "Accepted client (" << BLUE <<
+        (socket == players_socket_ ? "Player" : "Spectator") <<  GREEN <<")" << ENDC << std::endl;
+    }
     setnonblocking(fd);
-    // Add fd to epoll list
     ev.events = EPOLLIN | EPOLLET;
     ev.data.fd = fd;
     if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) == -1) {
@@ -270,21 +316,34 @@ namespace Zappy {
     if (DEBUG)
       std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl;
     if (players_socket_ == socket) {
-      clients_.insert(std::pair<int, Client *>(fd, new Player(fd)));
+      clients_.insert(std::pair<int, Client *>(fd, new Client(fd, Client::ClientType::PlayerT)));
     } else if (spectators_socket_ == socket) {
       clients_.insert(std::pair<int, Client *>(fd, new Spectator(fd)));
       // spectators_.push_back(fd);
     }
   }
 
-  void  Server::remove_client(int fd) {
-    if (DEBUG)
-      std::cout << YELLOW << "[Server]\t" << RED << "remove\t" << ENDC << fd << std::endl; 
-    if (is_client(fd)) {
-      delete clients_.at(fd);
-      clients_.erase(fd);
+  void  Server::handle_client(int fd, const std::string & cmd) {
+    Client * client;
+
+    // client = dynamic_cast<Player *>(clients_.at(fd));
+    // if (client)
+    //   std::cout << "Im a client" << std::endl;
+    // client = dynamic_cast<Spectator *>(clients_.at(fd));
+    // if (client)
+    //   std::cout << "Im a Spectator" << std::endl;
+    client = clients_.at(fd);
+    ClientCommand *c = ClientCommand::parse_command(trantor_, client, cmd);
+    if (DEBUG) {
+      std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC << ":" << YELLOW <<
+        (c->is_valid() ? "valid" : "invalid") << " | " << GREEN << "recv" << ENDC << ":" << BLUE <<
+        cmd.length() << ENDC << "bytes" << std::endl;
     }
-    close(fd);
+    if (c->is_valid()) {
+      client->queue_cmd(c);
+    } else {
+      client->broadcast(c->cmd_error());
+    }
   }
 
   const std::string Server::handle_client_input_or_disconnect(int fd) {
@@ -321,8 +380,10 @@ namespace Zappy {
   void  Server::handle_stdin(const std::string & cmd) {
     Command * c = Command::parse_server_command(cmd, this);
 
-    if (DEBUG)
-      std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
+    if (DEBUG) {
+      std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW <<
+        (c->is_valid() ? "valid" : "invalid") << ENDC << std::endl;
+    }
     if (c->is_valid())
       c->execute();
     else
@@ -332,76 +393,28 @@ namespace Zappy {
       write(1, "$> ", 3);
   }
   
-  void  Server::handle_client(int fd, const std::string & cmd) {
-    Client * client;
+  bool  Server::is_client(int fd) {
+    return (clients_.find(fd) != clients_.end());
+  }
 
-    // client = dynamic_cast<Player *>(clients_.at(fd));
-    // if (client)
-    //   std::cout << "Im a client" << std::endl;
-    // client = dynamic_cast<Spectator *>(clients_.at(fd));
-    // if (client)
-    //   std::cout << "Im a Spectator" << std::endl;
-    client = clients_.at(fd);
-    ClientCommand *c = ClientCommand::parse_command(trantor_, client, cmd);
+  bool Server::is_server_socket(int fd) {
+    return (players_socket_ == fd || spectators_socket_ == fd);
+  }
+
+  bool  Server::is_stdin(int fd) {
+    return (fd == 0);
+  }
+
+  void  Server::remove_client(int fd) {
     if (DEBUG)
-      std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC << ":" << YELLOW << (c->is_valid() ? "valid" : "invalid") << " | " << GREEN << "recv" << ENDC << ":" << BLUE << cmd.length() << ENDC << "bytes" << std::endl;
-    if (c->is_valid()) {
-      client->queue_cmd(c);
-    } else {
-      client->broadcast(c->cmd_error());
+      std::cout << YELLOW << "[Server]\t" << RED << "remove\t" << ENDC << fd << std::endl;
+    if (is_client(fd)) {
+      delete clients_.at(fd);
+      clients_.erase(fd);
     }
+    close(fd);
   }
-
-  // Epoll wait non blocking
-  // Check all events (for loop)
-  //  If Event
-  //   If server socket (some socket waits to be accepted)
-  //   If stdin (some command on the server input)
-  //   If client (client sent a command or disconnected)
-  // Broadcast to all specatators the current state
-  void Server::update() {
-    int nfds;
-
-    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0); // Change to 0 when implementing the udp bidirectionall socket
-    if (nfds == -1)
-       throw std::runtime_error(std::string("epoll_wait") + std::string(strerror(errno)));
-    for (int n = 0; n < nfds; ++n) {
-      if (is_server_socket(events_[n].data.fd)) {
-        accept_client(events_[n].data.fd);
-      } else { // must be a client (Note: could be a spectator [ignore])
-        const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
-        if (client_msg.empty())
-          continue ;
-        if (is_stdin(events_[n].data.fd))
-          handle_stdin(client_msg);
-        else if (is_client(events_[n].data.fd))
-          handle_client(events_[n].data.fd, client_msg);
-      }
-    }
-    // Update all clients
-    for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
-      i->second->update();
-    }
-    // Update all viewers 
-    // Testing Spectators send
-    // Server will send to spectator the game status at a given rate/s
-    // for (std::map<int, Client *>::iterator it = clients_.begin(); it != clients_.end(); ++it) {
-    //   std::ostringstream ss;
-
-    //   if (it->second->get_client_type() != Client::ClientType::Spectator)
-    //     continue ;
-    //   ss << "\033[H\033[2J\n";
-    //   ss << GREEN << "Zappy v" << BLUE << Server::VERSION << ENDC
-    //     << " - [" << BLUE << get_creation_date() << ENDC << "]" << std::endl;
-    //   ss << " * " << curr_config_->get("total_players") << ":" << BLUE << total_players() << ENDC << std::endl;
-    //   ss << " * " << curr_config_->get("total_spectators") << ":" << BLUE << total_spectators() << ENDC << std::endl;
-    //   ss << " * " << curr_config_->get("server_life") << ":" << BLUE << current_timestamp() << ENDC << "ms" << std::endl;
-    //   it->second->broadcast(ss.str());
-    // }
-    // Check clients list
-    // Remove any broken client
-  }
-
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   std::ostream& operator<<(std::ostream& s, const Server& param) {
     // s << param.CONST_METHOD()

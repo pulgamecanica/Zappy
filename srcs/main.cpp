@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
      * -f <path> --toml-file=<path>                 // default conf.toml
      * -P        --players-port=0000                // default 4242
      * -S        --viewers-port=0000                // default 2121
+     * -x <width>
+     * -y <height>
     **/
     int opt;
     std::string lang("en");
@@ -74,7 +76,7 @@ int main(int argc, char *argv[])
     int players_port(4242);
     int spectators_port(2121);
     int default_time(100);
-    int x(-1), y(-1);
+    int w(-1), h(-1), num_players(-1);
 
 
     /* The "-l" option specifies the default language. */
@@ -83,7 +85,7 @@ int main(int argc, char *argv[])
     /* The "-S" sets the Spectators port. */
     setup_signals();
     try {
-        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:")) != -1) {
+        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:c:h")) != -1) {
             switch (opt) {
             case 'l':
                 lang.assign(optarg);
@@ -101,22 +103,32 @@ int main(int argc, char *argv[])
                 default_time = std::stoi(optarg);
                 break;
             case 'x':
-                x = std::stoi(optarg);
-                if (x < 1)
+                w = std::stoi(optarg);
+                if (w < 1)
                     throw std::runtime_error("width < 1");
                 break;
             case 'y':
-                y = std::stoi(optarg);
-                if (y < 1)
+                h = std::stoi(optarg);
+                if (h < 1)
                     throw std::runtime_error("height < 1");
+                break;
+            case 'c':
+                num_players = std::stoi(optarg);
+                if (num_players < 1)
+                    throw std::runtime_error("num_players < 1");
                 break;
             case 'h':
                 std::cout << "Help" << std::endl;
                 // print_help();
                 return (0);
             default:
+                    // -n team\_name\_1 team\_name\_2 ...
+// -c number of clients authorized at the beginning of the game
                fprintf(stderr, "" \
                     "Usage: %s -x <width> -y <height> [-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>]\n" \
+                    "\t -x <width> world width\n" \
+                    "\t -y <height> world height\n" \
+                    "\t -c number of clients authorized per team at the beginning of the game\n" \
                     "\t -t time unit divider (the greater t is, the faster the game will go, default 100)\n" \
                     "\t -f configuration file for server messages (default conf.toml)\n" \
                     "\t -l default language for the server (default en)\n" \
@@ -133,12 +145,19 @@ int main(int argc, char *argv[])
             << ENDC << ")" << std::endl;
         return (1);
     }
-
-    // (void)x;
-    // (void)y;
-    // GameEngine throw runtime_exception on x or y negative or == 0
+    if (w == -1 || h == -1) {
+        std::cerr << RED << "Error:" << ENDC <<" [-x, -y] Width & Height must be provided" <<
+            std::endl << "./Zappy -h for more information" << std::endl;
+        return (1);
+    }
+    if (num_players == -1) {
+        std::cerr << RED << "Error:" << ENDC <<" [-c] # Clients must be provided " <<
+            std::endl << "./Zappy -h for more information" << std::endl;
+        return (1);
+    }
     try {
-        Zappy::GameEngine trantor(default_time, file_name, lang, players_port, spectators_port);
+        Zappy::GameEngine trantor(default_time, file_name, lang, players_port, spectators_port,
+            {w, h}, num_players);
         trantor.start(&g_stop_sig);
         // Zappy::Server s;
     } catch (const toml::parse_error& err) {
