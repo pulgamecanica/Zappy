@@ -7,18 +7,20 @@ extern "C" {
 }
 
 #include "Zappy.inc"
-
 #include "GameEngine.hpp"
+#include "Team.hpp"
 
 namespace Zappy {
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
-  GameEngine::GameEngine(int default_time, std::string toml_file, std::string default_lang,
-    int players_port, int spectators_port, Point p, int num_players, int timeout):
+  GameEngine::GameEngine(std::vector<std::string> teams, int default_time, std::string toml_file, std::string default_lang,
+    int players_port, int spectators_port, Point map_size, int num_players, int timeout):
       Server(this, toml_file, default_lang, players_port, spectators_port, timeout),
-      current_frame_(0), map_size_(p), t_(default_time) {
-    (void)num_players;
+      Map(map_size), current_frame_(0), t_(default_time) {
     set_game_delay();
     updated_at_ms_ = created_at_ms_;
+    for (std::vector<std::string>::iterator i = teams.begin(); i != teams.end(); ++i) {
+      teams_.emplace_back(*i, num_players);
+    }
   }
 
   GameEngine::~GameEngine() {
@@ -28,8 +30,8 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////// CONST PUBLIC METHODS ////////////////////////////////////////
-  const Point & GameEngine::get_map_size() const {
-    return (map_size_);
+  Point GameEngine::get_map_size() const {
+    return (Map::get_map_size());
   }
 
   bool  GameEngine::is_team_valid(const std::string & team) const {

@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Server.hpp"
+#include "Map.hpp"
 #include "Geometry/Point.hpp"
 
 /**
@@ -20,17 +21,19 @@
  *    Therefore each frame is 10 miliseconds, and so frame_delay is this defined
  **/
 namespace Zappy {
-  class GameEngine: public virtual Server {
+  class Team;
+  
+  class GameEngine: public Server, public Map {
     public:
       // CONSTRUCTORS & DESTRUCTORS //
-      GameEngine(int default_time = 100, std::string toml_file = "conf.toml",
+      GameEngine(std::vector<std::string> teams , int default_time = 100, std::string toml_file = "conf.toml",
         std::string default_lang = "en", int players_port = 4242, int spectators_port = 2121,
-        Point p = {10, 10}, int num_players = 1, int timeout = 60000);
+        Point map_size = {10, 10}, int num_players = 1, int timeout = 60000);
       GameEngine(const GameEngine&) = delete;
       GameEngine& operator=(const GameEngine&) = delete;
       ~GameEngine();
       // CONST PUBLIC METHODS //
-      const Point   &get_map_size() const;
+      Point         get_map_size() const;
       bool          is_team_valid(const std::string & team) const;
       // PUBLIC METHODS //
       unsigned int  frame();
@@ -42,12 +45,12 @@ namespace Zappy {
       void          update();
       void          update_time();
       // PRIVATE MEMBERS //
-      unsigned int  current_frame_;
-      int           frame_delay_; // in miliseconds, based on t_ ; see Note above
-      Point         map_size_;
-      int           *sig_;
-      int           t_; // t = fps, it's the time basically 
-      ssize_t       updated_at_ms_;
+      unsigned int      current_frame_;
+      int               frame_delay_; // in miliseconds, based on t_ ; see Note above
+      int               *sig_;
+      int               t_; // t = fps, it's the time basically 
+      std::vector<Team> teams_;
+      ssize_t           updated_at_ms_;
   };
 
   std::ostream& operator<<(std::ostream&, const GameEngine&);

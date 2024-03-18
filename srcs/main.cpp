@@ -24,7 +24,7 @@ static void sighandler(int signal) {
 
 static void setup_signals() {
     struct sigaction sigIntHandler;
-    // SETUP SIGNALE
+    // SETUP SIGNALS
     sigIntHandler.sa_handler = sighandler;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
@@ -63,12 +63,15 @@ int main(int argc, char *argv[])
     srand (time(NULL));
     /**
      * Params:
-     * -l <name> --default-language=<name>  // default en
-     * -f <path> --toml-file=<path>                 // default conf.toml
-     * -P        --players-port=0000                // default 4242
-     * -S        --viewers-port=0000                // default 2121
      * -x <width>
      * -y <height>
+     * -c <clients> --clients-per-team
+     * [-t]         --time-divider-unit         // default 100
+     * [-l <name>]  --default-language=<name>   // default "en"
+     * [-f <path>]  --toml-file=<path>          // default "conf.toml"
+     * [-P]         --players-port=0000         // default 4242
+     * [-S]         --spectators-port=0000      // default 2121
+     * [-T]         --connection-timeout        // default 60000ms<=>60s<=>1min
     **/
     int opt;
     std::string lang("en");
@@ -77,15 +80,11 @@ int main(int argc, char *argv[])
     int spectators_port(2121);
     int default_time(100);
     int w(-1), h(-1), num_players(-1), timeout(60000);
+    std::vector<std::string> teams;
 
-
-    /* The "-l" option specifies the default language. */
-    /* The "-f" modifies default file `conf.toml`. */
-    /* The "-P" sets the Players port. */
-    /* The "-S" sets the Spectators port. */
     setup_signals();
     try {
-        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:c:T:h")) != -1) {
+        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:c:T:hn")) != -1) {
             switch (opt) {
             case 'l':
                 lang.assign(optarg);
@@ -126,20 +125,31 @@ int main(int argc, char *argv[])
                 std::cout << "Help" << std::endl;
                 // print_help();
                 return (0);
+            case 'n':                
+                for (int i = optind; i < argc; ++i) {
+                    std::string team(argv[i]);
+
+                    if (team.empty() || team.starts_with('-'))
+                        break ;
+                    if (DEBUG)
+                        std::cout << YELLOW << "[Server]\t" << GREEN << "add team:" << BLUE << team << ENDC << std::endl;
+                    teams.push_back(team);
+                }
+                break;
             default:
-                    // -n team\_name\_1 team\_name\_2 ...
-// -c number of clients authorized at the beginning of the game
+                // -n team\_name\_1 team\_name\_2 ...
                fprintf(stderr, "" \
-                    "Usage: %s -x <width> -y <height> [-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>]\n" \
+                    "Usage: %s -x <width> -y <height> -c <# clients> -n team <team2> ... [-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>]\n" \
                     "\t -x <width> world width\n" \
                     "\t -y <height> world height\n" \
-                    "\t -c <clients> number of clients authorized per team at the beginning of the game\n" \
-                    "\t -t <ms> time unit divider (the greater t is, the faster the game will go, default 100)\n" \
-                    "\t -T <ms> connection timeout for the players (disconnect if not joined a room after <ms>\n" \
-                    "\t -f configuration file for server messages (default conf.toml)\n" \
-                    "\t -l default language for the server (default en)\n" \
-                    "\t -p port for the players (default 4242)\n" \
-                    "\t -S port for the spectators (default 2121)\n",
+                    "\t -c <# clients> number of clients authorized per team at the beginning of the game\n" \
+                    "\t -n team [<team2>] ... teams\n" \
+                    "\t [-t <ms>] time unit divider (the greater t is, the faster the game will go, default 100)\n" \
+                    "\t [-T <ms>] connection timeout for the players (disconnect if not joined a room after <ms> default 1 minute)\n" \
+                    "\t [-f configuration file] for server messages (default conf.toml)\n" \
+                    "\t [-l acronym] default language for the server (default en)\n" \
+                    "\t [-P] port for the players (default 4242)\n" \
+                    "\t [-S] port for the spectators (default 2121)\n",
                        argv[0]);
                exit(EXIT_FAILURE);
             }
@@ -161,8 +171,13 @@ int main(int argc, char *argv[])
             std::endl << "./Zappy -h for more information" << std::endl;
         return (1);
     }
+    if (teams.empty()) {
+        std::cerr << RED << "Error:" << ENDC <<" [-n team <team2> ...] Server must have at least one team" <<
+            std::endl << "./Zappy -h for more information" << std::endl;
+        return (1);
+    }
     try {
-        Zappy::GameEngine trantor(default_time, file_name, lang, players_port, spectators_port,
+        Zappy::GameEngine trantor(teams, default_time, file_name, lang, players_port, spectators_port,
             {w, h}, num_players, timeout);
         trantor.start(&g_stop_sig);
         // Zappy::Server s;

@@ -15,6 +15,7 @@
 namespace Zappy {
   
   class Client;
+  class Team;
 
   class Player {//: public Client {
     public:
@@ -24,7 +25,7 @@ namespace Zappy {
         Dead,
         Error
       };
-      Player(/*int fd*/);
+      Player(Team& team);
       Player(const Player&) = default;
       ~Player();
       Player&           operator= (const Player&) = delete; // const for safety... not super nesessary
@@ -37,6 +38,7 @@ namespace Zappy {
       Direction         direction_;
       Point             position_;
       enum PlayerStatus status_;
+      Team&             team_;
       // struct timeval created_at_;
       // Team
       // ETC...

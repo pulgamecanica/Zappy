@@ -254,7 +254,7 @@ namespace Zappy {
   void  Server::update() {
     int nfds;
 
-    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, connection_timeout_); // Change to 0 when implementing the udp bidirectionall socket
+    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0); // Change to 0 when implementing the udp bidirectionall socket
     if (nfds == -1)
        throw std::runtime_error(std::string("epoll_wait") + std::string(strerror(errno)));
     for (int n = 0; n < nfds; ++n) {

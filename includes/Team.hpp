@@ -8,18 +8,21 @@
 #include <iostream>
 #include <vector>
 
-#include "Player.hpp"
-
 namespace Zappy {
+	class Player;
+
 	class Team {
 		public:
-			Team(const std::string name);
-			Team(const Team&) = default;
+			Team(std::string name, int slots);
+			Team(const Team&);
 			~Team();
 			Team&	operator= (const Team&) = default; // const for safety... not super nesessary
+      // bool	operator==(const std::string&) const; // Needed in order to use find with a string
+			const std::string& get_name() const;
 		private:
-			const std::string name_;
-			// std::vector<Player > players;
+			std::string 	name_;
+			std::vector<Player>	players_;
+			int 								slots_;
 	};
 
 	std::ostream&	operator<<(std::ostream&, const Team&);

@@ -10,15 +10,14 @@ extern "C" {
 
 #include "Zappy.inc"
 #include "Player.hpp"
+#include "Team.hpp"
 
 namespace Zappy {
 
-  Player::Player(/*int fd*/):
-    /*Client(fd, ClientType::Player), */direction_(Direction::get_random()), position_(rand() % 10, rand() % 10), status_(Player::PlayerStatus::Waiting) {
-    // std::string welcome_msg = "Hello, Welcome player\nJoined at: ";
-
-    // welcome_msg.append(ctime(&created_at_ms_));
-    // broadcast(welcome_msg.c_str());
+  Player::Player(Team & team):
+    direction_(Direction::get_random()), position_(rand() % 10, rand() % 10), status_(Player::PlayerStatus::Waiting), team_(team) {
+    if (DEBUG)
+      std::cout << BLUE << "Player spawn {" << RED << team << BLUE <<"}: " << position_ << ENDC << "[" << BLUE << direction_.get_name() << ENDC << "]" << std::endl;
   }
 
   bool Player::advance() {
