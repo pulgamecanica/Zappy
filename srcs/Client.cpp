@@ -29,7 +29,7 @@ namespace Zappy {
     return (gettimeofday_ms() - created_at_ms_);
   }
 
-  bool  Client::joined() const { return (true/*player_ == nullptr*/); }
+  bool  Client::joined() const { return (player_ != nullptr); }
 
 
   void Client::broadcast(std::string msg) {

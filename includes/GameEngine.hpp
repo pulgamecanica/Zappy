@@ -25,7 +25,7 @@ namespace Zappy {
       // CONSTRUCTORS & DESTRUCTORS //
       GameEngine(int default_time = 100, std::string toml_file = "conf.toml",
         std::string default_lang = "en", int players_port = 4242, int spectators_port = 2121,
-        Point p = {10, 10}, int num_players = 1);
+        Point p = {10, 10}, int num_players = 1, int timeout = 60000);
       GameEngine(const GameEngine&) = delete;
       GameEngine& operator=(const GameEngine&) = delete;
       ~GameEngine();

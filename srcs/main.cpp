@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     int players_port(4242);
     int spectators_port(2121);
     int default_time(100);
-    int w(-1), h(-1), num_players(-1);
+    int w(-1), h(-1), num_players(-1), timeout(60000);
 
 
     /* The "-l" option specifies the default language. */
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     /* The "-S" sets the Spectators port. */
     setup_signals();
     try {
-        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:c:h")) != -1) {
+        while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:c:T:h")) != -1) {
             switch (opt) {
             case 'l':
                 lang.assign(optarg);
@@ -117,6 +117,11 @@ int main(int argc, char *argv[])
                 if (num_players < 1)
                     throw std::runtime_error("num_players < 1");
                 break;
+            case 'T':
+                timeout = std::stoi(optarg);
+                if (timeout < 1000)
+                    throw std::runtime_error("timeout < 1000");
+                break;
             case 'h':
                 std::cout << "Help" << std::endl;
                 // print_help();
@@ -128,8 +133,9 @@ int main(int argc, char *argv[])
                     "Usage: %s -x <width> -y <height> [-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>]\n" \
                     "\t -x <width> world width\n" \
                     "\t -y <height> world height\n" \
-                    "\t -c number of clients authorized per team at the beginning of the game\n" \
-                    "\t -t time unit divider (the greater t is, the faster the game will go, default 100)\n" \
+                    "\t -c <clients> number of clients authorized per team at the beginning of the game\n" \
+                    "\t -t <ms> time unit divider (the greater t is, the faster the game will go, default 100)\n" \
+                    "\t -T <ms> connection timeout for the players (disconnect if not joined a room after <ms>\n" \
                     "\t -f configuration file for server messages (default conf.toml)\n" \
                     "\t -l default language for the server (default en)\n" \
                     "\t -p port for the players (default 4242)\n" \
@@ -157,7 +163,7 @@ int main(int argc, char *argv[])
     }
     try {
         Zappy::GameEngine trantor(default_time, file_name, lang, players_port, spectators_port,
-            {w, h}, num_players);
+            {w, h}, num_players, timeout);
         trantor.start(&g_stop_sig);
         // Zappy::Server s;
     } catch (const toml::parse_error& err) {
