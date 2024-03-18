@@ -35,12 +35,7 @@ namespace Zappy {
       Direction&          operator--(void);
       Direction           operator--(int);
     private:
-      static constexpr const std::string DIRECTIONS_STR[4] = {
-        "North",
-        "East",
-        "South",
-        "West"
-      };
+      static const std::string DIRECTIONS_STR[4];
       enum Orientation o_;
   };
 

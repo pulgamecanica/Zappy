@@ -22,6 +22,7 @@ extern "C" {
 #include "Client.hpp"
 
 namespace Zappy {
+  const std::string  Server::VERSION = "42.0";
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
   Server::Server(GameEngine *trantor, std::string toml_file, std::string default_lang,
     int players_port, int spectators_port): players_port_(players_port),

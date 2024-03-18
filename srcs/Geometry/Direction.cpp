@@ -5,6 +5,12 @@
 #include "Geometry/Direction.hpp"
 
 namespace Zappy {
+  const std::string Direction::DIRECTIONS_STR[4] = {
+    "North",
+    "East",
+    "South",
+    "West"
+  };
 
   Point Direction::get_orientation_vec(enum Orientation o) {
     switch (o) {

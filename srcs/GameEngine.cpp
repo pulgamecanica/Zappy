@@ -2,6 +2,10 @@
 //*Template by pulgamecanica*//
 //***************************//
 
+extern "C" {
+  #include <unistd.h>
+}
+
 #include "Zappy.inc"
 
 #include "GameEngine.hpp"

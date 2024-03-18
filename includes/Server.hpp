@@ -28,7 +28,7 @@ namespace Zappy {
       Server(GameEngine *trantor, std::string toml_file, std::string default_lang,
         int players_port, int spectators_port);
     public:
-      static constexpr std::string  VERSION = "42.0";
+      static const std::string  VERSION;
       enum ServerHealth
       {
         Booting,
