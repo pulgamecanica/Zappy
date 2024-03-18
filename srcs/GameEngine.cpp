@@ -9,8 +9,8 @@
 namespace Zappy {
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
   GameEngine::GameEngine(int default_time, std::string toml_file, std::string default_lang,
-    int players_port, int spectators_port, Point p, int num_players):
-      Server(this, toml_file, default_lang, players_port, spectators_port),
+    int players_port, int spectators_port, Point p, int num_players, int timeout):
+      Server(this, toml_file, default_lang, players_port, spectators_port, timeout),
       current_frame_(0), map_size_(p), t_(default_time) {
     (void)num_players;
     set_game_delay();

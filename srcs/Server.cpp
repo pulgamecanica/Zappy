@@ -24,8 +24,9 @@ extern "C" {
 namespace Zappy {
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
   Server::Server(GameEngine *trantor, std::string toml_file, std::string default_lang,
-    int players_port, int spectators_port): players_port_(players_port),
-      spectators_port_(spectators_port), health_(Booting), trantor_(trantor) {
+    int players_port, int spectators_port, int timeout): connection_timeout_(timeout), 
+      players_port_(players_port), spectators_port_(spectators_port), health_(Booting),
+      trantor_(trantor) {
     /* Setup TOML configuration file */
     {
       toml::table tbl = toml::parse_file(toml_file);
@@ -171,7 +172,7 @@ namespace Zappy {
     return (clients_);
   }
 
-  const Config  &Server::get_config() const {
+  const Config& Server::get_config() const {
     return (*curr_config_);
   } 
 
@@ -183,7 +184,7 @@ namespace Zappy {
     return (date);
   }
   
-  const std::vector<std::string> Server::get_list_of_supported_languages() const {
+  const std::vector<std::string>  Server::get_list_of_supported_languages() const {
     std::vector<std::string> langs;
 
     for (std::vector<Config>::const_iterator it = configs_.begin(); it != configs_.end(); ++it) {
@@ -228,7 +229,7 @@ namespace Zappy {
     }
   }
 
-  void Server::stop_server() {
+  void  Server::stop_server() {
     health_ = ServerHealth::EndOfLife;
   };
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,10 +250,10 @@ namespace Zappy {
    *   If client (client sent a command or disconnected)
    * Broadcast to all specatators the current state
    **/
-  void Server::update() {
+  void  Server::update() {
     int nfds;
 
-    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0); // Change to 0 when implementing the udp bidirectionall socket
+    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, connection_timeout_); // Change to 0 when implementing the udp bidirectionall socket
     if (nfds == -1)
        throw std::runtime_error(std::string("epoll_wait") + std::string(strerror(errno)));
     for (int n = 0; n < nfds; ++n) {
@@ -271,7 +272,17 @@ namespace Zappy {
     /* Update all clients */
     for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
       i->second->update();
+      /* Remove innactive players */
+      if (i->second->get_client_type() == Client::ClientType::PlayerT && !i->second->joined() &&
+        i->second->uptime() >= connection_timeout_)
+        remove_client(i->first);
     }
+    /* Make sure to remove all players which are in the list of to be removed */
+    for (std::vector<int>::const_iterator i = clients_to_remove_.begin();
+      i != clients_to_remove_.end(); ++i) {
+      remove_client_immediately(*i);
+    }
+    clients_to_remove_.clear();
   }
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -312,14 +323,13 @@ namespace Zappy {
     return fd;
   }
 
-  void Server::add_client(int socket, int fd) {
+  void  Server::add_client(int socket, int fd) {
     if (DEBUG)
       std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl;
     if (players_socket_ == socket) {
       clients_.insert(std::pair<int, Client *>(fd, new Client(fd, Client::ClientType::PlayerT)));
     } else if (spectators_socket_ == socket) {
       clients_.insert(std::pair<int, Client *>(fd, new Spectator(fd)));
-      // spectators_.push_back(fd);
     }
   }
 
@@ -397,7 +407,7 @@ namespace Zappy {
     return (clients_.find(fd) != clients_.end());
   }
 
-  bool Server::is_server_socket(int fd) {
+  bool  Server::is_server_socket(int fd) {
     return (players_socket_ == fd || spectators_socket_ == fd);
   }
 
@@ -406,6 +416,10 @@ namespace Zappy {
   }
 
   void  Server::remove_client(int fd) {
+    clients_to_remove_.push_back(fd);
+  }
+
+  void  Server::remove_client_immediately(int fd) {
     if (DEBUG)
       std::cout << YELLOW << "[Server]\t" << RED << "remove\t" << ENDC << fd << std::endl;
     if (is_client(fd)) {

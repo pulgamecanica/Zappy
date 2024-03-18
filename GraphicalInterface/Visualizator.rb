@@ -13,8 +13,13 @@ set width: WIDTH, height: HEIGHT
 set background: "navy"
 set fps_cap: 32
 
+def max(a, b)
+  return (a > b ? a : b)
+end
+
 class Vizualisator
   attr_accessor :top_left, :show_grid, :show_ruler, :tile_size
+  attr_reader :map
 
   def initialize
     @top_left = Point.new(0, 0)
@@ -166,7 +171,7 @@ on :key_held do |event|
   if ['keypad +', 'keypad -'].include?(event.key)
     case event.key
     when 'keypad +' then trantor.tile_size += 1 unless trantor.tile_size >= 256 or trantor.tile_size >= 256 / 4
-    when 'keypad -' then trantor.tile_size -= 1 unless trantor.tile_size <= 8
+    when 'keypad -' then trantor.tile_size -= 1 unless (trantor.tile_size * max(trantor.map.width, trantor.map.height)) < max(WIDTH, HEIGHT)
     end 
   end
 end

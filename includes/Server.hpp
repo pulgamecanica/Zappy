@@ -26,7 +26,7 @@ namespace Zappy {
     protected:
       // PROTECTED CONSTRUCTOR //
       Server(GameEngine *trantor, std::string toml_file, std::string default_lang,
-        int players_port, int spectators_port);
+        int players_port, int spectators_port, int timeout);
     public:
       static constexpr std::string  VERSION = "42.0";
       enum ServerHealth
@@ -41,7 +41,7 @@ namespace Zappy {
       Server&                         operator= (const Server&) = delete;
       // CONST PUBLIC METHODS //
       ssize_t                         current_timestamp() const;
-      const std::map<int, Client *> & get_clients() const;
+      const std::map<int, Client *>   &get_clients() const;
       const Config &                  get_config() const; 
       const std::string               get_creation_date() const;
       const std::vector<std::string>  get_list_of_supported_languages() const;
@@ -72,10 +72,11 @@ namespace Zappy {
       bool              is_server_socket(int fd);
       bool              is_stdin(int fd);
       void              remove_client(int fd);
+      void              remove_client_immediately(int fd);
       // PRIVATE CONST MEMBERS //
+      const int connection_timeout_; // Players will time out after X miliseconds, spectators never timeout
       const int players_port_;
       const int spectators_port_;
-      // const int              connection_timeout_; // Players will time out after X seconds, spectators never timeout
       // PRIVATE MEMBERS //
       std::map<int, Client *> clients_;
       std::vector<Config>     configs_;
@@ -88,6 +89,7 @@ namespace Zappy {
       GameEngine              *trantor_;
       sockaddr_in             spectators_sockaddr_; // `man 7 ip` to see sockaddr_in struct
       int                     spectators_socket_;
+      std::vector<int>        clients_to_remove_;
   };
   std::ostream& operator<<(std::ostream&, const Server&);
 }
