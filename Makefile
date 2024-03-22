@@ -20,6 +20,7 @@ SRC += srcs/Commands/HelpServer.cpp \
   srcs/Commands/MapSize.cpp \
   srcs/Commands/Join.cpp \
   srcs/Commands/BlockContentTile.cpp \
+  srcs/Commands/MapContentTile.cpp \
 
 # Add The Geometry srcs
 SRC += srcs/Geometry/Point.cpp \

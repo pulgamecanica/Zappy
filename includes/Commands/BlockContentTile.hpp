@@ -14,7 +14,7 @@
 namespace Zappy {
 	class BlockContentTile: public ClientCommand {
 		public:
-			BlockContentTile(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options);
+			BlockContentTile(GameEngine *trantor, Spectator& spectator, std::vector<std::string>& options);
 			BlockContentTile(const BlockContentTile&) = default;
 			~BlockContentTile();
 			BlockContentTile&	operator= (const BlockContentTile&) = default; // const for safety... not super nesessary

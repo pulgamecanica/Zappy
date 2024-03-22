@@ -17,7 +17,6 @@ namespace Zappy {
   Point::~Point() {}
 
   Point::operator std::string() const {
-    
     return std::string(std::to_string(x()) + " " + std::to_string(y()));
   }
 

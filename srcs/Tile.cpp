@@ -2,6 +2,10 @@
 //*Template by pulgamecanica*//
 //***************************//
 
+extern "C" {
+	#include <math.h>
+}
+
 #include "Zappy.inc"
 
 #include "Tile.hpp"
@@ -18,15 +22,17 @@ namespace Zappy {
 
 
 	Tile::Tile(int i, int width): pos_(index_to_point(i, width)) {
-		std::cout << "Tile [" << BLUE << pos_ << ENDC << "]" << " Index: " << BLUE << i << ENDC << std::endl;
-		items_.push_back(1);
-		items_.push_back(2);
+		// std::cout << "Tile [" << BLUE << pos_ << ENDC << "]" << " Index: " << BLUE << i << ENDC << std::endl;
+		for (int i = 0; i < rand() % 10; ++i) {
+			items_.push_back(i);
+		}
 	}
 
 	Tile::Tile(const Point& pos): pos_(pos) {
-		std::cout << "Constructed Point from (pos) [" << pos_ << "]" << std::endl;
-		items_.push_back(1);
-		items_.push_back(2);
+		// std::cout << "Constructed Tile from (pos) [" << pos_ << "]" << std::endl;
+		for (int i = 0; i < rand() % 10; ++i) {
+			items_.push_back(i);
+		}
 	}
 
 	// Tile::Tile(const Tile& param) {
@@ -110,6 +116,10 @@ namespace Zappy {
 	
 	const Point & Tile::get_pos() const {
 		return (pos_);
+	}
+
+	Tile::operator std::string() const {
+    return std::string(pos_) + ":" + std::to_string(items_.size());
 	}
 
 	std::ostream& operator<<(std::ostream& s, const Tile& tile) {

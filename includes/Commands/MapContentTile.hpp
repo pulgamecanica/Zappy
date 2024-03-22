@@ -7,15 +7,25 @@
 
 #include <iostream>
 
-class MapContentTile {
-	public:
-		MapContentTile();
-		MapContentTile(const MapContentTile&);
-		~MapContentTile();
-		MapContentTile&	operator= (const MapContentTile&); // const for safety... not super nesessary
-};
+#include "Spectator.hpp"
+#include "ClientCommand.hpp"
 
-std::ostream&	operator<<(std::ostream&, const MapContentTile&);
+namespace Zappy {
+	class MapContentTile: public ClientCommand {
+		public:
+			MapContentTile(GameEngine *trantor, Spectator& spectator);
+			MapContentTile(const MapContentTile&) = default;
+			~MapContentTile();
+			MapContentTile&	operator= (const MapContentTile&) = default;
+			bool  is_valid() const;
+	    void  execute();
+			const std::string cmd_error() const;
+		private:
+			Spectator & spectator_;
+	};
+
+	std::ostream&	operator<<(std::ostream&, const MapContentTile&);
+}
 
 #endif
 

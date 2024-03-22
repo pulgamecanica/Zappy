@@ -76,8 +76,12 @@ namespace Zappy {
     if (!cmd_queue_.front()->was_executed()) {
       if (DEBUG)
         std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " exec" << ENDC << ":" << BLUE << *cmd_queue_.front() << ENDC << std::endl;
-      cmd_queue_.front()->execute();
-      cmd_queue_.front()->broadcast();
+      try {
+        cmd_queue_.front()->execute();
+        cmd_queue_.front()->broadcast();
+      } catch( std::exception & e) {
+        this->broadcast(e.what());
+      }
     } else if (cmd_queue_.front()->expired()) {
       if (DEBUG)
         std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " finished exec" << ENDC << ":" << BLUE << *cmd_queue_.front() << ENDC << std::endl; 

@@ -25,6 +25,7 @@ namespace Zappy {
 			bool	operator< (const Tile&) const;
 			bool	operator> (const Tile&) const;
 			inline int get_index(int width) const;
+      explicit operator std::string() const;
 			const Point & get_pos() const;
 		private:
 			const Point pos_;

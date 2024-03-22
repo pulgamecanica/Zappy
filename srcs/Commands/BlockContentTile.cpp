@@ -3,10 +3,11 @@
 //***************************//
 
 #include "Commands/BlockContentTile.hpp"
+#include "Tile.hpp"
 
 namespace Zappy {
 
- BlockContentTile::BlockContentTile(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options):
+ BlockContentTile::BlockContentTile(GameEngine *trantor, Spectator& spectator, std::vector<std::string>& options):
 		ClientCommand(trantor, "bct", 0), spectator_(spectator), bad_params_(false), pos_(nullptr) {
 			if (options.size() == 2) {
 				try {
@@ -28,20 +29,16 @@ namespace Zappy {
 	}
 
 	bool  BlockContentTile::is_valid() const {
-		return true;
-		// return trantor_->is_valid_coordinate(pos_);
+		return !bad_params_;
 	};
 	
 	void  BlockContentTile::execute() {
     ClientCommand::execute();
-		if (!is_valid())
-			return ;
 		if (bad_params_) {
-			spectator_.broadcast("KO:impossible to get the coordinates requested");
+			spectator_.broadcast("KO:Wrong Coordinates");
 		} else {
-			// const Tile & t = trandtor_->get_tile(pos_);	 
 			spectator_.broadcast(
-				std::string("bct ") + std::string(*pos_));
+				std::string("bct ") + std::string(trantor_->get_tile(*pos_)));
 		}
 	}
 

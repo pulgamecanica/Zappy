@@ -21,12 +21,14 @@ namespace Zappy {
 			Map(const Map&) = default;
 			~Map();
 			Map&	operator= (const Map&) = default; // const for safety... not super nesessary
-			const Tile& get_tile(const Point &pos) const;			
-			// std::vector<Tile> tiles_;
-			// resize(enum Orientation orientation);
+			const Tile&		get_tile(const Point &pos) const;			
+			const Tile&		get_tile(int index) const;
+			int point_to_index(const Point & p) const;
+			Point index_to_point(int index) const;
+			int get_lowest_index() const;			
+			int get_map_area() const;
 		protected:
 			Point get_map_size() const;
-      // Point	map_size_;
       Point tlc_; // Top Left Corner
       Point brc_; // Bottom Right Corner
       std::set<Tile> map_;

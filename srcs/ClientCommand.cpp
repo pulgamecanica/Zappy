@@ -11,6 +11,7 @@
 #include "Commands/MapSize.hpp"
 #include "Commands/Join.hpp"
 #include "Commands/BlockContentTile.hpp"
+#include "Commands/MapContentTile.hpp"
 
 namespace Zappy {
 
@@ -80,6 +81,8 @@ namespace Zappy {
         return new MapSize(trantor, s);
       } else if (cmd == "bct") {
         return new BlockContentTile(trantor, s, options);
+      } else if (cmd == "mct") {
+        return new MapContentTile(trantor, s);
       }
     }
     return (new ClientCommand(trantor, cmd, 0));
