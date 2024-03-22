@@ -37,6 +37,7 @@ namespace Zappy {
       Client&         operator= (const Client&) = default; // const for safety... not super nesessary
       // CONST PUBLIC METHODS
       enum ClientType get_client_type() const;
+      bool            check_client_type(enum ClientType) const;
       int             get_fd() const;
       bool            joined() const;
       ssize_t         uptime() const; // In miliseconds (ms)
@@ -44,6 +45,9 @@ namespace Zappy {
       void            broadcast(std::string msg);
       void            update();
       void            queue_cmd(ClientCommand * cmd);
+      void            assign_player(Player * player);
+      void            dismiss_player();
+      Player          *player_; // I don't like this, spectators should not inherit this...
     protected:
       // STATIC PROTECTED CONST MEMBERS
       static const int QUEUE_SIZE = 8;
@@ -55,7 +59,6 @@ namespace Zappy {
       std::vector<ClientCommand *>  cmd_queue_;
     private:
       // PRIVATE MEMBERS
-      Player                        *player_; // I don't like this, spectators should not inherit this...
     // Will concider having this separated...
   };
 

@@ -98,7 +98,7 @@ namespace Zappy {
   }
 
   std::ostream& operator<<(std::ostream& s, const Direction& d) {
-    s << "[" << d.get_name() << "]" << (Point)d;
+    s << d.get_name();
     return (s);
   }
 }

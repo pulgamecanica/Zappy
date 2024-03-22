@@ -6,16 +6,32 @@
 # define __TILE_HPP__
 
 #include <iostream>
+#include <vector>
 
-class Tile {
-	public:
-		Tile();
-		Tile(const Tile&);
-		~Tile();
-		Tile&	operator= (const Tile&); // const for safety... not super nesessary
-};
+#include "Geometry/Point.hpp"
 
-std::ostream&	operator<<(std::ostream&, const Tile&);
+namespace Zappy {
 
+	class Tile {
+		public:
+			static Point index_to_point(int i, int width);
+			Tile(int i, int width);
+			Tile(const Point& pos);
+			Tile(const Tile&) = default;
+			~Tile();
+			Tile&	operator= (const Tile&) = default; // const for safety... not super nesessary
+      bool	operator==(const Point&) const;// Needed in order to use find with a Point
+			bool	operator== (const Tile&) const;
+			bool	operator< (const Tile&) const;
+			bool	operator> (const Tile&) const;
+			inline int get_index(int width) const;
+			const Point & get_pos() const;
+		private:
+			const Point pos_;
+			std::vector<int> items_;
+	};
+
+	std::ostream&	operator<<(std::ostream&, const Tile&);
+}
 #endif
 

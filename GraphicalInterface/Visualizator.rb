@@ -26,7 +26,7 @@ class Vizualisator
     @show_grid = true
     @show_ruler = true
     @tile_size = 64
-    @socket = Socket.new('localhost', 4000)
+    @socket = Socket.new('localhost', 2121)
 
     # Get Map Size
     response = @socket.get("msz")

@@ -2,32 +2,119 @@
 //*Template by pulgamecanica*//
 //***************************//
 
+#include "Zappy.inc"
+
 #include "Tile.hpp"
 
-Tile::Tile() {
-	// TODO (default constructor)
-}
+namespace Zappy {
 
-Tile::Tile(const Tile& param) {
-	// TODO (copy constructor)
-	(void)param;
-}
+	Point Tile::index_to_point(int i, int width) {
+		int x, y;
 
-Tile::~Tile() {
-	std::cout << "Tile" << " destroyed" << std::endl;
-	// TODO (destructor)
-}
+		y = (i / width);
+		x = (i % width);
+		return (Point(x, y));
+	}
 
-Tile& Tile::operator= (const Tile& param) {
-	// TODO (Assignment operatior)
-	// std::swap()
-	(void)param;
-	return (*this);
-}
 
-std::ostream& operator<<(std::ostream& s, const Tile& param) {
-	// s << param.CONST_METHOD()
-	(void)param;
-	return (s);
-}
+	Tile::Tile(int i, int width): pos_(index_to_point(i, width)) {
+		std::cout << "Tile [" << BLUE << pos_ << ENDC << "]" << " Index: " << BLUE << i << ENDC << std::endl;
+		items_.push_back(1);
+		items_.push_back(2);
+	}
 
+	Tile::Tile(const Point& pos): pos_(pos) {
+		std::cout << "Constructed Point from (pos) [" << pos_ << "]" << std::endl;
+		items_.push_back(1);
+		items_.push_back(2);
+	}
+
+	// Tile::Tile(const Tile& param) {
+	// 	// TODO (copy constructor)
+	// 	(void)param;
+	// }
+
+	Tile::~Tile() {
+		// std::cout << "Tile" << " destroyed" << std::endl;
+		// TODO (destructor)
+	}
+
+
+	/**
+	 *****************
+	 *   0 1 2 3 4   *
+	 * 0 a . . . e 0 *
+	 * 1 . g . . . 1 *
+	 * 2 . . m n . 2 *
+	 * 3 . . . s t 3 *
+	 * 4 u v . . . 4 *
+	 *   0 1 2 3 4   *
+	 *****************
+	 * In the 5x5 map presented above we can `identify`
+	 * each tile by using coordinates, their value, or their index
+	 * It goes as follows:
+	 * | Value | Coordinate | Index | coord -> index                       | index -> coord                                                       |
+	 * | ----- | ---------- | ----- | ------------------------------------ | -------------------------------------------------------------------- |
+	 * |  'a'  |   [0, 0]   |   0   | ((y * width) + x) = (0 * 5) + 0 = 0  | [y = (i / width), x = (i % width)] = [y = 0 / 5, x = 0 % 5] = [0, 0] |
+	 * |  'b'  |   [1, 0]   |   1   | ((y * width) + x) = (0 * 5) + 1 = 1  | [y = (i / width), x = (i % width)] = [y = 0 / 5, x = 1 % 5] = [0, 1] |
+	 * |  'c'  |   [2, 0]   |   2   | ((y * width) + x) = (0 * 5) + 2 = 2  | [y = (i / width), x = (i % width)] = [y = 0 / 5, x = 2 % 5] = [0, 2] |
+	 * |  'd'  |   [3, 0]   |   3   | ((y * width) + x) = (0 * 5) + 3 = 3  | [y = (i / width), x = (i % width)] = [y = 0 / 5, x = 3 % 5] = [0, 3] |
+	 * |  'e'  |   [4, 0]   |   4   | ((y * width) + x) = (0 * 5) + 4 = 4  | [y = (i / width), x = (i % width)] = [y = 0 / 5, x = 4 % 5] = [0, 4] |
+	 * |  'f'  |   [0, 1]   |   5   | ((y * width) + x) = (1 * 5) + 0 = 5  | [y = (i / width), x = (i % width)] = [y = 1 / 5, x = 0 % 5] = [1, 0] |
+	 * |  'g'  |   [1, 1]   |   6   | ((y * width) + x) = (1 * 5) + 1 = 6  | [y = (i / width), x = (i % width)] = [y = 1 / 5, x = 1 % 5] = [1, 1] |
+	 * |  'h'  |   [2, 1]   |   7   | ((y * width) + x) = (1 * 5) + 2 = 7  | [y = (i / width), x = (i % width)] = [y = 1 / 5, x = 2 % 5] = [1, 2] |
+	 * |  'i'  |   [3, 1]   |   8   | ((y * width) + x) = (1 * 5) + 3 = 8  | [y = (i / width), x = (i % width)] = [y = 1 / 5, x = 3 % 5] = [1, 3] |
+	 * |  'j'  |   [4, 1]   |   9   | ((y * width) + x) = (1 * 5) + 4 = 9  | [y = (i / width), x = (i % width)] = [y = 1 / 5, x = 4 % 5] = [1, 4] |
+	 * |  'k'  |   [0, 2]   |   10  | ((y * width) + x) = (2 * 5) + 0 = 10 | [y = (i / width), x = (i % width)] = [y = 2 / 5, x = 0 % 5] = [2, 0] |
+	 * |  'l'  |   [1, 2]   |   11  | ((y * width) + x) = (2 * 5) + 1 = 11 | [y = (i / width), x = (i % width)] = [y = 2 / 5, x = 1 % 5] = [2, 1] |
+	 * |  'm'  |   [2, 2]   |   12  | ((y * width) + x) = (2 * 5) + 2 = 12 | [y = (i / width), x = (i % width)] = [y = 2 / 5, x = 2 % 5] = [2, 2] |
+	 * |  'n'  |   [3, 2]   |   13  | ((y * width) + x) = (2 * 5) + 3 = 13 | [y = (i / width), x = (i % width)] = [y = 2 / 5, x = 3 % 5] = [2, 3] |
+	 * |  'o'  |   [4, 2]   |   14  | ((y * width) + x) = (2 * 5) + 4 = 14 | [y = (i / width), x = (i % width)] = [y = 2 / 5, x = 4 % 5] = [2, 4] |
+	 * |  'p'  |   [0, 3]   |   15  | ((y * width) + x) = (3 * 5) + 0 = 15 | [y = (i / width), x = (i % width)] = [y = 3 / 5, x = 0 % 5] = [3, 0] |
+	 * |  'q'  |   [1, 3]   |   16  | ((y * width) + x) = (3 * 5) + 1 = 16 | [y = (i / width), x = (i % width)] = [y = 3 / 5, x = 1 % 5] = [3, 1] |
+	 * |  'r'  |   [2, 3]   |   17  | ((y * width) + x) = (3 * 5) + 2 = 17 | [y = (i / width), x = (i % width)] = [y = 3 / 5, x = 2 % 5] = [3, 2] |
+	 * |  's'  |   [3, 3]   |   18  | ((y * width) + x) = (3 * 5) + 3 = 18 | [y = (i / width), x = (i % width)] = [y = 3 / 5, x = 3 % 5] = [3, 3] |
+	 * |  't'  |   [4, 3]   |   19  | ((y * width) + x) = (3 * 5) + 4 = 19 | [y = (i / width), x = (i % width)] = [y = 3 / 5, x = 4 % 5] = [3, 4] |
+	 * |  'u'  |   [0, 4]   |   20  | ((y * width) + x) = (4 * 5) + 0 = 20 | [y = (i / width), x = (i % width)] = [y = 4 / 5, x = 0 % 5] = [4, 0] |
+	 * |  'v'  |   [1, 4]   |   21  | ((y * width) + x) = (4 * 5) + 1 = 21 | [y = (i / width), x = (i % width)] = [y = 4 / 5, x = 1 % 5] = [4, 1] |
+	 * |  'w'  |   [2, 4]   |   22  | ((y * width) + x) = (4 * 5) + 2 = 22 | [y = (i / width), x = (i % width)] = [y = 4 / 5, x = 2 % 5] = [4, 2] |
+	 * |  'x'  |   [3, 4]   |   23  | ((y * width) + x) = (4 * 5) + 3 = 23 | [y = (i / width), x = (i % width)] = [y = 4 / 5, x = 3 % 5] = [4, 3] |
+	 * |  'y'  |   [4, 4]   |   24  | ((y * width) + x) = (4 * 5) + 4 = 24 | [y = (i / width), x = (i % width)] = [y = 4 / 5, x = 4 % 5] = [4, 4] |
+	 **/
+	inline int Tile::get_index(int width) const {
+		return ((pos_.y() * width) + pos_.x());
+	}
+
+	bool	Tile::operator==(const Point& p) const {
+		return (pos_.y() == p.y() && pos_.x() && p.x());
+	}
+
+
+	bool	Tile::operator== (const Tile& t) const {
+		return (pos_.y() == t.pos_.y() && pos_.x() && t.pos_.x());
+	}
+
+	bool	Tile::operator< (const Tile& t) const {
+		if (pos_.y() == t.pos_.y())
+			return (pos_.x() < t.pos_.x());
+		return (pos_.y() < t.pos_.y());
+
+	}
+
+	bool	Tile::operator> (const Tile& t) const {
+		if (pos_.y() == t.pos_.y())
+			return (pos_.x() > t.pos_.x());
+		return (pos_.y() > t.pos_.y());
+	}
+
+	
+	const Point & Tile::get_pos() const {
+		return (pos_);
+	}
+
+	std::ostream& operator<<(std::ostream& s, const Tile& tile) {
+		s << tile.get_pos();
+		return (s);
+	}
+
+}

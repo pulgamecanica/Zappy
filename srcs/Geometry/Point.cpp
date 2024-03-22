@@ -81,7 +81,7 @@ namespace Zappy {
   }
 
   std::ostream& operator<<(std::ostream& s, const Point &p) {
-    s << "(" << p.x() << ", " << p.y() << ")";
+    s << p.x() <<  " " << p.y();
     return (s);
   }
 }

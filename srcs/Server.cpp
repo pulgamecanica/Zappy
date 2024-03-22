@@ -154,6 +154,7 @@ namespace Zappy {
     // close all clients and spectators
     // TODO
     for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
+      close(i->first);
       delete i->second;
     }
     clients_.clear();
@@ -198,7 +199,7 @@ namespace Zappy {
     int total(0);
 
     for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
-      if (i->second->get_client_type() == Client::ClientType::PlayerT)
+      if (i->second->check_client_type(Client::ClientType::PlayerT))
         total++;
     }
     return (total);
@@ -208,7 +209,7 @@ namespace Zappy {
     int total(0);
 
     for (std::map<int, Client *>::const_iterator i = clients_.begin(); i != clients_.end(); ++i) {
-      if (i->second->get_client_type() == Client::ClientType::SpectatorT)
+      if (i->second->check_client_type(Client::ClientType::SpectatorT))
         total++;
     }
     return (total);
@@ -216,6 +217,14 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   ////////////////////////////////////// PUBLIC METHODS ///////////////////////////////////////////
+  void  Server::broadcast_spectators(const std::string& msg) {
+    for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
+      if (i->second->check_client_type(Client::ClientType::SpectatorT))
+        i->second->broadcast(msg);
+    }
+  }  
+
+
   void  Server::set_config(const std::string lang_acronym) {
     std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
     if (it == std::end(configs_)) {
@@ -274,7 +283,7 @@ namespace Zappy {
     for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
       i->second->update();
       /* Remove innactive players */
-      if (i->second->get_client_type() == Client::ClientType::PlayerT && !i->second->joined() &&
+      if (i->second->check_client_type(Client::ClientType::PlayerT) && !i->second->joined() &&
         i->second->uptime() >= connection_timeout_)
         remove_client(i->first);
     }

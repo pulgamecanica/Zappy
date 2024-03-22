@@ -7,7 +7,7 @@
 
 namespace Zappy {
 
-  Advance::Advance(GameEngine * trantor, Player &p):
+  Advance::Advance(GameEngine *trantor, Player *p):
     ClientCommand(trantor, "advance", 7), player_(p) {
     // TODO (default constructor)
   }
@@ -18,8 +18,12 @@ namespace Zappy {
 
   void  Advance::execute() {
     ClientCommand::execute();
-    player_.advance();
-    player_.client_->broadcast("OK:advance");
+    player_->advance();
+    player_->client_->broadcast("OK:advance");
+  }
+
+  void  Advance::broadcast() const {
+    trantor_->broadcast_spectators(player_->get_ppo());
   }
 
   bool  Advance::is_valid() const { return (true); }

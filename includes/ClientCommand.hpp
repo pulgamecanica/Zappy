@@ -27,13 +27,13 @@ namespace Zappy {
       bool            was_executed() const;
       bool            expired() const;
       // VIRTUAL MEMBER FUNCTIONS(Inherited will prioritize)
-      virtual bool    is_valid() const;
-      virtual void    execute();
+      virtual void              broadcast() const;
+      virtual bool              is_valid() const;
+      virtual void              execute();
       virtual const std::string cmd_error() const;
     protected:
       ClientCommand(GameEngine *trantor, const std::string cmd, int time_cost);
       GameEngine          *trantor_;
-      // Client              *client_;
       ssize_t             executed_at_frame_;
     private:
       bool                executed_;

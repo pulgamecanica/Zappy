@@ -48,6 +48,7 @@ namespace Zappy {
       int                             total_players() const; 
       int                             total_spectators() const;
       // PUBLIC METHODS //
+      void                            broadcast_spectators(const std::string& msg);
       void                            set_config(const std::string lang_acronym);
       void                            stop_server();
     protected:

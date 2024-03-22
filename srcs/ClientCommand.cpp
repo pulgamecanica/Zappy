@@ -10,6 +10,7 @@
 #include "Commands/Left.hpp"
 #include "Commands/MapSize.hpp"
 #include "Commands/Join.hpp"
+#include "Commands/BlockContentTile.hpp"
 
 namespace Zappy {
 
@@ -30,6 +31,11 @@ namespace Zappy {
   void  ClientCommand::execute() {
     executed_ = true;
     executed_at_frame_ = trantor_->frame();
+  }
+
+  void  ClientCommand::broadcast() const {
+    ;
+    // throw std::runtime_error("Cannot broadcast a generic ClientCommand!");
   }
 
   bool ClientCommand::is_valid() const { return (false); }
@@ -53,32 +59,27 @@ namespace Zappy {
 
   ClientCommand* ClientCommand::parse_command(GameEngine *trantor, Client *c, const std::string &msg) {
     const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
-    // std::vector<std::string> options;
+    std::vector<std::string> options;
 
-    // options = get_options(msg.substr(cmd.length()));
-    // if (c->get_client_type() == Client::ClientType::PlayerT) {
-    //   if (!c->joined()) {
-    //     return new Join(trantor, *c, msg);
-    //   } else if (c->joined()) {
-    //     if (cmd == "advance") {
-    //       return new Advance(trantor, c->player_);
-    //     } else if (cmd == "right") {
-    //       return new Right(trantor, c->player_);
-    //     } else if (cmd == "left") {
-    //       return new Left(trantor, c->player_);
-    //     }
-    //   }
-      // } else if (cmd == "clear") {
-      //  return new ClientCommand();
-      // } else if (cmd == "players") {
-      //  return new ClientCommand();
-      // } else if (cmd == "lang") {
-      //  return new ClientCommand(options);
-      // }
-    /*} else */if (c->get_client_type() == Client::ClientType::SpectatorT) {
+    options = Command::get_options(msg.substr(cmd.length()));
+    if (c->get_client_type() == Client::ClientType::PlayerT) {
+      if (!c->joined()) {
+        return new Join(trantor, *c, msg.substr(0, msg.find_first_of("\n")));
+      } else { // Joined ... //
+        if (cmd == "advance") {
+          return new Advance(trantor, c->player_);
+        } else if (cmd == "right") {
+          return new Right(trantor, c->player_);
+        } else if (cmd == "left") {
+          return new Left(trantor, c->player_);
+        }
+      }
+    } else if (c->get_client_type() == Client::ClientType::SpectatorT) {
       Spectator & s = *(dynamic_cast<Spectator *>(c));
       if (cmd == "msz") {
         return new MapSize(trantor, s);
+      } else if (cmd == "bct") {
+        return new BlockContentTile(trantor, s, options);
       }
     }
     return (new ClientCommand(trantor, cmd, 0));

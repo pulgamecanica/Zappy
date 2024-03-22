@@ -8,7 +8,7 @@
 namespace Zappy {
 
 
-  Right::Right(GameEngine * trantor, Player &p):
+  Right::Right(GameEngine *trantor, Player *p):
     ClientCommand(trantor, "right", 7), player_(p) {  
   }
 
@@ -20,12 +20,16 @@ namespace Zappy {
     return (s);
   }
 
+  void  Right::broadcast() const {
+    trantor_->broadcast_spectators(player_->get_ppo());
+  }
+
   bool  Right::is_valid() const { return (true); };
 
   void  Right::execute() {
     ClientCommand::execute();
-    player_.move_right();
-    player_.client_->broadcast("OK:right");
+    player_->move_right();
+    player_->client_->broadcast("OK:right");
   };
 
   const std::string Right::cmd_error() const {

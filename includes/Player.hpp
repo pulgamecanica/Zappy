@@ -27,16 +27,30 @@ namespace Zappy {
       };
       Player(Team& team);
       Player(const Player&) = default;
+      Player(const Player&, Team& team);
       ~Player();
       Player&           operator= (const Player&) = delete; // const for safety... not super nesessary
       bool              advance();
       void              move_right();
       void              move_left();
-      enum PlayerStatus get_status() const;
+      void              assign_client(Client * client);
+      void              dismiss_client();
+      bool              check_status(enum PlayerStatus status) const;
+      int               get_id() const;
+      const Direction&  get_direction() const;
+      const Point&      get_position() const;
+      const Team&       get_team() const;
+      const std::string get_ppo() const;
+      int               get_lvl() const;
       Client            *client_;
     private:
+      static int get_next_id();
+
+      const int         id_;
+
       Direction         direction_;
       Point             position_;
+      int               lvl_;
       enum PlayerStatus status_;
       Team&             team_;
       // struct timeval created_at_;

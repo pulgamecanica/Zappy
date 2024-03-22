@@ -7,7 +7,7 @@
 
 namespace Zappy {
 
-  Left::Left(GameEngine * trantor, Player &p): 
+  Left::Left(GameEngine *trantor, Player *p): 
       ClientCommand(trantor, "left", 7), player_(p) {
   }
 
@@ -18,8 +18,12 @@ namespace Zappy {
 
   void  Left::execute() {
     ClientCommand::execute();
-    player_.move_left();
-    player_.client_->broadcast("OK:left");
+    player_->move_left();
+    player_->client_->broadcast("OK:left");
+  }
+
+  void  Left::broadcast() const {
+    trantor_->broadcast_spectators(player_->get_ppo());
   }
 
   const std::string Left::cmd_error() const {

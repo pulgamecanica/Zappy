@@ -22,6 +22,7 @@
  **/
 namespace Zappy {
   class Team;
+  class Client;
   
   class GameEngine: public Server, public Map {
     public:
@@ -35,6 +36,7 @@ namespace Zappy {
       // CONST PUBLIC METHODS //
       Point         get_map_size() const;
       bool          is_team_valid(const std::string & team) const;
+      bool          join_team(const std::string & team, Client * client);
       // PUBLIC METHODS //
       unsigned int  frame();
       void          start(int * sig);
@@ -45,12 +47,12 @@ namespace Zappy {
       void          update();
       void          update_time();
       // PRIVATE MEMBERS //
-      unsigned int      current_frame_;
-      int               frame_delay_; // in miliseconds, based on t_ ; see Note above
-      int               *sig_;
-      int               t_; // t = fps, it's the time basically 
-      std::vector<Team> teams_;
-      ssize_t           updated_at_ms_;
+      unsigned int                current_frame_;
+      int                         frame_delay_; // in miliseconds, based on t_ ; see Note above
+      int                         *sig_;
+      int                         t_; // t = fps, it's the time basically 
+      std::map<std::string, Team> teams_;
+      ssize_t                     updated_at_ms_;
   };
 
   std::ostream& operator<<(std::ostream&, const GameEngine&);

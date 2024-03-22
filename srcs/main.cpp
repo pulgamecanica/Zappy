@@ -35,6 +35,29 @@ static void setup_signals() {
     sigaction(SIGQUIT, &sigIntHandler, NULL);
 }
 
+static void print_help() {
+    std::cout << "Usage: ./Zappy -x width -y height -c #clients -n team [team2] ... [OPTIONS]\n" <<
+        "\nAbout: " << "Zappy Game, it's a game about the " << BLUE << "Trantor" << ENDC <<
+        " World\n       Trantorians live, collect food and stones and perform a ritual to win\n" <<
+        "       This is the `server` where the world is managed, it's GOD!" << std::endl <<
+        "\n[" << RED << "Mandatory OPTIONS" << ENDC << "]:" << std::endl <<
+        "  -c <#clients>       number of players allowed per team" << std::endl <<
+        "  -n team <team2> ... teams, this is, the teams that will exist on trantor" << std::endl <<
+        "  -x <width>          refers to the initial horizontal size of trantor (width > 10)" << std::endl <<
+        "  -y <height>         refers to the initial vertical size of trantor (height > 10)" << std::endl <<
+        "\n[Extra OPTIONS]:, if a parameter is not between `[]` then it's mandatory\n" <<
+        "  -f <file>    set the configuration file (TOML format)" << std::endl <<
+        "               by default `./conf.toml` is used" << std::endl <<
+        "  -t <ms>      set the time unit divider, it's 100 by default (100 frames per second)" << std::endl <<
+        "               the higher this number, the faster the world will be (ms > 0)" << std::endl <<
+        "  -T <ms>      set the connection timeout, if a player doesn't join a team after ms" << std::endl <<
+        "               doesn't apply to spectators (default to 1min (60000ms)" << std::endl <<
+        "  -l <acronym> default Zappy language <must be present on the conf.file>" << std::endl <<
+        "  -P <port>    set the players port to something else than 4242" << std::endl <<
+        "  -S <port>    set the spectators port to something else than 2121" << std::endl <<
+        "  -h           help" << std::endl;
+}
+
 void setnonblocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags == -1) {
@@ -46,7 +69,6 @@ void setnonblocking(int fd) {
         exit(EXIT_FAILURE);     
     }
 }
-
 
 ssize_t gettimeofday_ms() {
     struct timeval tv;
@@ -61,26 +83,20 @@ int main(int argc, char *argv[])
 {
     // Seed rand
     srand (time(NULL));
-    /**
-     * Params:
-     * -x <width>
-     * -y <height>
-     * -c <clients> --clients-per-team
-     * [-t]         --time-divider-unit         // default 100
-     * [-l <name>]  --default-language=<name>   // default "en"
-     * [-f <path>]  --toml-file=<path>          // default "conf.toml"
-     * [-P]         --players-port=0000         // default 4242
-     * [-S]         --spectators-port=0000      // default 2121
-     * [-T]         --connection-timeout        // default 60000ms<=>60s<=>1min
-    **/
     int opt;
     std::string lang("en");
     std::string file_name("conf.toml");
     int players_port(4242);
     int spectators_port(2121);
     int default_time(100);
-    int w(-1), h(-1), num_players(-1), timeout(60000);
+    int w(20), h(20), num_players(3), timeout(60000); // Just for testing purposes
+    // int w(-1), h(-1), num_players(-1), timeout(60000);
     std::vector<std::string> teams;
+
+    {
+        // Default teams
+        teams.push_back("Team Rocket");
+    }
 
     setup_signals();
     try {
@@ -122,8 +138,7 @@ int main(int argc, char *argv[])
                     throw std::runtime_error("timeout < 1000");
                 break;
             case 'h':
-                std::cout << "Help" << std::endl;
-                // print_help();
+                print_help();
                 return (0);
             case 'n':                
                 for (int i = optind; i < argc; ++i) {
@@ -137,20 +152,9 @@ int main(int argc, char *argv[])
                 }
                 break;
             default:
-                // -n team\_name\_1 team\_name\_2 ...
                fprintf(stderr, "" \
-                    "Usage: %s -x <width> -y <height> -c <# clients> -n team <team2> ... [-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>]\n" \
-                    "\t -x <width> world width\n" \
-                    "\t -y <height> world height\n" \
-                    "\t -c <# clients> number of clients authorized per team at the beginning of the game\n" \
-                    "\t -n team [<team2>] ... teams\n" \
-                    "\t [-t <ms>] time unit divider (the greater t is, the faster the game will go, default 100)\n" \
-                    "\t [-T <ms>] connection timeout for the players (disconnect if not joined a room after <ms> default 1 minute)\n" \
-                    "\t [-f configuration file] for server messages (default conf.toml)\n" \
-                    "\t [-l acronym] default language for the server (default en)\n" \
-                    "\t [-P] port for the players (default 4242)\n" \
-                    "\t [-S] port for the spectators (default 2121)\n",
-                       argv[0]);
+                    "Usage: %s -x <width> -y <height> -c <# clients> -n team <team2> ... "\
+                    "[-t <time>] [-f <file>] [-l <lang>] [-P <port>] [-S <port>] [-h]\n", argv[0]);
                exit(EXIT_FAILURE);
             }
         }
@@ -163,19 +167,21 @@ int main(int argc, char *argv[])
     }
     if (w == -1 || h == -1) {
         std::cerr << RED << "Error:" << ENDC <<" [-x, -y] Width & Height must be provided" <<
-            std::endl << "./Zappy -h for more information" << std::endl;
+            std::endl << argv[0] <<" -h for more information" << std::endl;
         return (1);
     }
     if (num_players == -1) {
         std::cerr << RED << "Error:" << ENDC <<" [-c] # Clients must be provided " <<
-            std::endl << "./Zappy -h for more information" << std::endl;
+            std::endl << argv[0] <<" -h for more information" << std::endl;
         return (1);
     }
     if (teams.empty()) {
         std::cerr << RED << "Error:" << ENDC <<" [-n team <team2> ...] Server must have at least one team" <<
-            std::endl << "./Zappy -h for more information" << std::endl;
+            std::endl << argv[0] <<" -h for more information" << std::endl;
         return (1);
     }
+
+
     try {
         Zappy::GameEngine trantor(teams, default_time, file_name, lang, players_port, spectators_port,
             {w, h}, num_players, timeout);

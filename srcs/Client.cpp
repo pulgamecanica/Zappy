@@ -14,7 +14,7 @@ extern "C" {
 #include "Player.hpp"
 
 namespace Zappy {
-  Client::Client(int fd, ClientType type): fd_(fd), client_type_(type), player_(nullptr) {
+  Client::Client(int fd, ClientType type): player_(nullptr), fd_(fd), client_type_(type) {
     created_at_ms_ = gettimeofday_ms();
   }
 
@@ -31,6 +31,17 @@ namespace Zappy {
 
   bool  Client::joined() const { return (player_ != nullptr); }
 
+  void  Client::assign_player(Player * player) {
+    if (player) {
+      if (client_type_ == ClientType::PlayerT) {
+        player_ = player;
+      }
+    }
+  }
+
+  void  Client::dismiss_player() {
+    player_ = nullptr;
+  }
 
   void Client::broadcast(std::string msg) {
     msg.append("\n");
@@ -56,7 +67,9 @@ namespace Zappy {
   // Update Client
   // Check cmd queue
   // Execute commands
-  // Remove expired commands
+  // Broadcast command
+  // Remove expired commands when appropiate
+  // Key Function of the server!!!
   void Client::update() {
     if (cmd_queue_.empty())
       return ;
@@ -64,6 +77,7 @@ namespace Zappy {
       if (DEBUG)
         std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " exec" << ENDC << ":" << BLUE << *cmd_queue_.front() << ENDC << std::endl;
       cmd_queue_.front()->execute();
+      cmd_queue_.front()->broadcast();
     } else if (cmd_queue_.front()->expired()) {
       if (DEBUG)
         std::cout << YELLOW << "[Server]" << BLUE << "(" << *this << ")" << GREEN << " finished exec" << ENDC << ":" << BLUE << *cmd_queue_.front() << ENDC << std::endl; 
@@ -75,6 +89,10 @@ namespace Zappy {
   int Client::get_fd() const { return (fd_); }
 
   enum Client::ClientType Client::get_client_type() const { return (client_type_); }
+
+  bool Client::check_client_type(enum Client::ClientType ct) const {
+    return (client_type_ == ct);
+  }
 
   std::ostream& operator<<(std::ostream& s, const Client& p) {
     s << Client::CLIENT_TYPES_STR[p.get_client_type()] << " [" << p. get_fd() << "]";

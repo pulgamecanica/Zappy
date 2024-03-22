@@ -9,6 +9,7 @@ extern "C" {
 #include "Zappy.inc"
 #include "GameEngine.hpp"
 #include "Team.hpp"
+#include "Client.hpp"
 
 namespace Zappy {
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
@@ -19,7 +20,7 @@ namespace Zappy {
     set_game_delay();
     updated_at_ms_ = created_at_ms_;
     for (std::vector<std::string>::iterator i = teams.begin(); i != teams.end(); ++i) {
-      teams_.emplace_back(*i, num_players);
+      teams_.insert(std::pair<std::string, Team>(*i, Team(*i, num_players)));
     }
   }
 
@@ -35,12 +36,13 @@ namespace Zappy {
   }
 
   bool  GameEngine::is_team_valid(const std::string & team) const {
-    // for (std::vector<std::string>::iterator i = .begin(); i != .end(); ++i)
-    // {
-      
-    // }
-    // Missing teams logic
-    return !team.empty();
+    return (teams_.count(team));
+  }
+
+  bool  GameEngine::join_team(const std::string & team, Client * client) {
+    if (!is_team_valid(team))
+      return false;
+    return teams_.at(team).add_client(client);
   }
   /////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -2,15 +2,35 @@
 //*Template by pulgamecanica*//
 //***************************//
 
+
+#include <sstream>
+
 #include "Commands/Join.hpp"
+#include "Player.hpp"
+#include "Team.hpp"
 
 namespace Zappy {
 
 	Join::Join(GameEngine *trantor, Client &c, std::string team):
-		ClientCommand(trantor, "join", 0), client_(c), team_(team), team_is_valid_(true) {
+		ClientCommand(trantor, "join", 0), client_(c), team_(team), joined_(false) {
 	}
 
 	Join::~Join() {
+	}
+	
+	void	Join::broadcast() const {
+		std::stringstream ss;
+
+		if (!is_valid() || !joined_)
+			return ;
+		Player *player = client_.player_;
+		ss << "pnw " <<
+			player->get_id() << " " <<
+			player->get_position() << " " <<
+			player->get_direction() << " " <<
+			player->get_lvl() << " " <<
+			player->get_team();
+    trantor_->broadcast_spectators(ss.str());
 	}
 
 	bool	Join::is_valid() const {
@@ -18,21 +38,28 @@ namespace Zappy {
 	}
 
 	void	Join::execute() {
+		std::stringstream ss;
     ClientCommand::execute();
-    // Logic to join here
-    // trantor.join(p, team_);
-		client_.broadcast("OK:joined");
+
+    joined_ = trantor_->join_team(team_, &client_);
+    if (joined_) {
+			// Player *player = client_.player_;
+			ss << client_.player_->get_team().slots_left() << std::endl << std::string(trantor_->get_map_size());
+			client_.broadcast(ss.str());
+    } else {
+			client_.broadcast("KO:failed to join the team");
+    }
 	}
 
 	const std::string Join::cmd_error() const {
     std::string msg;
 
     msg.append(get_cmd());
-  	if (!team_is_valid_) {
+  	if (!is_valid()) {
   		msg.append("<");
   		msg.append(team_);
   		msg.append(">:team is invalid");
-  	} else {
+  	} else if (!joined_) {
   		msg.append(":couldn't join");
   	}
     return (msg);

@@ -21,7 +21,7 @@ namespace Zappy {
 
     ClientCommand::execute();
 		spectator_.broadcast(
-			std::string("msz ") + size_str + std::string("\n"));
+			std::string("msz ") + size_str);
 	}
 
 	const std::string MapSize::cmd_error() const {
