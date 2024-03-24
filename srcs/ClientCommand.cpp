@@ -13,6 +13,7 @@
 #include "Commands/BlockContentTile.hpp"
 #include "Commands/MapContentTile.hpp"
 #include "Commands/TeamsNames.hpp"
+#include "Commands/PlayerPosition.hpp"
 
 namespace Zappy {
   ///////////////////////////////// STATIC PUBLIC METHODS /////////////////////////////////////////
@@ -44,6 +45,8 @@ namespace Zappy {
         return new MapContentTile(trantor, s);
       } else if (cmd == "tna") {
         return new TeamsNames(trantor, s);
+      } else if (cmd == "ppo") {
+        return new PlayerPosition(trantor, s, options);
       }
     }
     return (new ClientCommand(trantor, cmd, 0));

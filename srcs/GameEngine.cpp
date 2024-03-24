@@ -52,7 +52,6 @@ namespace Zappy {
     return vec;
   }
 
-
   bool  GameEngine::is_team_valid(const std::string & team) const {
     return (teams_.count(team));
   }
@@ -81,6 +80,10 @@ namespace Zappy {
 
   std::vector<Player*> GameEngine::get_players_at(int index) {
     return (get_players_at(index_to_point(index)));
+  }
+
+  const Player* GameEngine::get_player_by_index(int index) {
+    return players_[index];
   }
 
   void GameEngine::start(int * sig) {

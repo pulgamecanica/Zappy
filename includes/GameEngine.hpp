@@ -38,13 +38,14 @@ namespace Zappy {
       ~GameEngine();
       // CONST PUBLIC METHODS //
       Point                           get_map_size() const;
-      const std::vector<const Team *>       get_teams() const;
+      const std::vector<const Team *> get_teams() const;
       bool                            is_team_valid(const std::string & team) const;
       bool                            join_team(const std::string & team, Client * client);
       // PUBLIC METHODS //
       unsigned int          frame();
       std::vector<Player*>  get_players_at(const Point & p);
       std::vector<Player*>  get_players_at(int index);
+      const Player*         get_player_by_index(int index);
       void                  start(int * sig);
     private:
       // PRIVATE METHODS //
