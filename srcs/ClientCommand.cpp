@@ -14,6 +14,7 @@
 #include "Commands/MapContentTile.hpp"
 #include "Commands/TeamsNames.hpp"
 #include "Commands/PlayerPosition.hpp"
+#include "Commands/PlayerLevel.hpp"
 
 namespace Zappy {
   ///////////////////////////////// STATIC PUBLIC METHODS /////////////////////////////////////////
@@ -47,6 +48,8 @@ namespace Zappy {
         return new TeamsNames(trantor, s);
       } else if (cmd == "ppo") {
         return new PlayerPosition(trantor, s, options);
+      } else if (cmd == "plv") {
+        return new PlayerLevel(trantor, s, options);
       }
     }
     return (new ClientCommand(trantor, cmd, 0));

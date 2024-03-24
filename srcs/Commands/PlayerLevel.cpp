@@ -2,11 +2,11 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#include "Commands/PlayerPosition.hpp"
+#include "Commands/PlayerLevel.hpp"
 
 namespace Zappy {
-	PlayerPosition::PlayerPosition(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options):
-		ClientCommand(trantor, "ppo", 0), spectator_(spectator), bad_params_(false), player_(nullptr) {
+	PlayerLevel::PlayerLevel(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options):
+		ClientCommand(trantor, "plv", 0), spectator_(spectator), bad_params_(false), player_(nullptr) {
 			if (options.size() == 1) {
 				try {
 					player_num_ = std::stoi(options[0]);
@@ -20,28 +20,29 @@ namespace Zappy {
 			}
 	}
 
-	PlayerPosition::~PlayerPosition() {
+	PlayerLevel::~PlayerLevel() {
 		;
 	}
 
-	bool  PlayerPosition::is_valid() const {
+	bool  PlayerLevel::is_valid() const {
 		return !bad_params_;
 	}
 
-	void  PlayerPosition::execute() {
+	void  PlayerLevel::execute() {
 		ClientCommand::execute();
 		if (!player_) {
 			spectator_.broadcast("KO:Player not found");
 		} else {
-			spectator_.broadcast(player_->get_ppo());
+			spectator_.broadcast("plv " + std::to_string(player_->get_id()) +
+				" " + std::to_string(player_->get_lvl()));
 		}
 	}
 
-	const std::string PlayerPosition::cmd_error() const {
+	const std::string PlayerLevel::cmd_error() const {
 		return ("KO:Wrong Arguments, 'n' should be the index of a player > 0");
 	};
 
-	std::ostream& operator<<(std::ostream& s, const PlayerPosition& param) {
+	std::ostream& operator<<(std::ostream& s, const PlayerLevel& param) {
 		// s << param.CONST_METHOD()
 		(void)param;
 		return (s);
