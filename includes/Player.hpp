@@ -7,47 +7,52 @@
 
 #include <iostream>
 
-// #include "Client.hpp"
 #include "ClientCommand.hpp"
 #include "Geometry/Direction.hpp"
 #include "Geometry/Point.hpp"
 
-namespace Zappy {
-  
+namespace Zappy {  
   class Client;
   class Team;
 
-  class Player {//: public Client {
+  class Player {
     public:
+      // STATIC PUBLIC CONST METHODS //
+      static const std::string players_to_str(std::vector<Player *> lst);
+      // NESTED ENUM MEMBER //
       enum PlayerStatus {
         Waiting,
         Playing,
         Dead,
         Error
       };
+      // CONSTRUCTORS & DESTRUCTORS //
       Player(Team& team);
-      Player(const Player&) = default;
       Player(const Player&, Team& team);
+      Player(const Player&) = default;
+      Player& operator= (const Player&) = delete;
       ~Player();
-      Player&           operator= (const Player&) = delete; // const for safety... not super nesessary
+      // CONST PUBLIC METHODS //
+      bool              check_status(enum PlayerStatus status) const;
+      const Direction&  get_direction() const;
+      int               get_id() const;
+      int               get_lvl() const;
+      const Point&      get_position() const;
+      const std::string get_ppo() const;
+      const Team&       get_team() const;
+      Client*           get_client() const;
+      // PUBLIC METHODS //
       bool              advance();
-      void              move_right();
-      void              move_left();
       void              assign_client(Client * client);
       void              dismiss_client();
-      bool              check_status(enum PlayerStatus status) const;
-      int               get_id() const;
-      const Direction&  get_direction() const;
-      const Point&      get_position() const;
-      const Team&       get_team() const;
-      const std::string get_ppo() const;
-      int               get_lvl() const;
-      Client            *client_;
+      void              move_left();
+      void              move_right();
     private:
+      // STATIC PRIVATE CONST METHODS ///
       static int get_next_id();
-
       const int         id_;
-
+      // PRIVATE MEMBERS ///
+      Client            *client_;
       Direction         direction_;
       Point             position_;
       int               lvl_;

@@ -14,30 +14,69 @@
 #include "Server.hpp"
 
 namespace Zappy {
+  ////////////////////////////////// STATIC PUBLIC METHODS ////////////////////////////////////////
+  /**
+   * Server commands:
+   * 
+   * help -> Returns list of available commands
+   * status -> Returns the current status of the server
+   * exit -> exits the server
+   * lang <name> -> change the server language
+   * 
+   **/
+  Command* Command::parse_server_command(const std::string & msg, Server * s) {
+    const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
+    std::vector<std::string> options;
+
+    options = get_options(msg.substr(cmd.length()));
+    if (cmd == "help") {
+      return new HelpServer(s);
+    } else if (cmd == "status") {
+      return new StatusServer(s);
+    } else if (cmd == "exit") {
+      return new ExitServer(s);
+    } else if (cmd == "clear") {
+      return new ClearServer();
+    } else if (cmd == "players") {
+      return new PlayersServer(s);
+    } else if (cmd == "lang") {
+      return new LangServer(s, options);
+    }
+    return new Command(cmd, s);
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
   Command::Command(const std::string cmd, Server * s):
      s_(s), cmd_(cmd) {
   }
 
   Command::~Command() {
-    // if (DEBUG)
-      // std::cout << "Command" << " destroyed" << std::endl;
+    ;
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const std::string & Command::get_cmd() const {return (cmd_);}
+  /////////////////////////////////// CONST PUBLIC METHODS ////////////////////////////////////////
+  const std::string & Command::get_cmd() const {
+    return (cmd_);
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  bool Command::is_valid() const {
-    return false;
+  /////////////////////////////// CONST PUBLIC VIRTUAL METHODS ////////////////////////////////////
+  const std::string Command::cmd_error() const {
+    return ("Command:Error");
   }
 
   void Command::execute() {
     throw std::runtime_error("Cannot execute abstract command");
   }
 
-  const std::string Command::cmd_error() const {
-    return ("Command:Error");
+  bool Command::is_valid() const {
+    return false;
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+  //////////////////////////////////// STATIC PROTECTED METHODS ///////////////////////////////////
   std::vector<std::string> Command::get_options(const std::string & options_str) {
     std::vector<std::string> options;
 
@@ -58,37 +97,8 @@ namespace Zappy {
     }
     return (options);
   }
-
-  /**
-   * Server commands:
-   * 
-   * help -> Returns list of available commands
-   * status -> Returns the current status of the server
-   * exit -> exits the server
-   * lang <name> -> change the server language
-   * 
-   * */
-  Command * Command::parse_server_command(const std::string & msg, Server * s) {
-    const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
-    std::vector<std::string> options;
-
-    options = get_options(msg.substr(cmd.length()));
-    if (cmd == "help") {
-      return new HelpServer(s);
-    } else if (cmd == "status") {
-      return new StatusServer(s);
-    } else if (cmd == "exit") {
-      return new ExitServer(s);
-    } else if (cmd == "clear") {
-      return new ClearServer();
-    } else if (cmd == "players") {
-      return new PlayersServer(s);
-    } else if (cmd == "lang") {
-      return new LangServer(s, options);
-    }
-    return new Command(cmd, s);
-  }
-
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  
   std::ostream& operator<<(std::ostream& s, const Command& param) {
     s << param.get_cmd();
     return (s);

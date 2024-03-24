@@ -21,6 +21,7 @@ SRC += srcs/Commands/HelpServer.cpp \
   srcs/Commands/Join.cpp \
   srcs/Commands/BlockContentTile.cpp \
   srcs/Commands/MapContentTile.cpp \
+  srcs/Commands/TeamsNames.cpp \
 
 # Add The Geometry srcs
 SRC += srcs/Geometry/Point.cpp \

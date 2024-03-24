@@ -6,6 +6,8 @@
 # define __GAMEENGINE_HPP__
 
 #include <iostream>
+#include <vector>
+#include <map>
 
 #include "Server.hpp"
 #include "Map.hpp"
@@ -23,6 +25,7 @@
 namespace Zappy {
   class Team;
   class Client;
+  class Player;
   
   class GameEngine: public Server, public Map {
     public:
@@ -34,12 +37,15 @@ namespace Zappy {
       GameEngine& operator=(const GameEngine&) = delete;
       ~GameEngine();
       // CONST PUBLIC METHODS //
-      Point         get_map_size() const;
-      bool          is_team_valid(const std::string & team) const;
-      bool          join_team(const std::string & team, Client * client);
+      Point                           get_map_size() const;
+      const std::vector<const Team *>       get_teams() const;
+      bool                            is_team_valid(const std::string & team) const;
+      bool                            join_team(const std::string & team, Client * client);
       // PUBLIC METHODS //
-      unsigned int  frame();
-      void          start(int * sig);
+      unsigned int          frame();
+      std::vector<Player*>  get_players_at(const Point & p);
+      std::vector<Player*>  get_players_at(int index);
+      void                  start(int * sig);
     private:
       // PRIVATE METHODS //
       bool          is_time_to_update();
@@ -52,6 +58,7 @@ namespace Zappy {
       int                         *sig_;
       int                         t_; // t = fps, it's the time basically 
       std::map<std::string, Team> teams_;
+      std::map<int, const Player *> players_;
       ssize_t                     updated_at_ms_;
   };
 

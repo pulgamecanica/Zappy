@@ -10,6 +10,7 @@ extern "C" {
 #include "GameEngine.hpp"
 #include "Team.hpp"
 #include "Client.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
@@ -19,12 +20,20 @@ namespace Zappy {
       Map(map_size), current_frame_(0), t_(default_time) {
     set_game_delay();
     updated_at_ms_ = created_at_ms_;
+    // Setup Teams
     for (std::vector<std::string>::iterator i = teams.begin(); i != teams.end(); ++i) {
       teams_.insert(std::pair<std::string, Team>(*i, Team(*i, num_players)));
+    }
+    // Get all the players pointers for each team
+    for (std::map<std::string, Team>::const_iterator i = teams_.begin(); i != teams_.end(); ++i) {
+      const std::map<int, const Player*> players_map = i->second.get_players_map();
+      players_.insert(players_map.begin(), players_map.end());
     }
   }
 
   GameEngine::~GameEngine() {
+    players_.clear();
+    teams_.clear();
     if (DEBUG)
       std::cout << "GameEngine destroyed | Total: [" << current_frame_ << "]frames" << std::endl;
   }
@@ -34,6 +43,15 @@ namespace Zappy {
   Point GameEngine::get_map_size() const {
     return (Map::get_map_size());
   }
+
+  const std::vector<const Team *> GameEngine::get_teams() const {
+    std::vector<const Team *> vec;
+    for (std::map<std::string, Team>::const_iterator i = teams_.begin(); i != teams_.end(); ++i) {
+      vec.push_back(&(i->second));
+    }
+    return vec;
+  }
+
 
   bool  GameEngine::is_team_valid(const std::string & team) const {
     return (teams_.count(team));
@@ -48,6 +66,22 @@ namespace Zappy {
 
   ////////////////////////////////////// PUBLIC METHODS ///////////////////////////////////////////
   unsigned int GameEngine::frame() {return current_frame_;}
+
+  std::vector<Player*> GameEngine::get_players_at(const Point & p) {
+    std::vector<Player*> vec;
+    (void)p;
+    // for (std::map<std::string, Team>::iterator i = teams_.begin(); i != teams_.end(); ++i) {
+      // for (std::vector<Player>::iterator j = i->second.players_.begin(); j != i->second.players_.end(); ++j) {
+        // if (p == j->get_position())
+          // vec.push_back(&(*j));
+      // }
+    // }
+    return vec;
+  }
+
+  std::vector<Player*> GameEngine::get_players_at(int index) {
+    return (get_players_at(index_to_point(index)));
+  }
 
   void GameEngine::start(int * sig) {
     std::cout << get_config().get("welcome_to_server") << std::endl;

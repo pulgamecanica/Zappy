@@ -283,8 +283,8 @@ namespace Zappy {
     for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
       i->second->update();
       /* Remove innactive players */
-      if (i->second->check_client_type(Client::ClientType::PlayerT) && !i->second->joined() &&
-        i->second->uptime() >= connection_timeout_)
+      if ((i->second->check_client_type(Client::ClientType::PlayerT) && !i->second->joined() &&
+        i->second->uptime() >= connection_timeout_) || i->second->check_client_type(Client::ClientType::ErrorT))
         remove_client(i->first);
     }
     /* Make sure to remove all players which are in the list of to be removed */

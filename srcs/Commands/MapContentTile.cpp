@@ -4,6 +4,7 @@
 
 #include "Commands/MapContentTile.hpp"
 #include "Tile.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
 
@@ -27,11 +28,9 @@ namespace Zappy {
     lowest = trantor_->get_lowest_index();
     last_index = lowest + trantor_->get_map_area();
     for (int i = lowest; i < last_index; ++i) {
-    	if (i != lowest)
-    		ss << std::endl;
-    	ss << "bct " << std::string(trantor_->get_tile(i));
+    	ss << "bct " << std::string(trantor_->get_tile(i)) << std::endl;
     }
-		spectator_.broadcast(ss.str());
+		spectator_.broadcast(ss.str(), false);
 	}
 
 	const std::string MapContentTile::cmd_error() const {

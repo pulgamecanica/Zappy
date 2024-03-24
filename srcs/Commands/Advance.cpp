@@ -19,7 +19,7 @@ namespace Zappy {
   void  Advance::execute() {
     ClientCommand::execute();
     player_->advance();
-    player_->client_->broadcast("OK:advance");
+    player_->get_client()->broadcast("OK:advance");
   }
 
   void  Advance::broadcast() const {

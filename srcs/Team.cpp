@@ -44,12 +44,25 @@ namespace Zappy {
 		return (false);
 	}
 
+	Team::operator std::string() const {
+		return (name_);
+	}
+
+	const std::map<int, const Player*> Team::get_players_map() const {
+		std::map<int, const Player*> map;
+
+		for (std::vector<Player>::const_iterator i = players_.begin(); i != players_.end(); ++i) {
+			map[i->get_id()] = &*i;
+		}
+		return map;
+	}
+
 	const std::string& Team::get_name() const {
 		return (name_);
 	}
 
 	std::ostream& operator<<(std::ostream& s, const Team& team) {
-		s << team.get_name();
+		s << std::string(team);
 		return (s);
 	}
 }

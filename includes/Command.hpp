@@ -16,30 +16,30 @@ namespace Zappy {
 
   class Command {
     public:
-      static Command* parse_server_command(const std::string & msg, Server * s);
-      
-      // CONSTRUCTORS
+      // STATIC PUBLIC METHODS //
+      static Command* parse_server_command(const std::string & msg, Server * s);      
+      // CONSTRUCTORS & DESTRUCTORS //
       Command(const Command&) = default;
+      Command& operator=(const Command&) = default; // const for safety... not super nesessary
       virtual ~Command();
-      
-      // MEMBER FUNCTIONS
-      Command&            operator=(const Command&) = default; // const for safety... not super nesessary
-      const std::string & get_cmd() const;
-      // VIRTUAL MEMBER FUNCTIONS(Inherited will prioritize)
-      virtual bool        is_valid() const;
-      virtual void        execute();
+      // CONST PUBLIC METHODS //
+      const std::string&        get_cmd() const;
+      // CONST PUBLIC VIRTUAL METHODS //
       virtual const std::string cmd_error() const;
+      virtual void              execute();
+      virtual bool              is_valid() const;
     protected:
-      // Semi-Abstract Class, prevent Command from being created on the main scope
+      // PROTECTED CONSTRUCTORS (DISABLED PUBLICLY) //
       Command(const std::string cmd, Server * s);
+      // STATIC PROTECTED METHODS //
       static std::vector<std::string> get_options(const std::string & options_str);
-      Server * s_;
+      // PROTECTED METHODS //
+      Server* s_;
     private:
+      // PRIVATE METHODS //
       const std::string cmd_;
   };
 
   std::ostream& operator<<(std::ostream&, const Command&);
 }
-
 #endif
-

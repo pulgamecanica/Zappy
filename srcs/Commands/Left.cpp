@@ -19,7 +19,7 @@ namespace Zappy {
   void  Left::execute() {
     ClientCommand::execute();
     player_->move_left();
-    player_->client_->broadcast("OK:left");
+    player_->get_client()->broadcast("OK:left");
   }
 
   void  Left::broadcast() const {

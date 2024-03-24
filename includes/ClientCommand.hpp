@@ -15,27 +15,30 @@ namespace Zappy {
 
   class ClientCommand: public Command {// virtual inheritance because I want to also check the middle class (ClientCommand)
     public:
+      // STATIC PUBLIC METHOD //
       static ClientCommand* parse_command(GameEngine *trantor, Client *c, const std::string &msg);
-      
-      // CONSTRUCTORS
+      // CONSTRUCTORS & DESTRUCTORS //
       ClientCommand(const ClientCommand&) = default;
+      ClientCommand& operator= (const ClientCommand&) = default;
       virtual ~ClientCommand();
-
-      // MEMBER FUNCTIONS
-      ClientCommand&  operator= (const ClientCommand&) = default;
-      int             get_cost() const;
-      bool            was_executed() const;
-      bool            expired() const;
-      // VIRTUAL MEMBER FUNCTIONS(Inherited will prioritize)
+      // CONST PUBLIC METHODS //
+      int                       get_cost() const;
+      bool                      expired() const;
+      bool                      was_executed() const;
+      // CONST PUBLIC VIRTUAL METHODS //
       virtual void              broadcast() const;
-      virtual bool              is_valid() const;
-      virtual void              execute();
       virtual const std::string cmd_error() const;
+      virtual bool              is_valid() const;
+      // PUBLIC VIRTUAL METHODS //
+      virtual void              execute();
     protected:
+      // PROTECTED CONSTRUCTORS (DISABLED PUBLICLY) //
       ClientCommand(GameEngine *trantor, const std::string cmd, int time_cost);
+      // CONST PROTECTED MEMBERS //
       GameEngine          *trantor_;
       ssize_t             executed_at_frame_;
     private:
+      // CONST PRIVATE MEMBERS //
       bool                executed_;
       const int           frames_cost_;
   };
@@ -43,4 +46,3 @@ namespace Zappy {
   std::ostream& operator<<(std::ostream&, const ClientCommand&);
 }
 #endif
-

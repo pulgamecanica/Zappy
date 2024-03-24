@@ -4,6 +4,7 @@
 
 #include "Commands/BlockContentTile.hpp"
 #include "Tile.hpp"
+#include "Player.hpp"
 
 namespace Zappy {
 
@@ -38,7 +39,8 @@ namespace Zappy {
 			spectator_.broadcast("KO:Wrong Coordinates");
 		} else {
 			spectator_.broadcast(
-				std::string("bct ") + std::string(trantor_->get_tile(*pos_)));
+				std::string("bct ") +
+				std::string(trantor_->get_tile(*pos_)));
 		}
 	}
 

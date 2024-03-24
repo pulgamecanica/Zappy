@@ -6,6 +6,9 @@ extern "C" {
 	#include <math.h>
 }
 
+#include <sstream>
+#include <map>
+
 #include "Zappy.inc"
 
 #include "Tile.hpp"
@@ -23,16 +26,24 @@ namespace Zappy {
 
 	Tile::Tile(int i, int width): pos_(index_to_point(i, width)) {
 		// std::cout << "Tile [" << BLUE << pos_ << ENDC << "]" << " Index: " << BLUE << i << ENDC << std::endl;
+		for (int i = 0; i < 7; ++i)
+			resources_[(Resource::ResourceType)i] = 0;
 		for (int i = 0; i < rand() % 10; ++i) {
-			items_.push_back(i);
+			add_new_resource(Resource::get_random_resource());
 		}
 	}
 
 	Tile::Tile(const Point& pos): pos_(pos) {
 		// std::cout << "Constructed Tile from (pos) [" << pos_ << "]" << std::endl;
+		for (int i = 0; i < 7; ++i)
+			resources_[(Resource::ResourceType)i] = 0;
 		for (int i = 0; i < rand() % 10; ++i) {
-			items_.push_back(i);
+			add_new_resource(Resource::get_random_resource());
 		}
+	}
+
+	void Tile::add_new_resource(Resource res) {
+		resources_[res.get_resource_type()]++;
 	}
 
 	// Tile::Tile(const Tile& param) {
@@ -119,7 +130,13 @@ namespace Zappy {
 	}
 
 	Tile::operator std::string() const {
-    return std::string(pos_) + ":" + std::to_string(items_.size());
+		std::stringstream ss;
+
+		ss << std::string(pos_);
+		for (std::map<Resource::ResourceType, int>::const_iterator i = resources_.begin(); i != resources_.end(); ++i) {
+			ss << " " << i->second;
+		}
+    return ss.str();
 	}
 
 	std::ostream& operator<<(std::ostream& s, const Tile& tile) {
