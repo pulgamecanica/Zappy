@@ -12,6 +12,7 @@ extern "C" {
 
 #include "Zappy.inc"
 #include "Player.hpp"
+#include "Client.hpp"
 #include "Team.hpp"
 
 namespace Zappy {

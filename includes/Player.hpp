@@ -6,12 +6,12 @@
 # define __PLAYER_HPP__
 
 #include <iostream>
+#include <vector>
 
-#include "ClientCommand.hpp"
 #include "Geometry/Direction.hpp"
 #include "Geometry/Point.hpp"
 
-namespace Zappy {  
+namespace Zappy {
   class Client;
   class Team;
 

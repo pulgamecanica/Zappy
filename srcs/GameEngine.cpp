@@ -22,13 +22,16 @@ namespace Zappy {
     updated_at_ms_ = created_at_ms_;
     // Setup Teams
     for (std::vector<std::string>::iterator i = teams.begin(); i != teams.end(); ++i) {
-      teams_.insert(std::pair<std::string, Team>(*i, Team(*i, num_players)));
+      if (!teams_.count(*i))
+        teams_.insert(std::pair<std::string, Team>(*i, Team(*i, num_players)));
     }
     // Get all the players pointers for each team
     for (std::map<std::string, Team>::const_iterator i = teams_.begin(); i != teams_.end(); ++i) {
       const std::map<int, const Player*> players_map = i->second.get_players_map();
       players_.insert(players_map.begin(), players_map.end());
     }
+    if (DEBUG)
+      std::cout << BLUE << "Loaded " << GREEN << teams_.size() << ENDC << " Teams & " << GREEN << players_.size() << ENDC << " Players" << std::endl;
   }
 
   GameEngine::~GameEngine() {
@@ -40,8 +43,21 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////// CONST PUBLIC METHODS ////////////////////////////////////////
+  unsigned int GameEngine::frame() const {
+    return current_frame_;
+  }
+
   Point GameEngine::get_map_size() const {
     return (Map::get_map_size());
+  }
+
+  const std::vector<const Player *> GameEngine::get_players() const {
+    std::vector<const Player *> vec;
+    for (std::map<int, const Player *>::const_iterator i = players_.begin();
+      i != players_.end(); ++i) {
+      vec.push_back(i->second);
+    }
+    return vec;
   }
 
   const std::vector<const Team *> GameEngine::get_teams() const {
@@ -50,6 +66,10 @@ namespace Zappy {
       vec.push_back(&(i->second));
     }
     return vec;
+  }
+
+  int GameEngine::get_time_unit() const {
+    return (t_);
   }
 
   bool  GameEngine::is_team_valid(const std::string & team) const {
@@ -64,8 +84,6 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   ////////////////////////////////////// PUBLIC METHODS ///////////////////////////////////////////
-  unsigned int GameEngine::frame() {return current_frame_;}
-
   std::vector<Player*> GameEngine::get_players_at(const Point & p) {
     std::vector<Player*> vec;
     (void)p;
@@ -82,8 +100,18 @@ namespace Zappy {
     return (get_players_at(index_to_point(index)));
   }
 
-  const Player* GameEngine::get_player_by_index(int index) {
-    return players_[index];
+  const Player* GameEngine::get_player_by_id(int id) {
+    return players_[id];
+  }
+
+  void GameEngine::set_time_unit(int t) {
+    if (t_ <= 0)
+      throw std::runtime_error("Time unit should be > 0");
+    t_ = t;
+    set_game_delay();
+    if (DEBUG)
+      std::cout << YELLOW << "[Server]\t" << GREEN << "updated" << ENDC ":" << BLUE << "time unit"
+        << ENDC << "[" << BLUE << t_ << ENDC << "]" << std::endl;
   }
 
   void GameEngine::start(int * sig) {

@@ -11,7 +11,7 @@ namespace Zappy {
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
 	Map::Map(const Point & size): size_(size), tlc_(0, 0) {
 		for (int i = 0; i < size.x() * size.y(); ++i) {
-			map_.insert(Tile(i, size.x()));
+			map_.insert(Tile(index_to_point(i)));
 		}
 	}
 
@@ -35,7 +35,7 @@ namespace Zappy {
 	
 	const Tile& Map::get_tile(const Point &pos) const {
 		if (!map_.contains(pos))
-			throw std::runtime_error("Position [" + std::string(pos) + "] is not in the map");
+			throw std::runtime_error("Tile [" + std::string(pos) + "] is not in the map");
 		return *map_.find(pos);
 	}
 

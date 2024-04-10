@@ -4,12 +4,6 @@
 
 #include "Zappy.inc"
 #include "Command.hpp"
-#include "Commands/HelpServer.hpp"
-#include "Commands/StatusServer.hpp"
-#include "Commands/ExitServer.hpp"
-#include "Commands/LangServer.hpp"
-#include "Commands/ClearServer.hpp"
-#include "Commands/PlayersServer.hpp"
 
 #include "Server.hpp"
 
@@ -24,31 +18,11 @@ namespace Zappy {
    * lang <name> -> change the server language
    * 
    **/
-  Command* Command::parse_server_command(const std::string & msg, Server * s) {
-    const std::string cmd = msg.substr(0, msg.find_first_of(" \n"));
-    std::vector<std::string> options;
-
-    options = get_options(msg.substr(cmd.length()));
-    if (cmd == "help") {
-      return new HelpServer(s);
-    } else if (cmd == "status") {
-      return new StatusServer(s);
-    } else if (cmd == "exit") {
-      return new ExitServer(s);
-    } else if (cmd == "clear") {
-      return new ClearServer();
-    } else if (cmd == "players") {
-      return new PlayersServer(s);
-    } else if (cmd == "lang") {
-      return new LangServer(s, options);
-    }
-    return new Command(cmd, s);
-  }
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
-  Command::Command(const std::string cmd, Server * s):
-     s_(s), cmd_(cmd) {
+  Command::Command(const std::string cmd, GameEngine * trantor, Error e):
+      error_(e), trantor_(trantor), cmd_(cmd) {
   }
 
   Command::~Command() {
@@ -57,8 +31,12 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////// CONST PUBLIC METHODS ////////////////////////////////////////
-  const std::string & Command::get_cmd() const {
+  const std::string& Command::get_cmd() const {
     return (cmd_);
+  }
+
+  const std::string& Command::get_error_msg() const {
+    return ERROR_MSGS.at(error_);
   }
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,15 +44,23 @@ namespace Zappy {
   const std::string Command::cmd_error() const {
     return ("Command:Error");
   }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
+  /////////////////////////////////////// PUBLIC METHODS //////////////////////////////////////////
+  bool Command::is_valid() const {
+    return error_ == NoError;
+  }
+
+  void Command::set_error(enum Command::Error error) {
+    error_ = error;
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /////////////////////////////////// PUBLIC VIRTUAL METHODS //////////////////////////////////////
   void Command::execute() {
     throw std::runtime_error("Cannot execute abstract command");
   }
-
-  bool Command::is_valid() const {
-    return false;
-  }
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////// STATIC PROTECTED METHODS ///////////////////////////////////
 
   //////////////////////////////////// STATIC PROTECTED METHODS ///////////////////////////////////
   std::vector<std::string> Command::get_options(const std::string & options_str) {
@@ -99,6 +85,15 @@ namespace Zappy {
   }
   /////////////////////////////////////////////////////////////////////////////////////////////////
   
+  //////////////////////////////////// STATIC PROTECTED MEMBERS ///////////////////////////////////
+  const std::map<enum Command::Error, std::string> Command::ERROR_MSGS = {
+    {Command::Error::NoError, ""},
+    {Command::Error::BadParams, "was given bad parameters, make sure you are giving the correct type"},
+    {Command::Error::MissingParams, "is missing parameters"}
+  };
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  
+
   std::ostream& operator<<(std::ostream& s, const Command& param) {
     s << param.get_cmd();
     return (s);

@@ -30,22 +30,32 @@ namespace Zappy {
   class GameEngine: public Server, public Map {
     public:
       // CONSTRUCTORS & DESTRUCTORS //
-      GameEngine(std::vector<std::string> teams , int default_time = 100, std::string toml_file = "conf.toml",
-        std::string default_lang = "en", int players_port = 4242, int spectators_port = 2121,
-        Point map_size = {10, 10}, int num_players = 1, int timeout = 60000);
+      GameEngine(
+        std::vector<std::string> teams,
+        int default_time = 100,
+        std::string toml_file = "conf.toml",
+        std::string default_lang = "en",
+        int players_port = 4242,
+        int spectators_port = 2121,
+        Point map_size = {10, 10},
+        int num_players = 1,
+        int timeout = 60000);
       GameEngine(const GameEngine&) = delete;
       GameEngine& operator=(const GameEngine&) = delete;
       ~GameEngine();
       // CONST PUBLIC METHODS //
-      Point                           get_map_size() const;
-      const std::vector<const Team *> get_teams() const;
-      bool                            is_team_valid(const std::string & team) const;
-      bool                            join_team(const std::string & team, Client * client);
+      unsigned int                      frame() const;
+      Point                             get_map_size() const;
+      const std::vector<const Player *> get_players() const;
+      const std::vector<const Team *>   get_teams() const;
+      int                               get_time_unit() const;
+      bool                              is_team_valid(const std::string & team) const;
+      bool                              join_team(const std::string & team, Client * client);
       // PUBLIC METHODS //
-      unsigned int          frame();
       std::vector<Player*>  get_players_at(const Point & p);
       std::vector<Player*>  get_players_at(int index);
-      const Player*         get_player_by_index(int index);
+      const Player*         get_player_by_id(int id);
+      void                  set_time_unit(int t);
       void                  start(int * sig);
     private:
       // PRIVATE METHODS //

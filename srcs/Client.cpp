@@ -95,7 +95,7 @@ namespace Zappy {
       try {
         cmd_queue_.front()->execute();
         cmd_queue_.front()->broadcast();
-      } catch( std::exception & e) {
+      } catch(std::exception & e) {
         this->broadcast(e.what());
       }
     } else if (cmd_queue_.front()->expired()) {

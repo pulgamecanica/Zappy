@@ -14,25 +14,6 @@ extern "C" {
 #include "Tile.hpp"
 
 namespace Zappy {
-
-	Point Tile::index_to_point(int i, int width) {
-		int x, y;
-
-		y = (i / width);
-		x = (i % width);
-		return (Point(x, y));
-	}
-
-
-	Tile::Tile(int i, int width): pos_(index_to_point(i, width)) {
-		// std::cout << "Tile [" << BLUE << pos_ << ENDC << "]" << " Index: " << BLUE << i << ENDC << std::endl;
-		for (int i = 0; i < 7; ++i)
-			resources_[(Resource::ResourceType)i] = 0;
-		for (int i = 0; i < rand() % 10; ++i) {
-			add_new_resource(Resource::get_random_resource());
-		}
-	}
-
 	Tile::Tile(const Point& pos): pos_(pos) {
 		// std::cout << "Constructed Tile from (pos) [" << pos_ << "]" << std::endl;
 		for (int i = 0; i < 7; ++i)

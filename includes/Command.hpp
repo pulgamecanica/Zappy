@@ -7,35 +7,49 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "Client.hpp"
+#include "GameEngine.hpp"
 
 namespace Zappy {
   
   class Server;
 
   class Command {
-    public:
-      // STATIC PUBLIC METHODS //
-      static Command* parse_server_command(const std::string & msg, Server * s);      
+    protected:
+      enum Error {
+        NoError,
+        BadParams,
+        MissingParams,
+        CommandNotFound
+      };
+    public:  
       // CONSTRUCTORS & DESTRUCTORS //
       Command(const Command&) = default;
       Command& operator=(const Command&) = default; // const for safety... not super nesessary
       virtual ~Command();
       // CONST PUBLIC METHODS //
       const std::string&        get_cmd() const;
+      const std::string&        get_error_msg() const;
       // CONST PUBLIC VIRTUAL METHODS //
       virtual const std::string cmd_error() const;
+      // PUBLIC METHODS //
+      bool                      is_valid() const;
+      void                      set_error(enum Command::Error error);
+      // PUBLIC VIRTUAL METHODS //
       virtual void              execute();
-      virtual bool              is_valid() const;
     protected:
       // PROTECTED CONSTRUCTORS (DISABLED PUBLICLY) //
-      Command(const std::string cmd, Server * s);
+      Command(const std::string cmd, GameEngine * trantor, Error e = NoError);
       // STATIC PROTECTED METHODS //
       static std::vector<std::string> get_options(const std::string & options_str);
       // PROTECTED METHODS //
-      Server* s_;
+      enum Error  error_;
+      GameEngine  *trantor_;
     private:
+      // STATIC PRIVATE MEMBERS //
+      static const std::map<enum Error, std::string> ERROR_MSGS;
       // PRIVATE METHODS //
       const std::string cmd_;
   };

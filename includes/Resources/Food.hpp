@@ -1,21 +1,21 @@
-//***************************//
-//*Template by pulgamecanica*//
-//***************************//
+// //***************************//
+// //*Template by pulgamecanica*//
+// //***************************//
 
-#ifndef __FOOD_HPP__
-# define __FOOD_HPP__
+// #ifndef __FOOD_HPP__
+// # define __FOOD_HPP__
 
-#include <iostream>
+// #include <iostream>
 
-class Food {
-	public:
-		Food();
-		Food(const Food&);
-		~Food();
-		Food&	operator= (const Food&); // const for safety... not super nesessary
-};
+// class Food {
+// 	public:
+// 		Food();
+// 		Food(const Food&);
+// 		~Food();
+// 		Food&	operator= (const Food&); // const for safety... not super nesessary
+// };
 
-std::ostream&	operator<<(std::ostream&, const Food&);
+// std::ostream&	operator<<(std::ostream&, const Food&);
 
-#endif
+// #endif
 

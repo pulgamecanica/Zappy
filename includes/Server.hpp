@@ -66,7 +66,7 @@ namespace Zappy {
       // PRIVATE METHODS //
       int               accept_client(int socket);
       void              add_client(int socket, int fd);
-      void              handle_client(int fd, const std::string & cmd);
+      void              handle_client(int fd, const std::string & msg);
       const std::string handle_client_input_or_disconnect(int fd);
       void              handle_stdin(const std::string & cmd);
       bool              is_client(int fd);

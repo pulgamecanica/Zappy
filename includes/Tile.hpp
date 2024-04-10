@@ -15,8 +15,6 @@ namespace Zappy {
 
 	class Tile {
 		public:
-			static Point index_to_point(int i, int width);
-			Tile(int i, int width);
 			Tile(const Point& pos);
 			Tile(const Tile&) = default;
 			~Tile();

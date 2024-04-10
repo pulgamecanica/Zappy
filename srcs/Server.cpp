@@ -16,7 +16,7 @@ extern "C" {
 #include "Player.hpp"
 #include "Spectator.hpp"
 #include "Server.hpp"
-#include "Command.hpp"
+#include "ServerCommand.hpp"
 #include "ClientCommand.hpp"
 #include "GameEngine.hpp"
 #include "Client.hpp"
@@ -24,8 +24,14 @@ extern "C" {
 namespace Zappy {
   const std::string  Server::VERSION = "42.0";
   //////////////////////////////// CONSTRUCTORS & DESTRUCTORS /////////////////////////////////////
-  Server::Server(GameEngine *trantor, std::string toml_file, std::string default_lang,
-    int players_port, int spectators_port, int timeout): connection_timeout_(timeout), 
+  Server::Server(
+    GameEngine *trantor,
+    std::string toml_file,
+    std::string default_lang,
+    int players_port,
+    int spectators_port,
+    int timeout):
+      connection_timeout_(timeout), 
       players_port_(players_port), spectators_port_(spectators_port), health_(Booting),
       trantor_(trantor) {
     /* Setup TOML configuration file */
@@ -186,7 +192,7 @@ namespace Zappy {
     return (date);
   }
   
-  const std::vector<std::string>  Server::get_list_of_supported_languages() const {
+  const std::vector<std::string> Server::get_list_of_supported_languages() const {
     std::vector<std::string> langs;
 
     for (std::vector<Config>::const_iterator it = configs_.begin(); it != configs_.end(); ++it) {
@@ -223,7 +229,6 @@ namespace Zappy {
         i->second->broadcast(msg);
     }
   }  
-
 
   void  Server::set_config(const std::string lang_acronym) {
     std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
@@ -263,13 +268,13 @@ namespace Zappy {
   void  Server::update() {
     int nfds;
 
-    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0); // Change to 0 when implementing the udp bidirectionall socket
+    nfds = epoll_wait(epoll_fd_, events_, Server::MAX_EPOLL_EVENTS, 0);
     if (nfds == -1)
        throw std::runtime_error(std::string("epoll_wait") + std::string(strerror(errno)));
     for (int n = 0; n < nfds; ++n) {
       if (is_server_socket(events_[n].data.fd)) {
         accept_client(events_[n].data.fd);
-      } else { // must be a client (Note: could be a spectator [ignore])
+      } else { // must be a client (or the server itself: stdin)
         const std::string & client_msg = handle_client_input_or_disconnect(events_[n].data.fd);
         if (client_msg.empty())
           continue ;
@@ -283,8 +288,9 @@ namespace Zappy {
     for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
       i->second->update();
       /* Remove innactive players */
-      if ((i->second->check_client_type(Client::ClientType::PlayerT) && !i->second->joined() &&
-        i->second->uptime() >= connection_timeout_) || i->second->check_client_type(Client::ClientType::ErrorT))
+      if ((i->second->check_client_type(Client::ClientType::PlayerT) && !i->second->joined()
+        && i->second->uptime() >= connection_timeout_)
+        || i->second->check_client_type(Client::ClientType::ErrorT))
         remove_client(i->first);
     }
     /* Make sure to remove all players which are in the list of to be removed */
@@ -311,6 +317,7 @@ namespace Zappy {
     socklen_t           addrlen;
     sockaddr_in         addr;
 
+    // Check this ... is it really worth it to have two sockaddr_in on the struct... ?
     if (socket == players_socket_)
       addr = players_sockaddr_;
     else if (socket == spectators_socket_)
@@ -333,6 +340,7 @@ namespace Zappy {
     return fd;
   }
 
+  // This implementation could change depending if the server is launched in single port mode
   void  Server::add_client(int socket, int fd) {
     if (DEBUG)
       std::cout << YELLOW << "[Server]\t" << GREEN << "add\t" << ENDC << fd << std::endl;
@@ -343,21 +351,16 @@ namespace Zappy {
     }
   }
 
-  void  Server::handle_client(int fd, const std::string & cmd) {
+  void  Server::handle_client(int fd, const std::string & msg) {
     Client * client;
+    ClientCommand *c;
 
-    // client = dynamic_cast<Player *>(clients_.at(fd));
-    // if (client)
-    //   std::cout << "Im a client" << std::endl;
-    // client = dynamic_cast<Spectator *>(clients_.at(fd));
-    // if (client)
-    //   std::cout << "Im a Spectator" << std::endl;
     client = clients_.at(fd);
-    ClientCommand *c = ClientCommand::parse_command(trantor_, client, cmd);
+    c = ClientCommand::parse_command(trantor_, client, msg);
     if (DEBUG) {
       std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC << ":" << YELLOW <<
         (c->is_valid() ? "valid" : "invalid") << " | " << GREEN << "recv" << ENDC << ":" << BLUE <<
-        cmd.length() << ENDC << "bytes" << std::endl;
+        msg.length() << ENDC << "bytes" << std::endl;
     }
     if (c->is_valid()) {
       client->queue_cmd(c);
@@ -398,7 +401,7 @@ namespace Zappy {
 
   // Handle standard input from the server [BONUS]
   void  Server::handle_stdin(const std::string & cmd) {
-    Command * c = Command::parse_server_command(cmd, this);
+    ServerCommand * c = ServerCommand::parse_command(trantor_, cmd);
 
     if (DEBUG) {
       std::cout << YELLOW << "[Server]\t" << BLUE << *c << ENDC ":" << YELLOW <<
