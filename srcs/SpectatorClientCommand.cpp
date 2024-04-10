@@ -4,7 +4,7 @@
 
 #include "SpectatorClientCommand.hpp"
 #include "Commands/SpectatorClientCommands/MapSize.hpp"
-#include "Commands/SpectatorClientCommands/BlockContentTile.hpp"
+#include "Commands/SpectatorClientCommands/BoxContentTile.hpp"
 #include "Commands/SpectatorClientCommands/MapContentTile.hpp"
 #include "Commands/SpectatorClientCommands/TeamsNames.hpp"
 #include "Commands/SpectatorClientCommands/PlayerPosition.hpp"
@@ -17,7 +17,7 @@ namespace Zappy {
 
 	std::map<std::string, SpectatorClientCommand::SpectatorsCommandFactory> SpectatorClientCommand::spectatorsCommandFactoryMap = {
     {"msz", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { (void)options; return new MapSize(trantor, s); }},
-    {"bct", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new BlockContentTile(trantor, s, options); }},
+    {"bct", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new BoxContentTile(trantor, s, options); }},
     {"mct", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { (void)options; return new MapContentTile(trantor, s); }},
     {"tna", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { (void)options; return new TeamsNames(trantor, s); }},
     {"ppo", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new PlayerPosition(trantor, s, options); }},

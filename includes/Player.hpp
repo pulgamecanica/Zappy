@@ -10,6 +10,7 @@
 
 #include "Geometry/Direction.hpp"
 #include "Geometry/Point.hpp"
+// #include "Geometry/Resource.hpp"
 
 namespace Zappy {
   class Client;
@@ -58,6 +59,7 @@ namespace Zappy {
       int               lvl_;
       enum PlayerStatus status_;
       Team&             team_;
+      // const std::vector<Resource>
       // struct timeval created_at_;
       // Team
       // ETC...

@@ -2,8 +2,8 @@
 //*Template by pulgamecanica*//
 //***************************//
 
-#ifndef __BLOCKCONTENTTILE_HPP__
-# define __BLOCKCONTENTTILE_HPP__
+#ifndef __BOXCONTENTTILE_HPP__
+# define __BOXCONTENTTILE_HPP__
 
 #include <iostream>
 
@@ -12,13 +12,13 @@
 #include "Geometry/Point.hpp"
 
 namespace Zappy {
-	class BlockContentTile: public SpectatorClientCommand {
+	class BoxContentTile: public SpectatorClientCommand {
 		public:
       // CONSTRUCTORS & DESTRUCTORS //
-			BlockContentTile(GameEngine *trantor, Spectator& spect, std::vector<std::string>& options);
-			BlockContentTile(const BlockContentTile&) = delete;
-			BlockContentTile&	operator= (const BlockContentTile&) = delete;
-			~BlockContentTile();
+			BoxContentTile(GameEngine *trantor, Spectator& spect, std::vector<std::string>& options);
+			BoxContentTile(const BoxContentTile&) = delete;
+			BoxContentTile&	operator= (const BoxContentTile&) = delete;
+			~BoxContentTile();
       // PUBLIC INHERITED VIRTUAL METHODS //
 	    void  execute();
 			const std::string cmd_error() const;
@@ -27,7 +27,7 @@ namespace Zappy {
 			Point * pos_;
 	};
 
-	std::ostream&	operator<<(std::ostream&, const BlockContentTile&);
+	std::ostream&	operator<<(std::ostream&, const BoxContentTile&);
 }
 #endif
 

@@ -15,7 +15,7 @@ SRC += srcs/Commands/PlayerClientCommands/Advance.cpp \
 
 # Add Spectator Commands
 SRC += srcs/Commands/SpectatorClientCommands/MapSize.cpp \
-  srcs/Commands/SpectatorClientCommands/BlockContentTile.cpp \
+  srcs/Commands/SpectatorClientCommands/BoxContentTile.cpp \
   srcs/Commands/SpectatorClientCommands/MapContentTile.cpp \
   srcs/Commands/SpectatorClientCommands/TeamsNames.cpp \
   srcs/Commands/SpectatorClientCommands/Players.cpp \
@@ -37,7 +37,7 @@ SRC += srcs/Geometry/Point.cpp \
   srcs/Geometry/Direction.cpp \
 
 CFLAGS  = -Wall -Wextra -Werror -std=c++20 #-fsanitize=leak
-# CFLAGS  = -O3 -g -Wall -Wextra -Werror -std=c++20 -pedantic #-fsanitize=leak
+#CFLAGS  = -O3 -g -Wall -Wextra -Werror -std=c++20 -pedantic -fsanitize=leak
 
 INC = -I includes -I tomlplusplus/include
 

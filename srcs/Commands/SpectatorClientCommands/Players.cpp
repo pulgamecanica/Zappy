@@ -4,6 +4,7 @@
 
 #include "Commands/SpectatorClientCommands/Players.hpp"
 #include "Player.hpp"
+#include "Team.hpp"
 
 namespace Zappy {
 
@@ -24,7 +25,7 @@ namespace Zappy {
 
   	const std::vector<const Player *> players = trantor_->get_players();
 	  for (std::vector<const Player *>::const_iterator i = players.begin(); i != players.end(); ++i) {
-	  	ss <<	"player " << *(*i) << std::endl;
+	  	ss << *(*i) << " " << (*i)->get_team() << std::endl;
 	  }
 		spectator_.broadcast(ss.str());
 

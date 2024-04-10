@@ -366,6 +366,7 @@ namespace Zappy {
       client->queue_cmd(c);
     } else {
       client->broadcast(c->cmd_error());
+      delete c;
     }
   }
 
