@@ -20,7 +20,7 @@ namespace Zappy {
 			~Team();
 			Team&	operator= (const Team&) = default;
 			bool	add_client(Client * client);
-			const std::map<int, const Player*> get_players_map() const;
+			const std::map<int, Player*> get_players_map();
 			const std::string& get_name() const;
 			int slots_left() const;
       explicit operator std::string() const;

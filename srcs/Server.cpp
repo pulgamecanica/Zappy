@@ -186,8 +186,9 @@ namespace Zappy {
 
   const std::string Server::get_creation_date() const {
     std::string date;
-
-    date = ctime(&created_at_ms_);
+    ssize_t seconds_since_epoch = (created_at_ms_) / 1000;
+    
+    date = ctime(&seconds_since_epoch);
     date.pop_back();
     return (date);
   }

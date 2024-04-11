@@ -14,7 +14,8 @@
 namespace Zappy {
 	class Inventory {
 		public:
-			Inventory();
+			// const int INITIAL_FOOD; 
+			Inventory(bool rand_gen = false);
 			Inventory(const Inventory&) = default;
 			Inventory&	operator= (const Inventory&) = default;
 			~Inventory();

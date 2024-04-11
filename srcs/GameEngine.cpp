@@ -26,8 +26,8 @@ namespace Zappy {
         teams_.insert(std::pair<std::string, Team>(*i, Team(*i, num_players)));
     }
     // Get all the players pointers for each team
-    for (std::map<std::string, Team>::const_iterator i = teams_.begin(); i != teams_.end(); ++i) {
-      const std::map<int, const Player*> players_map = i->second.get_players_map();
+    for (std::map<std::string, Team>::iterator i = teams_.begin(); i != teams_.end(); ++i) {
+      const std::map<int, Player*> players_map = i->second.get_players_map();
       players_.insert(players_map.begin(), players_map.end());
     }
     if (DEBUG)
@@ -53,7 +53,7 @@ namespace Zappy {
 
   const std::vector<const Player *> GameEngine::get_players() const {
     std::vector<const Player *> vec;
-    for (std::map<int, const Player *>::const_iterator i = players_.begin();
+    for (std::map<int, Player *>::const_iterator i = players_.begin();
       i != players_.end(); ++i) {
       vec.push_back(i->second);
     }
@@ -140,7 +140,11 @@ namespace Zappy {
   void GameEngine::update() {
     Server::update();
     if (is_time_to_update()) {
-      // std::cout << "1/t:[" << frame() << "]" << std::endl;
+      // std::cout << "1/" << get_time_unit() << ":[" << frame() << "]" << std::endl;
+      for (std::map<int, Player *>::iterator i = players_.begin(); i != players_.end(); ++i) {
+        std::cout << "updating player #" << i->first << ":" << *(i->second) << std::endl;
+        i->second->advance();
+      }
       current_frame_++;
       update_time();
     }

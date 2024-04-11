@@ -2,14 +2,19 @@
 //*Template by pulgamecanica*//
 //***************************//
 
+extern "C" {
+	#include <math.h>
+}
+
 #include "Resources/Inventory.hpp"
 
 namespace Zappy {
-	Inventory::Inventory() {
+	Inventory::Inventory(bool rand_gen) {
 		int minerals_count = Mineral::TRANTORIAN_MINERALS.size();
 
+		food_ = rand_gen ? rand() % 10 : 126;
 		for (int i = 0; i < minerals_count; ++i) {
-			resources_[i] = 0;
+			resources_[i] = rand_gen ? rand() % 10 : 0;
 		}
 	}
 

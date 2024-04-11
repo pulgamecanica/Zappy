@@ -9,8 +9,9 @@ namespace Zappy {
 	Spectator::Spectator(int fd):
     Client(fd, ClientType::SpectatorT) {
 		std::string welcome_msg = "Hello, Welcome spectator\nJoined at: ";
+		ssize_t seconds_since_epoch = created_at_ms_ / 1000;
 
-    welcome_msg.append(ctime(&created_at_ms_));
+    welcome_msg.append(ctime(&seconds_since_epoch));
     broadcast(welcome_msg.c_str());
 	}
 

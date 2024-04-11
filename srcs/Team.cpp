@@ -48,10 +48,10 @@ namespace Zappy {
 		return (name_);
 	}
 
-	const std::map<int, const Player*> Team::get_players_map() const {
-		std::map<int, const Player*> map;
+	const std::map<int, Player*> Team::get_players_map() {
+		std::map<int, Player*> map;
 
-		for (std::vector<Player>::const_iterator i = players_.begin(); i != players_.end(); ++i) {
+		for (std::vector<Player>::iterator i = players_.begin(); i != players_.end(); ++i) {
 			map[i->get_id()] = &*i;
 		}
 		return map;

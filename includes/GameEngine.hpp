@@ -69,7 +69,7 @@ namespace Zappy {
       int                         *sig_;
       int                         t_; // t = fps, it's the time basically 
       std::map<std::string, Team> teams_;
-      std::map<int, const Player *> players_;
+      std::map<int, Player *>     players_;
       ssize_t                     updated_at_ms_;
   };
 
