@@ -23,6 +23,7 @@ SRC += srcs/Commands/SpectatorClientCommands/MapSize.cpp \
   srcs/Commands/SpectatorClientCommands/PlayerLevel.cpp \
   srcs/Commands/SpectatorClientCommands/GetTimeUnit.cpp \
   srcs/Commands/SpectatorClientCommands/SetTimeUnit.cpp \
+  srcs/Commands/SpectatorClientCommands/PlayerInventory.cpp \
 
 # Add Server Commands
 SRC += srcs/Commands/ServerCommands/HelpServer.cpp \

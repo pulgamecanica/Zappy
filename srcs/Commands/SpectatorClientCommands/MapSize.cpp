@@ -14,8 +14,6 @@ namespace Zappy {
 		// std::cout << "MapSize" << " destroyed" << std::endl;
 	}
 
-	bool  MapSize::is_valid() const { return (true); };
-
 	void	MapSize::execute() {
 		std::string size_str(trantor_->get_map_size());
 

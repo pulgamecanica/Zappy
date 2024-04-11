@@ -17,7 +17,6 @@ namespace Zappy {
 			Players(const Players&) = delete;
 			~Players();
 			Players&	operator= (const Players&) = delete; // const for safety... not super nesessary
-			bool  is_valid() const;
 	    void  execute();
 			const std::string cmd_error() const;
 		private:

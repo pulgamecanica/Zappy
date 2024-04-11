@@ -18,7 +18,6 @@ namespace Zappy {
 			GetTimeUnit(const GetTimeUnit&) = default;
 			~GetTimeUnit();
 			GetTimeUnit&	operator= (const GetTimeUnit&) = default;
-			bool  is_valid() const;
 	    void  execute();
 			const std::string cmd_error() const;
 		private:

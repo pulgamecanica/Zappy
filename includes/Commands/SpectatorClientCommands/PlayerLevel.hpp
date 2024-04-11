@@ -19,12 +19,10 @@ namespace Zappy {
 			PlayerLevel(const PlayerLevel&) = default;
 			~PlayerLevel();
 			PlayerLevel&	operator=(const PlayerLevel&) = default;
-			bool  is_valid() const;
       void  execute();
 			const std::string cmd_error() const;
 		private:
 			Spectator & spectator_;
-			bool bad_params_;
 			int player_id_;
 			const Player* player_;
 	};

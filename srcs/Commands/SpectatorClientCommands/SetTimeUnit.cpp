@@ -11,21 +11,17 @@ namespace Zappy {
 				try {
 					time_unit = std::stoi(options[0]);
 					if (time_unit <= 0)
-						bad_params_ = true;
+						set_error(Command::Error::BadParams);
 				} catch (std::exception &e) {
-					bad_params_ = true;
+					set_error(Command::Error::BadParams);
     		}
 			} else {
-				bad_params_ = true;
+				set_error(Command::Error::MissingParams);
 			}
 	}
 
 	SetTimeUnit::~SetTimeUnit() {
 		;
-	}
-	
-	bool  SetTimeUnit::is_valid() const {
-		return !bad_params_;
 	}
 	
 	void  SetTimeUnit::execute() {

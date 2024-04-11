@@ -126,7 +126,7 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   std::ostream& operator<<(std::ostream& s, const Player& p) {
-    s << p.get_ppo() << " " << p.get_team() << " " << p.get_lvl() << " " << p.get_inventory();
+    s << p.get_ppo() << " " << p.get_lvl() << " " << p.get_inventory() << " \"" << p.get_team() << "\" ";
     return (s);
   }
 }

@@ -15,10 +15,6 @@ namespace Zappy {
 		;
 	}
 
-	bool GetTimeUnit::is_valid() const {
-		return true;
-	}
-
 	void GetTimeUnit::execute() {
 		ClientCommand::execute();
 		spectator_.broadcast("sgt " + std::to_string(trantor_->get_time_unit()));

@@ -105,9 +105,11 @@ In the future I will implement the port(s), address, single port mode; etc
 ||
 | `plv #n` | `plv #n L\n` | Player Level, returns the level of player #n <hr>Params:<br>`#n` player's id<hr>`L` level<hr>Errors:<br>When the id is not found: `Player not found`<br> | <details><summary>Example</summary><a href="https://github.com/pulgamecanica/Zappy/assets/28810331/bca14971-76f5-4280-9459-8c6397fe2ee2" referer="no-referer" target="auto"><img src="https://github.com/pulgamecanica/Zappy/assets/28810331/bca14971-76f5-4280-9459-8c6397fe2ee2" alt="Player Level"></a></details>|
 ||
-| `pin #n` | `pin #n X Y q q q q q q q\n`| Player inventory, get the inventory of player #n<hr>Params:<br>`#n` player's id<hr>`X` x coordinate<br>`Y` y coordinate<br>`q` amount of the resource<hr>Errors:<br>When the id is not found: `Player not found`<br> | <details> <summary>Example</summary></details>|
+| `pin #n` | `pin #n X Y q q q q q q q\n`| Player inventory, get the inventory of player #n<hr>Params:<br>`#n` player's id<hr>`X` x coordinate<br>`Y` y coordinate<br>`q` amount of the resource<hr>Errors:<br>When the id is not found: `Player not found`<br> | <details> <summary>Example</summary>
+<a href="https://github.com/pulgamecanica/Zappy/assets/28810331/ec6bbce5-6957-4489-96bf-2d1f7c8fb79b" referer="no-referer" target="auto"><img src="https://github.com/pulgamecanica/Zappy/assets/28810331/ec6bbce5-6957-4489-96bf-2d1f7c8fb79b" alt="Players Inventory"></a>
+</details>|
 ||
-| `players` | `player #n X Y O N L q q q q q q q\n` (for each player) | Players, get all the players information, as described on the Player New and Player inventory, followed by an empty new line (end of message) | <details> <summary>Example</summary><a href="https://github.com/pulgamecanica/Zappy/assets/28810331/219ce9db-7712-4597-a88d-3711fc3ff5c5" referer="no-referer" target="auto"><img src="https://github.com/pulgamecanica/Zappy/assets/28810331/219ce9db-7712-4597-a88d-3711fc3ff5c5" alt="Players"></a></details>|
+| `players` | `player #n X Y O L q q q q q q q "N"\n` (for each player) | Players, get all the players information, as described on the Player New and Player inventory, followed by an empty new line (end of message)<br>*Note:* The team name is between \"\" so it can be parsed more easily | <details> <summary>Example</summary><a href="https://github.com/pulgamecanica/Zappy/assets/28810331/1f65f840-7579-458a-84c4-30f19079ec68" referer="no-referer" target="auto"><img src="https://github.com/pulgamecanica/Zappy/assets/28810331/1f65f840-7579-458a-84c4-30f19079ec68" alt="Players"></a></details>|
 ||
 
 <h6 style="text-align:left;">

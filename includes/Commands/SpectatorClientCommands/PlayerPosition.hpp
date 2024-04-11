@@ -19,12 +19,10 @@ namespace Zappy {
 			PlayerPosition(const PlayerPosition&) = default;
 			~PlayerPosition();
 			PlayerPosition&	operator=(const PlayerPosition&) = default;
-			bool  is_valid() const;
       void  execute();
 			const std::string cmd_error() const;
 		private:
 			Spectator & spectator_;
-			bool bad_params_;
 			int player_id_;
 			const Player* player_;
 	};

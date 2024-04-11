@@ -16,10 +16,6 @@ namespace Zappy {
 		// std::cout << "MapContentTile" << " destroyed" << std::endl;
 	}
 
-	bool  MapContentTile::is_valid() const {
-		return true;
-	}
-
 	void  MapContentTile::execute() {
     // std::stringstream ss;
     int lowest, last_index;

@@ -2,13 +2,16 @@
 //*Template by pulgamecanica*//
 //***************************//
 
+#include <sstream>
+
 #include "Zappy.inc"
 
-#include "Commands/SpectatorClientCommands/PlayerPosition.hpp"
+#include "Commands/SpectatorClientCommands/PlayerInventory.hpp"
 
 namespace Zappy {
-	PlayerPosition::PlayerPosition(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options):
-		SpectatorClientCommand(trantor, "ppo"), spectator_(spectator), player_(nullptr) {
+
+	PlayerInventory::PlayerInventory(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options):
+		SpectatorClientCommand(trantor, "pin"), spectator_(spectator), player_(nullptr) {
 			if (options.size() == 1) {
 				try {
 					player_id_ = std::stoi(options[0]);
@@ -22,26 +25,32 @@ namespace Zappy {
 			}
 	}
 
-	PlayerPosition::~PlayerPosition() {
-		;
+	PlayerInventory::~PlayerInventory() {
 	}
 
-	void  PlayerPosition::execute() {
+	void  PlayerInventory::execute() {
 		ClientCommand::execute();
+    std::stringstream ss;
+
 		if (!player_) {
-			spectator_.broadcast("Player not found");
+			spectator_.broadcast("KO:Player not found");
 		} else {
-			spectator_.broadcast(player_->get_ppo());
+			ss << get_cmd() << " "
+				<< player_->get_id() << " "
+				<< player_->get_position() << " "
+				<< player_->get_inventory();
+			spectator_.broadcast(ss.str());
 		}
 	}
 
-	const std::string PlayerPosition::cmd_error() const {
+	const std::string PlayerInventory::cmd_error() const {
 		if (DEBUG)
 			return (ClientCommand::BAD_PARAMS_MSG + ":" + "'n' should be the index of a player > 0");
 		return (ClientCommand::BAD_PARAMS_MSG);
 	};
 
-	std::ostream& operator<<(std::ostream& s, const PlayerPosition& param) {
+
+	std::ostream& operator<<(std::ostream& s, const PlayerInventory& param) {
 		// s << param.CONST_METHOD()
 		(void)param;
 		return (s);

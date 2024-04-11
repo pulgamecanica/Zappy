@@ -8,26 +8,22 @@
 
 namespace Zappy {
 	PlayerLevel::PlayerLevel(GameEngine * trantor, Spectator & spectator, std::vector<std::string>& options):
-		SpectatorClientCommand(trantor, "plv"), spectator_(spectator), bad_params_(false), player_(nullptr) {
+		SpectatorClientCommand(trantor, "plv"), spectator_(spectator), player_(nullptr) {
 			if (options.size() == 1) {
 				try {
 					player_id_ = std::stoi(options[0]);
 					player_ = trantor_->get_player_by_id(player_id_);
 				} catch (std::exception &e) {
-					bad_params_ = true;
+					set_error(Command::Error::BadParams);
 					player_ = nullptr;
     		}
 			} else {
-				bad_params_ = true;
+				set_error(Command::Error::MissingParams);
 			}
 	}
 
 	PlayerLevel::~PlayerLevel() {
 		;
-	}
-
-	bool  PlayerLevel::is_valid() const {
-		return !bad_params_;
 	}
 
 	void  PlayerLevel::execute() {

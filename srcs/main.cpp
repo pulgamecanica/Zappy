@@ -93,11 +93,6 @@ int main(int argc, char *argv[])
     // int w(-1), h(-1), num_players(-1), timeout(60000);
     std::vector<std::string> teams;
 
-    {
-        // Default teams
-        teams.push_back("Team Rocket");
-    }
-
     setup_signals();
     try {
         while ((opt = getopt(argc, argv, "l:f:P:S:t:x:y:c:T:hn")) != -1) {
@@ -176,9 +171,13 @@ int main(int argc, char *argv[])
         return (1);
     }
     if (teams.empty()) {
-        std::cerr << RED << "Error:" << ENDC <<" [-n team <team2> ...] Server must have at least one team" <<
-            std::endl << argv[0] <<" -h for more information" << std::endl;
-        return (1);
+        {
+            // Default teams
+            teams.push_back("Team Rocket");
+        }
+        // std::cerr << RED << "Error:" << ENDC <<" [-n team <team2> ...] Server must have at least one team" <<
+        //     std::endl << argv[0] <<" -h for more information" << std::endl;
+        // return (1);
     }
 
 

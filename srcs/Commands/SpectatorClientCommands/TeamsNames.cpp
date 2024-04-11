@@ -14,10 +14,6 @@ namespace Zappy {
 	TeamsNames::~TeamsNames() {
 	}
 
-	bool  TeamsNames::is_valid() const {
-		return true;
-	}
-
 	void  TeamsNames::execute() {
 		ClientCommand::execute();
     std::stringstream ss;

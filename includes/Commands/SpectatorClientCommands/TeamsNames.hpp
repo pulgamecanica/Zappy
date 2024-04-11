@@ -18,7 +18,6 @@ namespace Zappy {
 			TeamsNames(const TeamsNames&) = delete;
 			~TeamsNames();
 			TeamsNames&	operator= (const TeamsNames&) = delete; // const for safety... not super nesessary
-			bool  is_valid() const;
 	    void  execute();
 			const std::string cmd_error() const;
 		private:

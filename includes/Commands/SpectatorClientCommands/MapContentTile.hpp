@@ -17,7 +17,6 @@ namespace Zappy {
 			MapContentTile(const MapContentTile&) = default;
 			~MapContentTile();
 			MapContentTile&	operator= (const MapContentTile&) = default;
-			bool  is_valid() const;
 	    void  execute();
 			const std::string cmd_error() const;
 		private:

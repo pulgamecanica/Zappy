@@ -15,10 +15,6 @@ namespace Zappy {
 	Players::~Players() {
 	}
 
-	bool  Players::is_valid() const {
-		return true;
-	}
-
 	void  Players::execute() {
 		ClientCommand::execute();
     std::stringstream ss;

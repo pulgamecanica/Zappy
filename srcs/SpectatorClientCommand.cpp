@@ -12,6 +12,7 @@
 #include "Commands/SpectatorClientCommands/GetTimeUnit.hpp"
 #include "Commands/SpectatorClientCommands/SetTimeUnit.hpp"
 #include "Commands/SpectatorClientCommands/Players.hpp"
+#include "Commands/SpectatorClientCommands/PlayerInventory.hpp"
 
 namespace Zappy {
 
@@ -22,6 +23,7 @@ namespace Zappy {
     {"tna", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { (void)options; return new TeamsNames(trantor, s); }},
     {"ppo", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new PlayerPosition(trantor, s, options); }},
     {"plv", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new PlayerLevel(trantor, s, options); }},
+    {"pin", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new PlayerInventory(trantor, s, options); }},
     {"sgt", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { (void)options; return new GetTimeUnit(trantor, s); }},
     {"sst", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { return new SetTimeUnit(trantor, s, options); }},
     {"players", [](GameEngine* trantor, Spectator& s, std::vector<std::string>& options) { (void)options; return new Players(trantor, s); }}
