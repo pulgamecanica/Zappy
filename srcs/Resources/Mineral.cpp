@@ -1,33 +1,46 @@
-// //***************************//
-// //*Template by pulgamecanica*//
-// //***************************//
+//***************************//
+//*Template by pulgamecanica*//
+//***************************//
 
-// #include "Mineral.hpp"
+#include "Resources/Mineral.hpp"
 
-// Mineral::Mineral() {
-// 	// TODO (default constructor)
-// }
+namespace Zappy {
 
-// Mineral::Mineral(const Mineral& param) {
-// 	// TODO (copy constructor)
-// 	(void)param;
-// }
+  std::map<int, std::string> Mineral::TRANTORIAN_MINERALS = {
+    { 0, "linemate" },
+    { 1, "deraumere" },
+    { 2, "sibur" },
+    { 3, "mendiane" },
+    { 4, "phiras" },
+    { 5, "thystame" },
+  };
 
-// Mineral::~Mineral() {
-// 	std::cout << "Mineral" << " destroyed" << std::endl;
-// 	// TODO (destructor)
-// }
+  Mineral::Mineral(int index): index_(index), name_(TRANTORIAN_MINERALS[index]) {
+    ;
+  }
 
-// Mineral& Mineral::operator= (const Mineral& param) {
-// 	// TODO (Assignment operatior)
-// 	// std::swap()
-// 	(void)param;
-// 	return (*this);
-// }
+  Mineral::~Mineral() {
+    ;
+  }
 
-// std::ostream& operator<<(std::ostream& s, const Mineral& param) {
-// 	// s << param.CONST_METHOD()
-// 	(void)param;
-// 	return (s);
-// }
+  const std::string & Mineral::get_name() const {
+    return name_;
+  }
 
+  bool  Mineral::operator==(int mineral_rhs) const {
+    return index_ == mineral_rhs;
+  }
+
+  bool  Mineral::operator== (const Mineral& mineral_rhs) const {
+    return index_ == mineral_rhs.index_;
+  }
+
+  bool  Mineral::operator< (const Mineral& mineral_rhs) const {
+    return index_ < mineral_rhs.index_;
+  }
+
+  std::ostream& operator<<(std::ostream& s, const Mineral& param) {
+  	(void)param;
+  	return (s);
+  }
+}

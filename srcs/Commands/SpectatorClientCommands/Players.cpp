@@ -25,7 +25,7 @@ namespace Zappy {
 
   	const std::vector<const Player *> players = trantor_->get_players();
 	  for (std::vector<const Player *>::const_iterator i = players.begin(); i != players.end(); ++i) {
-	  	ss << *(*i) << " " << (*i)->get_team() << std::endl;
+	  	ss << *(*i) << std::endl;
 	  }
 		spectator_.broadcast(ss.str());
 

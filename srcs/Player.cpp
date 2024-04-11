@@ -79,6 +79,11 @@ namespace Zappy {
   Client* Player::get_client() const {
     return client_;
   }
+
+  const Inventory & Player::get_inventory() const {
+    return inventory_;
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
   
   //////////////////////////////////////// PUBLIC METHODS /////////////////////////////////////////
@@ -121,7 +126,7 @@ namespace Zappy {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   std::ostream& operator<<(std::ostream& s, const Player& p) {
-    s << p.get_ppo() << " " << p.get_lvl();
+    s << p.get_ppo() << " " << p.get_team() << " " << p.get_lvl() << " " << p.get_inventory();
     return (s);
   }
 }

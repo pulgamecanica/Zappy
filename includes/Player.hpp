@@ -10,7 +10,7 @@
 
 #include "Geometry/Direction.hpp"
 #include "Geometry/Point.hpp"
-// #include "Geometry/Resource.hpp"
+#include "Resources/Inventory.hpp"
 
 namespace Zappy {
   class Client;
@@ -42,6 +42,7 @@ namespace Zappy {
       const std::string get_ppo() const;
       const Team&       get_team() const;
       Client*           get_client() const;
+      const Inventory & get_inventory() const;
       // PUBLIC METHODS //
       bool              advance();
       void              assign_client(Client * client);
@@ -59,8 +60,7 @@ namespace Zappy {
       int               lvl_;
       enum PlayerStatus status_;
       Team&             team_;
-      // const std::vector<Resource>
-      // struct timeval created_at_;
+      const Inventory   inventory_;
       // Team
       // ETC...
       // Inventory
