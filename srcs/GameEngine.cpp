@@ -141,10 +141,10 @@ namespace Zappy {
     Server::update();
     if (is_time_to_update()) {
       // std::cout << "1/" << get_time_unit() << ":[" << frame() << "]" << std::endl;
-      for (std::map<int, Player *>::iterator i = players_.begin(); i != players_.end(); ++i) {
-        std::cout << "updating player #" << i->first << ":" << *(i->second) << std::endl;
-        i->second->advance();
-      }
+      // for (std::map<int, Player *>::iterator i = players_.begin(); i != players_.end(); ++i) {
+        // std::cout << "updating player #" << i->first << ":" << *(i->second) << std::endl;
+        // i->second->advance();
+      // }
       current_frame_++;
       update_time();
     }
