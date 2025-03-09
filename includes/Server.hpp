@@ -68,7 +68,9 @@ namespace Zappy {
       void              add_client(int socket, int fd);
       void              handle_client(int fd, const std::string & msg);
       const std::string handle_client_input_or_disconnect(int fd);
+      const std::string get_spectator_welcome_msg();
       void              handle_stdin(const std::string & cmd);
+      void              add_command_to_history(const std::string cmd);
       bool              is_client(int fd);
       bool              is_server_socket(int fd);
       bool              is_stdin(int fd);
@@ -79,18 +81,20 @@ namespace Zappy {
       const int players_port_;
       const int spectators_port_;
       // PRIVATE MEMBERS //
-      std::map<int, Client *> clients_;
-      std::vector<Config>     configs_;
-      Config                  *curr_config_;
-      int                     epoll_fd_;
-      struct epoll_event      events_[MAX_EPOLL_EVENTS];
-      enum ServerHealth       health_;
-      int                     players_socket_;
-      sockaddr_in             players_sockaddr_; // `man 7 ip` to see sockaddr_in struct
-      GameEngine              *trantor_;
-      sockaddr_in             spectators_sockaddr_; // `man 7 ip` to see sockaddr_in struct
-      int                     spectators_socket_;
-      std::vector<int>        clients_to_remove_;
+      std::map<int, Client *>   clients_;
+      std::vector<Config>       configs_;
+      Config                    *curr_config_;
+      int                       epoll_fd_;
+      struct epoll_event        events_[MAX_EPOLL_EVENTS];
+      enum ServerHealth         health_;
+      int                       players_socket_;
+      sockaddr_in               players_sockaddr_; // `man 7 ip` to see sockaddr_in struct
+      GameEngine                *trantor_;
+      sockaddr_in               spectators_sockaddr_; // `man 7 ip` to see sockaddr_in struct
+      int                       spectators_socket_;
+      std::vector<int>          clients_to_remove_;
+      std::vector<std::string>  commands_history_;
+      std::string               commands_history_string_;
   };
   std::ostream& operator<<(std::ostream&, const Server&);
 }

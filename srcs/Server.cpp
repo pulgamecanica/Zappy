@@ -20,6 +20,7 @@ extern "C" {
 #include "ClientCommand.hpp"
 #include "GameEngine.hpp"
 #include "Client.hpp"
+#include "Tile.hpp"
 
 namespace Zappy {
   const std::string  Server::VERSION = "42.0";
@@ -225,11 +226,13 @@ namespace Zappy {
 
   ////////////////////////////////////// PUBLIC METHODS ///////////////////////////////////////////
   void  Server::broadcast_spectators(const std::string& msg) {
+    commands_history_.push_back(msg);
+    add_command_to_history(msg);
     for (std::map<int, Client *>::iterator i = clients_.begin(); i != clients_.end(); ++i) {
       if (i->second->check_client_type(Client::ClientType::SpectatorT))
         i->second->broadcast(msg);
     }
-  }  
+  }
 
   void  Server::set_config(const std::string lang_acronym) {
     std::vector<Config>::iterator it = std::find(configs_.begin(), configs_.end(), lang_acronym);
@@ -348,7 +351,7 @@ namespace Zappy {
     if (players_socket_ == socket) {
       clients_.insert(std::pair<int, Client *>(fd, new Client(fd, Client::ClientType::PlayerT)));
     } else if (spectators_socket_ == socket) {
-      clients_.insert(std::pair<int, Client *>(fd, new Spectator(fd)));
+      clients_.insert(std::pair<int, Client *>(fd, new Spectator(fd, get_spectator_welcome_msg())));
     }
   }
 
@@ -400,6 +403,26 @@ namespace Zappy {
     }
     return (msg);
   }
+  
+  const std::string Server::get_spectator_welcome_msg() {
+    int lowest, last_index;
+    std::string welcome_msg;
+    std::string size_str(trantor_->get_map_size());
+
+    welcome_msg.append("msz " + size_str + "\n");
+    welcome_msg.append("sgt " + std::to_string(trantor_->get_time_unit()) + "\n");
+
+    lowest = trantor_->get_lowest_index();
+    last_index = lowest + trantor_->get_map_area();
+    for (int i = lowest; i < last_index; ++i) {
+      const Tile& tile = trantor_->get_tile(i);
+      if (tile.has_resources()) 
+        welcome_msg.append("bct " + std::string(trantor_->get_tile(i)) + "\n");
+    }
+    welcome_msg.append(commands_history_string_);
+    return welcome_msg;
+  }
+
 
   // Handle standard input from the server [BONUS]
   void  Server::handle_stdin(const std::string & cmd) {
@@ -416,6 +439,11 @@ namespace Zappy {
     delete c;
     if (check_health(Running))
       write(1, "$> ", 3);
+  }
+
+  void  Server::add_command_to_history(const std::string cmd) {
+    commands_history_.push_back(cmd);
+    commands_history_string_.append(cmd + '\n');
   }
   
   bool  Server::is_client(int fd) {

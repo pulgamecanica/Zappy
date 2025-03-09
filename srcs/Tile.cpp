@@ -120,6 +120,10 @@ namespace Zappy {
     return ss.str();
 	}
 
+	bool Tile::has_resources() const {
+		return resources_.size() > 0;
+	}
+
 	std::ostream& operator<<(std::ostream& s, const Tile& tile) {
 		s << tile.get_pos();
 		return (s);

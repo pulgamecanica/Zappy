@@ -27,6 +27,7 @@ namespace Zappy {
 			inline int get_index(int width) const;
       explicit operator std::string() const;
 			const Point & get_pos() const;
+			bool	has_resources() const;
 		private:
 			const Point pos_;
 			std::map<Resource::ResourceType, int> resources_;
